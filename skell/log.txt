@@ -4,3 +4,15 @@
 [2020-01-11 04:01:32.971] [file_logger] [info] program linked successfully
 [2020-01-11 04:06:31.498] [file_logger] [info] vertex shader compiled successfully
 [2020-01-11 04:06:31.499] [file_logger] [info] program linked successfully
+[2020-01-11 04:19:21.834] [file_logger] [info] XInput Controller
+[2020-01-11 04:19:22.271] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 04:19:22.272] [file_logger] [info] program linked successfully
+[2020-01-11 04:20:24.483] [file_logger] [info] XInput Controller
+[2020-01-11 04:20:24.921] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 04:20:24.922] [file_logger] [info] program linked successfully
+[2020-01-11 04:21:40.096] [file_logger] [info] XInput Controller
+[2020-01-11 04:21:40.536] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 04:21:40.537] [file_logger] [info] program linked successfully
+[2020-01-11 04:22:08.125] [file_logger] [info] XInput Controller
+[2020-01-11 04:22:08.580] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 04:22:08.582] [file_logger] [info] program linked successfully

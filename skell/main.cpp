@@ -183,13 +183,18 @@ int main(int argc, char* argv[]) {
 
 		//fun part is here, or replaced with delay
 		//SDL_Delay(30);
-		//should use "render_two" bool here, but it needs to be repurposed
-		//for (auto offset : offsets) {
-		//	model[12] = offset.first;
-		//	model[13] = offset.second;
-		//	glUniformMatrix4fv(model_id, 1, GL_FALSE, model);
-		//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//}
+		if (render_two) {
+			LinearAlgebra::Matrix<GLfloat> trans({
+				+1.0f, +0.0f, +0.0f, +0.0f,
+				+0.0f, +1.0f, +0.0f, +0.0f,
+				+0.0f, +0.0f, +1.0f, +0.0f,
+				+1.5f, +1.5f, +0.0f, +1.0f
+			});
+			LinearAlgebra::Matrix<GLfloat> model2 = model * trans;
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model2.GetPointerToData());
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //write this on exit because we may not come back and don't need to keep sending this data down if so
+		}
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		//progress
