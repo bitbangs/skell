@@ -410,3 +410,23 @@ error: "color" not declared as an output from the previous stage
 [2020-01-11 14:05:43.786] [file_logger] [info] vertex shader compiled successfully
 [2020-01-11 14:05:43.786] [file_logger] [info] fragment shader compiled successfully
 [2020-01-11 14:05:43.787] [file_logger] [info] program linked successfully
+[2020-01-11 14:18:40.381] [file_logger] [info] XInput Controller
+[2020-01-11 14:18:40.825] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:18:40.825] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:18:40.826] [file_logger] [info] program linked successfully
+[2020-01-11 14:19:22.304] [file_logger] [info] XInput Controller
+[2020-01-11 14:19:22.754] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:19:22.754] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:19:22.755] [file_logger] [info] program linked successfully
+[2020-01-11 14:22:18.436] [file_logger] [info] XInput Controller
+[2020-01-11 14:22:18.889] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:22:18.889] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:22:18.890] [file_logger] [info] program linked successfully
+[2020-01-11 14:23:28.197] [file_logger] [info] XInput Controller
+[2020-01-11 14:23:28.652] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:23:28.652] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:23:28.654] [file_logger] [info] program linked successfully
+[2020-01-11 14:24:00.697] [file_logger] [info] XInput Controller
+[2020-01-11 14:24:01.155] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:24:01.155] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:24:01.156] [file_logger] [info] program linked successfully

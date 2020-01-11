@@ -61,6 +61,7 @@ int main(int argc, char* argv[]) {
 	//gl context creation and glew initialization
 	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 	glewInit();
+	glEnable(GL_DEPTH_TEST);
 
 	//vertex shader compilation
 	GLuint vert_shader_id = glCreateShader(GL_VERTEX_SHADER);
@@ -136,7 +137,16 @@ int main(int argc, char* argv[]) {
 		+1.0f, +0.0f, +0.0f,
 		+0.0f, +0.0f, +1.0f, +1.0f, //blue
 		+1.0f, +1.0f, +0.0f,
+		+1.0f, +0.0f, +1.0f, +1.0f, //purple
+		+1.0f, +0.0f, +1.0f,
+		+1.0f, +0.0f, +0.0f, +1.0f, //red
+		+1.0f, +1.0f, +1.0f,
+		+0.0f, +1.0f, +0.0f, +1.0f, //green
+		+0.0f, +0.0f, +1.0f,
+		+0.0f, +0.0f, +1.0f, +1.0f, //blue
+		+0.0f, +1.0f, +1.0f,
 		+1.0f, +0.0f, +1.0f, +1.0f //purple
+
 	};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); //must bind so next call knows where to put data
 	glBufferData(GL_ARRAY_BUFFER, //glBufferData is used for mutable storage
@@ -167,7 +177,17 @@ int main(int argc, char* argv[]) {
 	glGenBuffers(1, &ibo);
 	GLuint indices[] = {
 		0u, 1u, 2u,
-		1u, 3u, 2u
+		1u, 3u, 2u,
+		2u, 3u, 4u,
+		3u, 5u, 4u,
+		4u, 5u, 6u,
+		5u, 7u, 6u,
+		6u, 7u, 0u,
+		7u, 1u, 0u,
+		1u, 7u, 3u,
+		7u, 5u, 3u,
+		6u, 0u, 4u,
+		0u, 2u, 4u
 	};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //binding here attaches us to vao
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -206,19 +226,11 @@ int main(int argc, char* argv[]) {
 
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
-	/*Model<GLfloat> model({
-		+0.25f, +0.00f, +0.00f, +0.00f,
-		+0.00f, +0.25f, +0.00f, +0.00f,
-		+0.00f, +0.00f, +0.25f, +0.00f,
-		+0.00f, +0.00f, +0.00f, +1.00f
-	});*/
 	Model<GLfloat> model;
-	//model.Scale(+0.25f, +0.25f, +0.25f);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 
 	//view matrix for the eye
 	GLint view_id = glGetUniformLocation(program, "view");
-	//Model<GLfloat> view({
 	LinearAlgebra::Matrix<GLfloat> left_view(4, 4, {
 		+1.0f, +0.0f, +0.0f, +0.0f, //our right
 		+0.0f, +1.0f, +0.0f, +0.0f, //up
@@ -257,7 +269,6 @@ int main(int argc, char* argv[]) {
 	bool quit = false;
 	unsigned char spawn_alive_mask = 0;
 	Model<GLfloat> spawned_model;
-	//spawned_model.Scale(+0.15f, +0.15f, +0.15f);
 	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
@@ -400,14 +411,14 @@ int main(int argc, char* argv[]) {
 
 		//wipe frame
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
 		//drawing begins
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw the main square mesh
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
 		
 		if (spawn_alive_mask > 0) {
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
 
 			//check if there was a collision
