@@ -209,6 +209,30 @@ int main(int argc, char* argv[]) {
 		+0.00f, +0.00f, +0.00f, +1.00f
 	});
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+	LinearAlgebra::Matrix<GLfloat> model_x(4, 4, {
+		+0.25f, +0.00f, +0.00f, +0.00f,
+		+0.00f, +0.25f, +0.00f, +0.00f,
+		+0.00f, +0.00f, +0.25f, +0.00f,
+		-1.75f, +0.00f, +0.00f, +1.00f
+	});
+	LinearAlgebra::Matrix<GLfloat> model_y(4, 4, {
+		+0.25f, +0.00f, +0.00f, +0.00f,
+		+0.00f, +0.25f, +0.00f, +0.00f,
+		+0.00f, +0.00f, +0.25f, +0.00f,
+		+0.00f, +1.75f, +0.00f, +1.00f
+	});
+	LinearAlgebra::Matrix<GLfloat> model_a(4, 4, {
+		+0.25f, +0.00f, +0.00f, +0.00f,
+		+0.00f, +0.25f, +0.00f, +0.00f,
+		+0.00f, +0.00f, +0.25f, +0.00f,
+		+0.00f, -1.75f, +0.00f, +1.00f
+	});
+	LinearAlgebra::Matrix<GLfloat> model_b(4, 4, {
+		+0.25f, +0.00f, +0.00f, +0.00f,
+		+0.00f, +0.25f, +0.00f, +0.00f,
+		+0.00f, +0.00f, +0.25f, +0.00f,
+		+1.75f, +0.00f, +0.00f, +1.00f
+	});
 
 	//set the ambient light
 	GLint ambient_id = glGetUniformLocation(program, "ambient");
@@ -264,23 +288,28 @@ int main(int argc, char* argv[]) {
 		+0.0f, +0.0f, +1.0f, +0.0f,
 		+0.1f, +0.1f, +0.0f, +1.0f
 	});
-	
 
 	//main loop
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	bool button_a_held = false;
-	bool button_y_held = false;
+	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
-	while (event.type != SDL_QUIT) {
+	bool quit = false;
+	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
 			switch (button) {
-			case SDL_CONTROLLER_BUTTON_A:
-				button_a_held = true;
+			case SDL_CONTROLLER_BUTTON_X:
+				button_mask |= 0x1;
 				break;
 			case SDL_CONTROLLER_BUTTON_Y:
-				button_y_held = true;
+				button_mask |= 0x2;
+				break;
+			case SDL_CONTROLLER_BUTTON_A:
+				button_mask |= 0x4;
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				button_mask |= 0x8;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 				dpad_mask |= 0x2;
@@ -294,6 +323,9 @@ int main(int argc, char* argv[]) {
 			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 				dpad_mask |= 0x1;
 				break;
+			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+				quit = true;
+				break;
 			default:
 				break;
 			}
@@ -301,11 +333,17 @@ int main(int argc, char* argv[]) {
 		if (event.type == SDL_CONTROLLERBUTTONUP) {
 			auto button = event.cbutton.button;
 			switch (button) {
-			case SDL_CONTROLLER_BUTTON_A:
-				button_a_held = false;
+			case SDL_CONTROLLER_BUTTON_X:
+				button_mask ^= 0x1;
 				break;
 			case SDL_CONTROLLER_BUTTON_Y:
-				button_y_held = false;
+				button_mask ^= 0x2;
+				break;
+			case SDL_CONTROLLER_BUTTON_A:
+				button_mask ^= 0x4;
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				button_mask ^= 0x8;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 				dpad_mask ^= 0x2;
@@ -322,6 +360,9 @@ int main(int argc, char* argv[]) {
 			default:
 				break;
 			}
+		}
+		if (event.type == SDL_QUIT) {
+			quit = true;
 		}
 
 		if (dpad_mask > 0) {
@@ -354,22 +395,55 @@ int main(int argc, char* argv[]) {
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 		}
 
-		if (button_y_held) {
-			ambient += 0.1f;
-			glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
-		}
-		else if (button_a_held) {
-			ambient -= 0.1f;
-			glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
-		}
-
 		//wipe frame
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		//fun part is here, or replaced with delay
 		//SDL_Delay(30);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw the main square mesh
+		if (button_mask > 0) { //maybe later find a way to separate input from drawing better
+			LinearAlgebra::Matrix<GLfloat> spawned_model(4, 4);
+			switch (button_mask) {
+			case 0x1: //x
+				spawned_model = model * model_x;
+				break;
+			case 0x2: //y
+				spawned_model = model * model_y;
+				break;
+			case 0x4: //a
+				spawned_model = model * model_a;
+				break;
+			case 0x8: //b
+				spawned_model = model * model_b;
+				break;
+				//case 0x3: //x and y
+				//	break;
+				//case 0x5: //x and a
+				//	break;
+				//case 0x6: //y and a
+				//	break;
+				//case 0x9: //x and b
+				//	break;
+				//case 0xa: //y and b
+				//	break;
+				//case 0xc: //a and b
+				//	break;
+				//case 0x7: //x, y, and a
+				//	break;
+				//case 0xb: //x, y, and b
+				//	break;
+				//case 0xd: //x, a, and b
+				//	break;
+				//case 0xe: //y, a, and b
+				//	break;
+				//case 0xf: //x, a, b, and y
+				//	break;
+			}
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a scaled mesh
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+		}
 
 		//progress
 		SDL_GL_SwapWindow(window);

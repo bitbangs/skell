@@ -106,3 +106,27 @@ error: "color" not declared as an output from the previous stage
 [2020-01-11 07:58:29.375] [file_logger] [info] vertex shader compiled successfully
 [2020-01-11 07:58:29.376] [file_logger] [info] fragment shader compiled successfully
 [2020-01-11 07:58:29.377] [file_logger] [info] program linked successfully
+[2020-01-11 08:25:48.450] [file_logger] [info] XInput Controller
+[2020-01-11 08:25:48.888] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:25:48.888] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:25:48.889] [file_logger] [info] program linked successfully
+[2020-01-11 08:31:34.180] [file_logger] [info] XInput Controller
+[2020-01-11 08:31:34.616] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:31:34.616] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:31:34.617] [file_logger] [info] program linked successfully
+[2020-01-11 08:33:02.555] [file_logger] [info] XInput Controller
+[2020-01-11 08:33:02.981] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:33:02.981] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:33:02.982] [file_logger] [info] program linked successfully
+[2020-01-11 08:33:40.690] [file_logger] [info] XInput Controller
+[2020-01-11 08:33:41.130] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:33:41.131] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:33:41.132] [file_logger] [info] program linked successfully
+[2020-01-11 08:34:32.879] [file_logger] [info] XInput Controller
+[2020-01-11 08:34:33.325] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:34:33.325] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:34:33.326] [file_logger] [info] program linked successfully
+[2020-01-11 08:37:03.629] [file_logger] [info] XInput Controller
+[2020-01-11 08:37:04.076] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 08:37:04.077] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 08:37:04.077] [file_logger] [info] program linked successfully
