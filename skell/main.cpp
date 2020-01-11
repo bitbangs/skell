@@ -60,14 +60,17 @@ int main(int argc, char* argv[]) {
 	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 	glewInit();
 
-	//shader compilation
+	//vertex shader compilation
 	GLuint vert_shader_id = glCreateShader(GL_VERTEX_SHADER);
 	const GLchar* vert_shader_src = "#version 450\n"
-		"in vec4 pos;\n"
+		"in vec3 pos;\n"
+		"in vec4 pass_color;\n"
+		"out vec4 color;\n"
 		"uniform mat4 model;\n"
 		"void main() {\n"
-		"gl_Position = model * pos;\n"
-		"}";
+		"gl_Position = model * vec4(pos, 1.0);\n"
+		"color = pass_color;\n"
+	"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
 	glCompileShader(vert_shader_id);
 	GLint is_vert_shader_compiled = GL_FALSE;
@@ -88,29 +91,71 @@ int main(int argc, char* argv[]) {
 		delete[] err_msg;
 	}
 	logger->info("vertex shader compiled successfully");
+	//fragment shader compilation
+	GLuint frag_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
+	const GLchar* frag_shader_src = "#version 450\n"
+		"in vec4 color;\n"
+		"out vec4 frag_color;\n"
+		"void main() {\n"
+		"frag_color = color;"
+		"}";
+	glShaderSource(frag_shader_id, 1, &frag_shader_src, NULL);
+	glCompileShader(frag_shader_id);
+	GLint is_frag_shader_compiled = GL_FALSE;
+	glGetShaderiv(frag_shader_id, GL_COMPILE_STATUS, &is_frag_shader_compiled);
+	if (is_frag_shader_compiled == GL_FALSE) {
+		GLint err_msg_size = 0;
+		glGetShaderiv(frag_shader_id, GL_INFO_LOG_LENGTH, &err_msg_size);
+		GLchar* err_msg = new GLchar[err_msg_size];
+		glGetShaderInfoLog(frag_shader_id, err_msg_size, NULL, err_msg);
+
+		logger->warn("fragment shader did not compile");
+		if (err_msg == NULL) {
+			logger->warn("could not get fragment shader compilation error message");
+		}
+		else {
+			logger->warn(err_msg);
+		}
+		delete[] err_msg;
+	}
+	logger->info("fragment shader compiled successfully");
 
 	//vertex data initialization for triangle
 	GLuint vbo;
 	glGenBuffers(1, &vbo); //get a vbo from opengl
-	LinearAlgebra::Matrix<GLfloat> positions(4, 4, {
-		+0.0f, +0.0f, +0.0f, +1.0f,
-		+0.0f, +1.0f, +0.0f, +1.0f,
-		+1.0f, +0.0f, +0.0f, +1.0f,
-		+1.0f, +1.0f, +0.0f, +1.0f
-	});
+	GLfloat mesh[] = {
+		+0.0f, +0.0f, +0.0f,
+		+1.0f, +0.0f, +0.0f, +1.0f, //red
+		+0.0f, +1.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +1.0f, //green
+		+1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +1.0f, //blue
+		+1.0f, +1.0f, +0.0f,
+		+1.0f, +0.0f, +1.0f, +1.0f //purple
+	};
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); //must bind so next call knows where to put data
 	glBufferData(GL_ARRAY_BUFFER, //glBufferData is used for mutable storage
-		positions.GetSizeInBytes(), //sizeof(positions), //size in bytes
-		positions.GetPointerToData(), //&positions, //const void*
+		sizeof(mesh), //sizeof(positions), //size in bytes
+		&mesh, //&positions, //const void*
 		GL_STATIC_DRAW
 	);
 	GLuint vao;
 	glGenVertexArrays(1, &vao); //get a vao from opengl
 	glBindVertexArray(vao); //must bind vao before configuring it
 	glVertexAttribPointer(0, //attribute index 0
-		4, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position +w coordinate
-		GL_FALSE, 0, 0); //do not normalize, no stride for now, no offset
+		3, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position
+		GL_FALSE, //do not normalize
+		7 * sizeof(GLfloat), //stride in bytes
+		0 //no offset
+	);
 	glEnableVertexAttribArray(0); //must enable attribute 0 (positions)
+	glVertexAttribPointer(1, //attribute index 1
+		4, GL_FLOAT, //vbo is already bound in current state; contains 4 floats for each vertex color, rgba
+		GL_FALSE, //do not normalize
+		7 * sizeof(GLfloat), //stride in bytes
+		(void*)(3 * sizeof(GLfloat)) //byte offset
+	);
+	glEnableVertexAttribArray(1); //must enable attribute 0 (positions)
 
 	//create indices, which must be done after vao is bound
 	GLuint ibo;
@@ -129,7 +174,9 @@ int main(int argc, char* argv[]) {
 	//bind to a program before you link
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vert_shader_id);
+	glAttachShader(program, frag_shader_id);
 	glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
+	glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
 	glLinkProgram(program);
 	GLint is_program_linked = GL_FALSE;
 	glGetProgramiv(program, GL_LINK_STATUS, &is_program_linked);
