@@ -8,6 +8,7 @@
 
 #include <LinearAlgebra/Vector.hpp>
 #include <LinearAlgebra/Matrix.hpp>
+#include "Model.hpp"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -202,92 +203,18 @@ int main(int argc, char* argv[]) {
 
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
-	LinearAlgebra::Matrix<GLfloat> model(4, 4, {
+	Model<GLfloat> model({
 		+0.25f, +0.00f, +0.00f, +0.00f,
 		+0.00f, +0.25f, +0.00f, +0.00f,
 		+0.00f, +0.00f, +0.25f, +0.00f,
 		+0.00f, +0.00f, +0.00f, +1.00f
 	});
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
-	LinearAlgebra::Matrix<GLfloat> model_x(4, 4, {
-		+0.25f, +0.00f, +0.00f, +0.00f,
-		+0.00f, +0.25f, +0.00f, +0.00f,
-		+0.00f, +0.00f, +0.25f, +0.00f,
-		-1.75f, +0.00f, +0.00f, +1.00f
-	});
-	LinearAlgebra::Matrix<GLfloat> model_y(4, 4, {
-		+0.25f, +0.00f, +0.00f, +0.00f,
-		+0.00f, +0.25f, +0.00f, +0.00f,
-		+0.00f, +0.00f, +0.25f, +0.00f,
-		+0.00f, +1.75f, +0.00f, +1.00f
-	});
-	LinearAlgebra::Matrix<GLfloat> model_a(4, 4, {
-		+0.25f, +0.00f, +0.00f, +0.00f,
-		+0.00f, +0.25f, +0.00f, +0.00f,
-		+0.00f, +0.00f, +0.25f, +0.00f,
-		+0.00f, -1.75f, +0.00f, +1.00f
-	});
-	LinearAlgebra::Matrix<GLfloat> model_b(4, 4, {
-		+0.25f, +0.00f, +0.00f, +0.00f,
-		+0.00f, +0.25f, +0.00f, +0.00f,
-		+0.00f, +0.00f, +0.25f, +0.00f,
-		+1.75f, +0.00f, +0.00f, +1.00f
-	});
 
 	//set the ambient light
 	GLint ambient_id = glGetUniformLocation(program, "ambient");
 	GLfloat ambient = 0.6f;
 	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
-
-	//movement
-	const LinearAlgebra::Matrix<GLfloat> trans_1(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		-0.1f, -0.1f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_2(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.0f, -0.1f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_3(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.1f, -0.1f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_4(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		-0.1f, +0.0f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_6(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.1f, +0.0f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_7(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		-0.1f, +0.1f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_8(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.0f, +0.1f, +0.0f, +1.0f
-	});
-	const LinearAlgebra::Matrix<GLfloat> trans_9(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.1f, +0.1f, +0.0f, +1.0f
-	});
 
 	//main loop
 	SDL_Event event;
@@ -295,6 +222,9 @@ int main(int argc, char* argv[]) {
 	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
 	bool quit = false;
+	unsigned char spawn_alive_mask = 0;
+	Model<GLfloat> spawned_model;
+	spawned_model.Scale(+0.15f, +0.15f, +0.15f);
 	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
@@ -368,28 +298,28 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				model *= trans_2;
+				model.Translate(+0.0f, -0.1f, +0.0f);
 				break;
 			case 0x2: //4
-				model *= trans_4;
+				model.Translate(-0.1f, +0.0f, +0.0f);
 				break;
 			case 0x3: //1
-				model *= trans_1;
+				model.Translate(-0.1f, -0.1f, +0.0f);
 				break;
 			case 0x4: //6
-				model *= trans_6;
+				model.Translate(+0.1f, +0.0f, +0.0f);
 				break;
 			case 0x5: //3
-				model *= trans_3;
+				model.Translate(+0.1f, -0.1f, +0.0f);
 				break;
 			case 0x8: //8
-				model *= trans_8;
+				model.Translate(+0.0f, +0.1f, +0.0f);
 				break;
 			case 0xa: //7
-				model *= trans_7;
+				model.Translate(-0.1f, +0.1f, +0.0f);
 				break;
 			case 0xc: //9
-				model *= trans_9;
+				model.Translate(+0.1f, +0.1f, +0.0f);
 				break;
 			}
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
@@ -399,23 +329,44 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//fun part is here, or replaced with delay
-		//SDL_Delay(30);
+		//drawing begins
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw the main square mesh
+		if (spawn_alive_mask > 0) {
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
+
+			//check if there was a collision
+			auto spawned_xx = spawned_model.Getxx();
+			auto spawned_yy = spawned_model.Getyy();
+			auto spawned_sx = spawned_model.Getsx();
+			auto spawned_sy = spawned_model.Getsy();
+			auto xx = model.Getxx();
+			auto yy = model.Getyy();
+			auto sx = model.Getsx();
+			auto sy = model.Getsy();
+
+			//this is not correct, but kinda works
+			if (spawned_xx >= xx && spawned_xx <= ((xx + 1) * sx)) {
+				if (spawned_yy >= yy && spawned_yy <= ((yy + 1) * sy)) {
+					spawn_alive_mask = 0;
+				}
+			}
+		}
+		
 		if (button_mask > 0) { //maybe later find a way to separate input from drawing better
-			LinearAlgebra::Matrix<GLfloat> spawned_model(4, 4);
 			switch (button_mask) {
 			case 0x1: //x
-				spawned_model = model * model_x;
+				spawned_model.Translate(-0.15f, +0.00f, +0.00f);
 				break;
 			case 0x2: //y
-				spawned_model = model * model_y;
+				spawned_model.Translate(+0.00f, +0.15f, +0.00f);
 				break;
 			case 0x4: //a
-				spawned_model = model * model_a;
+				spawned_model.Translate(+0.00f, -0.15f, +0.00f);
 				break;
 			case 0x8: //b
-				spawned_model = model * model_b;
+				spawned_model.Translate(+0.15f, +0.00f, +0.00f);
 				break;
 				//case 0x3: //x and y
 				//	break;
@@ -440,9 +391,7 @@ int main(int argc, char* argv[]) {
 				//case 0xf: //x, a, b, and y
 				//	break;
 			}
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a scaled mesh
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+			spawn_alive_mask = button_mask;
 		}
 
 		//progress
