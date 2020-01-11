@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <LinearAlgebra/Vector.hpp>
 #include <LinearAlgebra/Matrix.hpp>
 
 int main(int argc, char* argv[]) {
@@ -91,7 +92,7 @@ int main(int argc, char* argv[]) {
 	//vertex data initialization for triangle
 	GLuint vbo;
 	glGenBuffers(1, &vbo); //get a vbo from opengl
-	LinearAlgebra::Matrix<GLfloat> positions({
+	LinearAlgebra::Matrix<GLfloat> positions(4, 4, {
 		+0.0f, +0.0f, +0.0f, +1.0f,
 		+0.0f, +1.0f, +0.0f, +1.0f,
 		+1.0f, +0.0f, +0.0f, +1.0f,
@@ -109,7 +110,7 @@ int main(int argc, char* argv[]) {
 	glVertexAttribPointer(0, //attribute index 0
 		4, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position +w coordinate
 		GL_FALSE, 0, 0); //do not normalize, no stride for now, no offset
-	glEnableVertexAttribArray(0); //must enable attribute 0
+	glEnableVertexAttribArray(0); //must enable attribute 0 (positions)
 
 	//create indices, which must be done after vao is bound
 	GLuint ibo;
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
 
 	//create multiple instances via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
-	LinearAlgebra::Matrix<GLfloat> model({
+	LinearAlgebra::Matrix<GLfloat> model(4, 4, {
 		+0.25f, +0.00f, +0.00f, +0.00f,
 		+0.00f, +0.25f, +0.00f, +0.00f,
 		+0.00f, +0.00f, +0.25f, +0.00f,
@@ -184,7 +185,7 @@ int main(int argc, char* argv[]) {
 		//fun part is here, or replaced with delay
 		//SDL_Delay(30);
 		if (render_two) {
-			LinearAlgebra::Matrix<GLfloat> trans({
+			LinearAlgebra::Matrix<GLfloat> trans(4, 4, {
 				+1.0f, +0.0f, +0.0f, +0.0f,
 				+0.0f, +1.0f, +0.0f, +0.0f,
 				+0.0f, +0.0f, +1.0f, +0.0f,
