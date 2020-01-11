@@ -96,8 +96,9 @@ int main(int argc, char* argv[]) {
 	const GLchar* frag_shader_src = "#version 450\n"
 		"in vec4 color;\n"
 		"out vec4 frag_color;\n"
+		"uniform vec4 ambient;\n"
 		"void main() {\n"
-		"frag_color = color;"
+		"frag_color = ambient * color;"
 		"}";
 	glShaderSource(frag_shader_id, 1, &frag_shader_src, NULL);
 	glCompileShader(frag_shader_id);
@@ -199,7 +200,7 @@ int main(int argc, char* argv[]) {
 	logger->info("program linked successfully");
 	glUseProgram(program);
 
-	//create multiple instances via the model uniform
+	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
 	LinearAlgebra::Matrix<GLfloat> model(4, 4, {
 		+0.25f, +0.00f, +0.00f, +0.00f,
@@ -209,20 +210,157 @@ int main(int argc, char* argv[]) {
 	});
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 
+	//set the ambient light
+	GLint ambient_id = glGetUniformLocation(program, "ambient");
+	GLfloat ambient = 0.6f;
+	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
+
+	//movement
+	const LinearAlgebra::Matrix<GLfloat> trans_1(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		-0.1f, -0.1f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_2(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.0f, -0.1f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_3(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.1f, -0.1f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_4(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		-0.1f, +0.0f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_6(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.1f, +0.0f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_7(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		-0.1f, +0.1f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_8(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.0f, +0.1f, +0.0f, +1.0f
+	});
+	const LinearAlgebra::Matrix<GLfloat> trans_9(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.1f, +0.1f, +0.0f, +1.0f
+	});
+	
+
 	//main loop
 	SDL_Event event;
 	SDL_PollEvent(&event);
-	bool render_two = false;
+	bool button_a_held = false;
+	bool button_y_held = false;
+	unsigned char dpad_mask = 0;
 	while (event.type != SDL_QUIT) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
 			switch (button) {
 			case SDL_CONTROLLER_BUTTON_A:
-				render_two = !render_two;
+				button_a_held = true;
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				button_y_held = true;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+				dpad_mask |= 0x2;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+				dpad_mask |= 0x4;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_UP:
+				dpad_mask |= 0x8;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+				dpad_mask |= 0x1;
 				break;
 			default:
 				break;
 			}
+		}
+		if (event.type == SDL_CONTROLLERBUTTONUP) {
+			auto button = event.cbutton.button;
+			switch (button) {
+			case SDL_CONTROLLER_BUTTON_A:
+				button_a_held = false;
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				button_y_held = false;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+				dpad_mask ^= 0x2;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+				dpad_mask ^= 0x4;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_UP:
+				dpad_mask ^= 0x8;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+				dpad_mask ^= 0x1;
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (dpad_mask > 0) {
+			switch (dpad_mask) {
+			case 0x1: //2
+				model *= trans_2;
+				break;
+			case 0x2: //4
+				model *= trans_4;
+				break;
+			case 0x3: //1
+				model *= trans_1;
+				break;
+			case 0x4: //6
+				model *= trans_6;
+				break;
+			case 0x5: //3
+				model *= trans_3;
+				break;
+			case 0x8: //8
+				model *= trans_8;
+				break;
+			case 0xa: //7
+				model *= trans_7;
+				break;
+			case 0xc: //9
+				model *= trans_9;
+				break;
+			}
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+		}
+
+		if (button_y_held) {
+			ambient += 0.1f;
+			glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
+		}
+		else if (button_a_held) {
+			ambient -= 0.1f;
+			glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
 		}
 
 		//wipe frame
@@ -231,18 +369,6 @@ int main(int argc, char* argv[]) {
 
 		//fun part is here, or replaced with delay
 		//SDL_Delay(30);
-		if (render_two) {
-			LinearAlgebra::Matrix<GLfloat> trans(4, 4, {
-				+1.0f, +0.0f, +0.0f, +0.0f,
-				+0.0f, +1.0f, +0.0f, +0.0f,
-				+0.0f, +0.0f, +1.0f, +0.0f,
-				+1.5f, +1.5f, +0.0f, +1.0f
-			});
-			LinearAlgebra::Matrix<GLfloat> model2 = model * trans;
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model2.GetPointerToData());
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //write this on exit because we may not come back and don't need to keep sending this data down if so
-		}
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		//progress
