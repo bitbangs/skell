@@ -104,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\spdlog-1.x\spdlog-1.x\include;C:\glew-2.1.0-win32\glew-2.1.0\include;C:\SDL2-devel-2.0.10-VC\SDL2-2.0.10\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\spdlog-1.x\spdlog-1.x\include;C:\glew-2.1.0-win32\glew-2.1.0\include;C:\SDL2-devel-2.0.10-VC\SDL2-2.0.10\include;C:\Users\rchristo\source\repos\LinearAlgebra;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\SDL2-devel-2.0.10-VC\SDL2-2.0.10\lib\x64;C:\glew-2.1.0-win32\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;glew32.lib;opengl32.lib;LinearAlgebra.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\SDL2-devel-2.0.10-VC\SDL2-2.0.10\lib\x64;C:\glew-2.1.0-win32\glew-2.1.0\lib\Release\x64;C:\Users\rchristo\source\repos\LinearAlgebra\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

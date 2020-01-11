@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <LinearAlgebra/Matrix.hpp>
+
 int main(int argc, char* argv[]) {
 	//logger initialization
 	std::shared_ptr<spdlog::logger> logger;
@@ -60,10 +62,10 @@ int main(int argc, char* argv[]) {
 	//shader compilation
 	GLuint vert_shader_id = glCreateShader(GL_VERTEX_SHADER);
 	const GLchar* vert_shader_src = "#version 450\n"
-		"in vec3 pos;\n"
+		"in vec4 pos;\n"
 		"uniform mat4 model;\n"
 		"void main() {\n"
-		"gl_Position = model * vec4(pos, 1.0);\n"
+		"gl_Position = model * pos;\n"
 		"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
 	glCompileShader(vert_shader_id);
@@ -89,23 +91,23 @@ int main(int argc, char* argv[]) {
 	//vertex data initialization for triangle
 	GLuint vbo;
 	glGenBuffers(1, &vbo); //get a vbo from opengl
-	GLfloat positions[] = {
-		+0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f,
-		+1.0f, +0.0f, +0.0f,
-		+1.0f, +1.0f, +0.0f
-	};
+	LinearAlgebra::Matrix<GLfloat> positions({
+		+0.0f, +0.0f, +0.0f, +1.0f,
+		+0.0f, +1.0f, +0.0f, +1.0f,
+		+1.0f, +0.0f, +0.0f, +1.0f,
+		+1.0f, +1.0f, +0.0f, +1.0f
+	});
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); //must bind so next call knows where to put data
 	glBufferData(GL_ARRAY_BUFFER, //glBufferData is used for mutable storage
-		sizeof(positions), //size in bytes
-		&positions,
+		positions.GetSizeInBytes(), //sizeof(positions), //size in bytes
+		positions.GetPointerToData(), //&positions, //const void*
 		GL_STATIC_DRAW
 	);
 	GLuint vao;
 	glGenVertexArrays(1, &vao); //get a vao from opengl
 	glBindVertexArray(vao); //must bind vao before configuring it
 	glVertexAttribPointer(0, //attribute index 0
-		3, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position
+		4, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position +w coordinate
 		GL_FALSE, 0, 0); //do not normalize, no stride for now, no offset
 	glEnableVertexAttribArray(0); //must enable attribute 0
 
@@ -151,19 +153,13 @@ int main(int argc, char* argv[]) {
 
 	//create multiple instances via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
-	GLfloat model[] = {
+	LinearAlgebra::Matrix<GLfloat> model({
 		+0.25f, +0.00f, +0.00f, +0.00f,
 		+0.00f, +0.25f, +0.00f, +0.00f,
 		+0.00f, +0.00f, +0.25f, +0.00f,
 		+0.00f, +0.00f, +0.00f, +1.00f
-	};
-	std::vector<std::pair<GLfloat, GLfloat>> offsets({
-		{+0.25f, +0.00f},
-		{-0.25f, +0.00f},
-		{+0.75f, +0.00f},
-		{-0.75f, +0.00f},
-		{+0.50f, +0.25f}
-		});
+	});
+	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 
 	//main loop
 	SDL_Event event;
@@ -188,12 +184,13 @@ int main(int argc, char* argv[]) {
 		//fun part is here, or replaced with delay
 		//SDL_Delay(30);
 		//should use "render_two" bool here, but it needs to be repurposed
-		for (auto offset : offsets) {
-			model[12] = offset.first;
-			model[13] = offset.second;
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		}
+		//for (auto offset : offsets) {
+		//	model[12] = offset.first;
+		//	model[13] = offset.second;
+		//	glUniformMatrix4fv(model_id, 1, GL_FALSE, model);
+		//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//}
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		//progress
 		SDL_GL_SwapWindow(window);
