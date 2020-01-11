@@ -68,8 +68,9 @@ int main(int argc, char* argv[]) {
 		"in vec4 pass_color;\n"
 		"out vec4 color;\n"
 		"uniform mat4 model;\n"
+		"uniform mat4 view;\n"
 		"void main() {\n"
-		"gl_Position = model * vec4(pos, 1.0);\n"
+		"gl_Position = view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 	"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
@@ -203,13 +204,36 @@ int main(int argc, char* argv[]) {
 
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
-	Model<GLfloat> model({
+	/*Model<GLfloat> model({
 		+0.25f, +0.00f, +0.00f, +0.00f,
 		+0.00f, +0.25f, +0.00f, +0.00f,
 		+0.00f, +0.00f, +0.25f, +0.00f,
 		+0.00f, +0.00f, +0.00f, +1.00f
-	});
+	});*/
+	Model<GLfloat> model;
+	//model.Scale(+0.25f, +0.25f, +0.25f);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+
+	//view matrix for the eye
+	GLint view_id = glGetUniformLocation(program, "view");
+	//Model<GLfloat> view({
+	LinearAlgebra::Matrix<GLfloat> left_view(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f, //our right
+		+0.0f, +1.0f, +0.0f, +0.0f, //up
+		+0.0f, +0.0f, +1.0f, +0.0f, //look in this direction
+		+0.0f, +0.0f, +0.0f, +1.0f
+	});
+	LinearAlgebra::Matrix<GLfloat> right_view(4, 4, {
+		+1.0f, +0.0f, +0.0f, +0.0f,
+		+0.0f, +1.0f, +0.0f, +0.0f,
+		+0.0f, +0.0f, +1.0f, +0.0f,
+		+0.0f, +0.0f, +0.5f, +1.0f //our position
+	});
+	LinearAlgebra::Matrix<GLfloat> view = right_view * left_view;
+	glUniformMatrix4fv(view_id, 1, GL_FALSE, view.GetPointerToData());
+
+	//projection matrix
+	
 
 	//set the ambient light
 	GLint ambient_id = glGetUniformLocation(program, "ambient");
@@ -224,7 +248,7 @@ int main(int argc, char* argv[]) {
 	bool quit = false;
 	unsigned char spawn_alive_mask = 0;
 	Model<GLfloat> spawned_model;
-	spawned_model.Scale(+0.15f, +0.15f, +0.15f);
+	//spawned_model.Scale(+0.15f, +0.15f, +0.15f);
 	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
@@ -325,35 +349,6 @@ int main(int argc, char* argv[]) {
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 		}
 
-		//wipe frame
-		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//drawing begins
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw the main square mesh
-		if (spawn_alive_mask > 0) {
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
-
-			//check if there was a collision
-			auto spawned_xx = spawned_model.Getxx();
-			auto spawned_yy = spawned_model.Getyy();
-			auto spawned_sx = spawned_model.Getsx();
-			auto spawned_sy = spawned_model.Getsy();
-			auto xx = model.Getxx();
-			auto yy = model.Getyy();
-			auto sx = model.Getsx();
-			auto sy = model.Getsy();
-
-			//this is not correct, but kinda works
-			if (spawned_xx >= xx && spawned_xx <= ((xx + 1) * sx)) {
-				if (spawned_yy >= yy && spawned_yy <= ((yy + 1) * sy)) {
-					spawn_alive_mask = 0;
-				}
-			}
-		}
-		
 		if (button_mask > 0) { //maybe later find a way to separate input from drawing better
 			switch (button_mask) {
 			case 0x1: //x
@@ -392,6 +387,36 @@ int main(int argc, char* argv[]) {
 				//	break;
 			}
 			spawn_alive_mask = button_mask;
+		}
+
+		//wipe frame
+		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		//drawing begins
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw the main square mesh
+		
+		if (spawn_alive_mask > 0) {
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
+
+			//check if there was a collision
+			auto spawned_xx = spawned_model.Getxx();
+			auto spawned_yy = spawned_model.Getyy();
+			auto spawned_sx = spawned_model.Getsx();
+			auto spawned_sy = spawned_model.Getsy();
+			auto xx = model.Getxx();
+			auto yy = model.Getyy();
+			auto sx = model.Getsx();
+			auto sy = model.Getsy();
+
+			//this is not correct, but kinda works
+			if ((spawned_xx + spawned_sx >= xx && spawned_xx <= xx + sx)) {
+				if (spawned_yy + spawned_sy >= yy && spawned_yy <= yy + sy) {
+					spawn_alive_mask = 0;
+				}
+			}
 		}
 
 		//progress

@@ -20,9 +20,9 @@ public:
 	{}
 	Model(std::initializer_list<T> list) :
 		model(LinearAlgebra::Matrix<T>(4, 4, list)),
-		xx(*(list.begin() + 3)),
-		yy(*(list.begin() + 7)),
-		zz(*(list.begin() + 11)),
+		xx(*(list.begin() + 12)),
+		yy(*(list.begin() + 13)),
+		zz(*(list.begin() + 14)),
 		sx(*(list.begin())),
 		sy(*(list.begin() + 5)),
 		sz(*(list.begin() + 10))
