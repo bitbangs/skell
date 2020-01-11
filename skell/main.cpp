@@ -1,3 +1,4 @@
+#include <cmath>
 #include <GL/glew.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
 	SDL_Window* window = SDL_CreateWindow(
 		"sdl_window",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		640, 640,
+		640, 480,
 		SDL_WINDOW_OPENGL
 	);
 	if (window == NULL) {
@@ -69,8 +70,9 @@ int main(int argc, char* argv[]) {
 		"out vec4 color;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
 		"void main() {\n"
-		"gl_Position = view * model * vec4(pos, 1.0);\n"
+		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 	"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
@@ -227,13 +229,20 @@ int main(int argc, char* argv[]) {
 		+1.0f, +0.0f, +0.0f, +0.0f,
 		+0.0f, +1.0f, +0.0f, +0.0f,
 		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.0f, +0.0f, +0.5f, +1.0f //our position
+		+0.0f, +0.0f, +3.5f, +1.0f //our position
 	});
 	LinearAlgebra::Matrix<GLfloat> view = right_view * left_view;
 	glUniformMatrix4fv(view_id, 1, GL_FALSE, view.GetPointerToData());
 
 	//projection matrix
-	
+	GLint projection_id = glGetUniformLocation(program, "projection");
+	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
+		+1.0f / +1.33f * std::tanf(3.14159f / 4.0f), +0.0f, +0.0f, +0.0f,
+		0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
+		+0.0f, +0.0f, (-0.1f - 10.0f) / (0.1f - 10.0f), +1.0f,
+		+0.0f, +0.0f, (+2.0f * 10.0f * 0.1f) / (0.1f - 10.0f), +0.0f
+	});
+	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection.GetPointerToData());
 
 	//set the ambient light
 	GLint ambient_id = glGetUniformLocation(program, "ambient");

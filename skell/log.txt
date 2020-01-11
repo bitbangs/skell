@@ -326,3 +326,87 @@ error: "color" not declared as an output from the previous stage
 [2020-01-11 13:38:39.170] [file_logger] [info] vertex shader compiled successfully
 [2020-01-11 13:38:39.170] [file_logger] [info] fragment shader compiled successfully
 [2020-01-11 13:38:39.171] [file_logger] [info] program linked successfully
+[2020-01-11 13:56:14.642] [file_logger] [info] XInput Controller
+[2020-01-11 13:56:15.109] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 13:56:15.109] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 13:56:15.136] [file_logger] [info] program linked successfully
+[2020-01-11 13:56:46.944] [file_logger] [info] XInput Controller
+[2020-01-11 13:56:47.397] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 13:56:47.398] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 13:56:47.399] [file_logger] [info] program linked successfully
+[2020-01-11 13:56:58.135] [file_logger] [info] XInput Controller
+[2020-01-11 13:56:58.598] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 13:56:58.598] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 13:56:58.599] [file_logger] [info] program linked successfully
+[2020-01-11 13:58:38.835] [file_logger] [info] XInput Controller
+[2020-01-11 13:58:39.289] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 13:58:39.289] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 13:58:39.290] [file_logger] [info] program linked successfully
+[2020-01-11 13:59:42.158] [file_logger] [info] XInput Controller
+[2020-01-11 13:59:42.607] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 13:59:42.607] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 13:59:42.608] [file_logger] [info] program linked successfully
+[2020-01-11 14:00:00.507] [file_logger] [info] XInput Controller
+[2020-01-11 14:00:00.972] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:00:00.972] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:00:00.973] [file_logger] [info] program linked successfully
+[2020-01-11 14:00:08.970] [file_logger] [info] XInput Controller
+[2020-01-11 14:00:09.432] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:00:09.432] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:00:09.433] [file_logger] [info] program linked successfully
+[2020-01-11 14:00:21.572] [file_logger] [info] XInput Controller
+[2020-01-11 14:00:22.030] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:00:22.030] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:00:22.031] [file_logger] [info] program linked successfully
+[2020-01-11 14:00:37.484] [file_logger] [info] XInput Controller
+[2020-01-11 14:00:37.938] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:00:37.939] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:00:37.940] [file_logger] [info] program linked successfully
+[2020-01-11 14:01:05.618] [file_logger] [info] XInput Controller
+[2020-01-11 14:01:06.083] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:01:06.083] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:01:06.104] [file_logger] [info] program linked successfully
+[2020-01-11 14:01:18.599] [file_logger] [info] XInput Controller
+[2020-01-11 14:01:19.049] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:01:19.049] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:01:19.050] [file_logger] [info] program linked successfully
+[2020-01-11 14:02:21.996] [file_logger] [info] XInput Controller
+[2020-01-11 14:02:22.445] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:02:22.445] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:02:22.446] [file_logger] [info] program linked successfully
+[2020-01-11 14:02:33.156] [file_logger] [info] XInput Controller
+[2020-01-11 14:02:33.613] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:02:33.613] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:02:33.615] [file_logger] [info] program linked successfully
+[2020-01-11 14:02:42.035] [file_logger] [info] XInput Controller
+[2020-01-11 14:02:42.491] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:02:42.492] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:02:42.493] [file_logger] [info] program linked successfully
+[2020-01-11 14:02:53.476] [file_logger] [info] XInput Controller
+[2020-01-11 14:02:53.927] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:02:53.928] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:02:53.928] [file_logger] [info] program linked successfully
+[2020-01-11 14:03:45.681] [file_logger] [info] XInput Controller
+[2020-01-11 14:03:46.142] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:03:46.142] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:03:46.143] [file_logger] [info] program linked successfully
+[2020-01-11 14:04:08.796] [file_logger] [info] XInput Controller
+[2020-01-11 14:04:09.243] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:04:09.244] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:04:09.245] [file_logger] [info] program linked successfully
+[2020-01-11 14:04:19.800] [file_logger] [info] XInput Controller
+[2020-01-11 14:04:20.252] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:04:20.253] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:04:20.254] [file_logger] [info] program linked successfully
+[2020-01-11 14:05:19.489] [file_logger] [info] XInput Controller
+[2020-01-11 14:05:19.936] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:05:19.936] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:05:19.937] [file_logger] [info] program linked successfully
+[2020-01-11 14:05:32.749] [file_logger] [info] XInput Controller
+[2020-01-11 14:05:33.208] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:05:33.208] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:05:33.209] [file_logger] [info] program linked successfully
+[2020-01-11 14:05:43.332] [file_logger] [info] XInput Controller
+[2020-01-11 14:05:43.786] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 14:05:43.786] [file_logger] [info] fragment shader compiled successfully
+[2020-01-11 14:05:43.787] [file_logger] [info] program linked successfully
