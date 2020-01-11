@@ -1,0 +1,2 @@
+[2020-01-11 03:41:56.705] [file_logger] [info] vertex shader compiled successfully
+[2020-01-11 03:41:56.744] [file_logger] [info] program linked successfully
