@@ -249,10 +249,10 @@ int main(int argc, char* argv[]) {
 	//projection matrix
 	GLint projection_id = glGetUniformLocation(program, "projection");
 	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
-		+1.0f / +1.33f * std::tanf(3.14159f / 4.0f), +0.0f, +0.0f, +0.0f,
-		0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
-		+0.0f, +0.0f, (-0.1f - 10.0f) / (0.1f - 10.0f), +1.0f,
-		+0.0f, +0.0f, (+2.0f * 10.0f * 0.1f) / (0.1f - 10.0f), +0.0f
+		+1.0f / (+1.3333f * std::tanf(3.14159f / 5.2f)), +0.0f, +0.0f, +0.0f,
+		0.0f, +1.0f / std::tanf(3.14159f / 5.2f), +0.0f, +0.0f,
+		+0.0f, +0.0f, (-1.0f - 5.0f) / (1.0f - 5.0f), +1.0f,
+		+0.0f, +0.0f, (+2.0f * 5.0f * 1.0f) / (1.0f - 5.0f), +0.0f
 	});
 	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection.GetPointerToData());
 
