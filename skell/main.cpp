@@ -265,6 +265,9 @@ int main(int argc, char* argv[]) {
 	GLfloat ambient = 0.6f;
 	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
 
+	//translations
+	GLfloat step = +0.15f;
+
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model;
 	std::random_device rand_dev;
@@ -279,7 +282,7 @@ int main(int argc, char* argv[]) {
 	bool quit = false;
 	unsigned char spawn_alive_mask = 0;
 
-	//main game loop
+	//main loop
 	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
@@ -353,91 +356,76 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				model.Translate(+0.0f, -0.1f, +0.0f);
+				model.Translate(+0.0f, -step, +0.0f);
 				break;
 			case 0x2: //4
-				model.Translate(-0.1f, +0.0f, +0.0f);
+				model.Translate(-step, +0.0f, +0.0f);
 				break;
 			case 0x3: //1
-				model.Translate(-0.1f, -0.1f, +0.0f);
+				model.Translate(-step, -step, +0.0f);
 				break;
 			case 0x4: //6
-				model.Translate(+0.1f, +0.0f, +0.0f);
+				model.Translate(+step, +0.0f, +0.0f);
 				break;
 			case 0x5: //3
-				model.Translate(+0.1f, -0.1f, +0.0f);
+				model.Translate(+step, -step, +0.0f);
 				break;
 			case 0x8: //8
-				model.Translate(+0.0f, +0.1f, +0.0f);
+				model.Translate(+0.0f, +step, +0.0f);
 				break;
 			case 0xa: //7
-				model.Translate(-0.1f, +0.1f, +0.0f);
+				model.Translate(-step, +step, +0.0f);
 				break;
 			case 0xc: //9
-				model.Translate(+0.1f, +0.1f, +0.0f);
+				model.Translate(+step, +step, +0.0f);
 				break;
 			}
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 		}
 
-		if (button_mask > 0) {
-			switch (spawn_alive_mask) {
-			case 0x1: //x moves left
-				spawned_model.Translate(-0.15f, +0.00f, +0.00f);
-				break;
-			case 0x2: //y moves up
-				spawned_model.Translate(+0.00f, +0.15f, +0.00f);
-				break;
-			case 0x4: //a moves down
-				spawned_model.Translate(+0.00f, -0.15f, +0.00f);
-				break;
-			case 0x8: //b moves right
-				spawned_model.Translate(+0.15f, +0.00f, +0.00f);
-				break;
-			default: //button pressed, but spawn is new
-				spawned_model = Model<GLfloat>();
-				auto rand_xx = rand_uniform(rand_eng);
-				auto rand_yy = rand_uniform(rand_eng);
+		if (button_mask > 0 && spawn_alive_mask == 0) {
+			//button pressed, but spawn is new
+			spawned_model = Model<GLfloat>();
+			auto rand_xx = rand_uniform(rand_eng);
+			auto rand_yy = rand_uniform(rand_eng);
 
-				switch (button_mask) {
-				case 0x1: //x spawns in quadrant ii
-					spawned_model.Translate(-rand_xx, +rand_yy, +0.00f);
-					break;
-				case 0x2: //y spawns in quadrant i
-					spawned_model.Translate(+rand_xx, +rand_yy, +0.00f);
-					break;
-				case 0x4: //a spawns in quadrant iii
-					spawned_model.Translate(-rand_xx, -rand_yy, +0.00f);
-					break;
-				case 0x8: //b spawns in quadrant iv
-					spawned_model.Translate(+rand_xx, -rand_yy, +0.00f);
-					break;
-					//case 0x3: //x and y
-					//	break;
-					//case 0x5: //x and a
-					//	break;
-					//case 0x6: //y and a
-					//	break;
-					//case 0x9: //x and b
-					//	break;
-					//case 0xa: //y and b
-					//	break;
-					//case 0xc: //a and b
-					//	break;
-					//case 0x7: //x, y, and a
-					//	break;
-					//case 0xb: //x, y, and b
-					//	break;
-					//case 0xd: //x, a, and b
-					//	break;
-					//case 0xe: //y, a, and b
-					//	break;
-					//case 0xf: //x, a, b, and y
-					//	break;
-				}
-				spawn_alive_mask = button_mask;
+			switch (button_mask) {
+			case 0x1: //x spawns in quadrant ii
+				spawned_model.Translate(-rand_xx, +rand_yy, +0.00f);
 				break;
+			case 0x2: //y spawns in quadrant i
+				spawned_model.Translate(+rand_xx, +rand_yy, +0.00f);
+				break;
+			case 0x4: //a spawns in quadrant iii
+				spawned_model.Translate(-rand_xx, -rand_yy, +0.00f);
+				break;
+			case 0x8: //b spawns in quadrant iv
+				spawned_model.Translate(+rand_xx, -rand_yy, +0.00f);
+				break;
+				//case 0x3: //x and y
+				//	break;
+				//case 0x5: //x and a
+				//	break;
+				//case 0x6: //y and a
+				//	break;
+				//case 0x9: //x and b
+				//	break;
+				//case 0xa: //y and b
+				//	break;
+				//case 0xc: //a and b
+				//	break;
+				//case 0x7: //x, y, and a
+				//	break;
+				//case 0xb: //x, y, and b
+				//	break;
+				//case 0xd: //x, a, and b
+				//	break;
+				//case 0xe: //y, a, and b
+				//	break;
+				//case 0xf: //x, a, b, and y
+				//	break;
 			}
+			spawn_alive_mask = button_mask;
 		}
 
 		//wipe frame
@@ -448,6 +436,8 @@ int main(int argc, char* argv[]) {
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
 		
 		if (spawn_alive_mask > 0) {
+			//move toward player
+			spawned_model.MoveToward(model, +0.01f);
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back

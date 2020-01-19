@@ -1,5 +1,6 @@
 #pragma once
 #include <LinearAlgebra/Matrix.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 template <typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
 class Model {
@@ -39,6 +40,16 @@ public:
 		yy += dy;
 		zz += dz;
 	}
+	void MoveToward(const Model<T>& dest, const T step) {
+		/*T dx = step * (dest.Getxx() - xx);
+		T dy = step * (dest.Getyy() - yy);
+		T dz = step * (dest.Getxx() - zz);
+		Translate(dx, dy, dz);*/
+		auto toward = dest.GetCentroid() - GetCentroid();
+		toward.Normalize();
+		toward.Scale(step);
+		Translate(toward[0], toward[1], toward[2]);
+	}
 
 	void Scale(T dx, T dy, T dz) {
 		model *= LinearAlgebra::Matrix<T>(4, 4, {
@@ -69,6 +80,14 @@ public:
 	}
 	T Getsz() const {
 		return sz;
+	}
+	LinearAlgebra::Vector<T> GetCentroid() const {
+		LinearAlgebra::Vector<T> centroid({
+			xx + (sx / (T)2),
+			yy + (sy / (T)2),
+			zz + (sz / (T)2)
+		});
+		return centroid;
 	}
 
 	const T* GetPointerToData() const { //not a fan of doing this...
