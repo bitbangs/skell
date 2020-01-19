@@ -1,6 +1,7 @@
 #include <cmath>
 #include <GL/glew.h>
 #include <iostream>
+#include <random>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <SDL.h>
@@ -47,16 +48,19 @@ int main(int argc, char* argv[]) {
 	}
 
 	//sdl window creation
+	int width = 640;
+	int height = 480;
 	SDL_Window* window = SDL_CreateWindow(
 		"sdl_window",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		640, 480,
+		width, height,
 		SDL_WINDOW_OPENGL
 	);
 	if (window == NULL) {
 		logger->critical("could not create window");
 		return 1;
 	}
+	GLfloat aspect_ratio = (GLfloat)width / (GLfloat)height;
 
 	//gl context creation and glew initialization
 	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
@@ -104,7 +108,7 @@ int main(int argc, char* argv[]) {
 		"uniform vec4 ambient;\n"
 		"void main() {\n"
 		"frag_color = ambient * color;"
-		"}";
+	"}";
 	glShaderSource(frag_shader_id, 1, &frag_shader_src, NULL);
 	glCompileShader(frag_shader_id);
 	GLint is_frag_shader_compiled = GL_FALSE;
@@ -249,7 +253,7 @@ int main(int argc, char* argv[]) {
 	//projection matrix
 	GLint projection_id = glGetUniformLocation(program, "projection");
 	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
-		+1.0f / (+1.3333f * std::tanf(3.14159f / 5.2f)), +0.0f, +0.0f, +0.0f,
+		+1.0f / (+aspect_ratio * std::tanf(3.14159f / 5.2f)), +0.0f, +0.0f, +0.0f,
 		0.0f, +1.0f / std::tanf(3.14159f / 5.2f), +0.0f, +0.0f,
 		+0.0f, +0.0f, (-1.0f - 5.0f) / (1.0f - 5.0f), +1.0f,
 		+0.0f, +0.0f, (+2.0f * 5.0f * 1.0f) / (1.0f - 5.0f), +0.0f
@@ -261,14 +265,21 @@ int main(int argc, char* argv[]) {
 	GLfloat ambient = 0.6f;
 	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
 
-	//main loop
+	//spawn "enemies" with some uncertainty
+	Model<GLfloat> spawned_model;
+	std::random_device rand_dev;
+	std::default_random_engine rand_eng(rand_dev());
+	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
+
+	//main loop events
 	SDL_Event event;
 	SDL_PollEvent(&event);
 	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
 	bool quit = false;
 	unsigned char spawn_alive_mask = 0;
-	Model<GLfloat> spawned_model;
+
+	//main game loop
 	while (!quit) {
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
@@ -369,44 +380,64 @@ int main(int argc, char* argv[]) {
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 		}
 
-		if (button_mask > 0) { //maybe later find a way to separate input from drawing better
-			switch (button_mask) {
-			case 0x1: //x
+		if (button_mask > 0) {
+			switch (spawn_alive_mask) {
+			case 0x1: //x moves left
 				spawned_model.Translate(-0.15f, +0.00f, +0.00f);
 				break;
-			case 0x2: //y
+			case 0x2: //y moves up
 				spawned_model.Translate(+0.00f, +0.15f, +0.00f);
 				break;
-			case 0x4: //a
+			case 0x4: //a moves down
 				spawned_model.Translate(+0.00f, -0.15f, +0.00f);
 				break;
-			case 0x8: //b
+			case 0x8: //b moves right
 				spawned_model.Translate(+0.15f, +0.00f, +0.00f);
 				break;
-				//case 0x3: //x and y
-				//	break;
-				//case 0x5: //x and a
-				//	break;
-				//case 0x6: //y and a
-				//	break;
-				//case 0x9: //x and b
-				//	break;
-				//case 0xa: //y and b
-				//	break;
-				//case 0xc: //a and b
-				//	break;
-				//case 0x7: //x, y, and a
-				//	break;
-				//case 0xb: //x, y, and b
-				//	break;
-				//case 0xd: //x, a, and b
-				//	break;
-				//case 0xe: //y, a, and b
-				//	break;
-				//case 0xf: //x, a, b, and y
-				//	break;
+			default: //button pressed, but spawn is new
+				spawned_model = Model<GLfloat>();
+				auto rand_xx = rand_uniform(rand_eng);
+				auto rand_yy = rand_uniform(rand_eng);
+
+				switch (button_mask) {
+				case 0x1: //x spawns in quadrant ii
+					spawned_model.Translate(-rand_xx, +rand_yy, +0.00f);
+					break;
+				case 0x2: //y spawns in quadrant i
+					spawned_model.Translate(+rand_xx, +rand_yy, +0.00f);
+					break;
+				case 0x4: //a spawns in quadrant iii
+					spawned_model.Translate(-rand_xx, -rand_yy, +0.00f);
+					break;
+				case 0x8: //b spawns in quadrant iv
+					spawned_model.Translate(+rand_xx, -rand_yy, +0.00f);
+					break;
+					//case 0x3: //x and y
+					//	break;
+					//case 0x5: //x and a
+					//	break;
+					//case 0x6: //y and a
+					//	break;
+					//case 0x9: //x and b
+					//	break;
+					//case 0xa: //y and b
+					//	break;
+					//case 0xc: //a and b
+					//	break;
+					//case 0x7: //x, y, and a
+					//	break;
+					//case 0xb: //x, y, and b
+					//	break;
+					//case 0xd: //x, a, and b
+					//	break;
+					//case 0xe: //y, a, and b
+					//	break;
+					//case 0xf: //x, a, b, and y
+					//	break;
+				}
+				spawn_alive_mask = button_mask;
+				break;
 			}
-			spawn_alive_mask = button_mask;
 		}
 
 		//wipe frame
@@ -430,8 +461,6 @@ int main(int argc, char* argv[]) {
 			auto yy = model.Getyy();
 			auto sx = model.Getsx();
 			auto sy = model.Getsy();
-
-			//this is not correct, but kinda works
 			if ((spawned_xx + spawned_sx >= xx && spawned_xx <= xx + sx)) {
 				if (spawned_yy + spawned_sy >= yy && spawned_yy <= yy + sy) {
 					spawn_alive_mask = 0;
