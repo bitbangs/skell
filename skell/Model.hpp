@@ -41,14 +41,10 @@ public:
 		zz += dz;
 	}
 	void MoveToward(const Model<T>& dest, const T step) {
-		/*T dx = step * (dest.Getxx() - xx);
-		T dy = step * (dest.Getyy() - yy);
-		T dz = step * (dest.Getxx() - zz);
-		Translate(dx, dy, dz);*/
 		auto toward = dest.GetCentroid() - GetCentroid();
-		toward.Normalize();
-		toward.Scale(step);
-		Translate(toward[0], toward[1], toward[2]);
+		auto norm_toward = toward.Normalize();
+		norm_toward.Scale(step);
+		Translate(norm_toward[0], norm_toward[1], norm_toward[2]);
 	}
 
 	void Scale(T dx, T dy, T dz) {
