@@ -59,24 +59,15 @@ public:
 		sz *= dz;
 	}
 
-	T Getxx() const {
-		return xx;
+	bool IsIntersecting(const Model<T>& other) const {
+		if ((other.xx + other.sx >= xx && other.xx <= xx + sx)) {
+			if (other.yy + other.sy >= yy && other.yy <= yy + sy) {
+				return true;
+			}
+		}
+		return false;
 	}
-	T Getyy() const {
-		return yy;
-	}
-	T Getzz() const {
-		return zz;
-	}
-	T Getsx() const {
-		return sx;
-	}
-	T Getsy() const {
-		return sy;
-	}
-	T Getsz() const {
-		return sz;
-	}
+
 	LinearAlgebra::Vector<T> GetCentroid() const {
 		LinearAlgebra::Vector<T> centroid({
 			xx + (sx / (T)2),

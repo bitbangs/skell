@@ -267,6 +267,7 @@ int main(int argc, char* argv[]) {
 
 	//translations
 	GLfloat step = +0.15f;
+	GLfloat creep = +0.01f;
 
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model;
@@ -436,25 +437,15 @@ int main(int argc, char* argv[]) {
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
 		
 		if (spawn_alive_mask > 0) {
-			//move toward player
-			spawned_model.MoveToward(model, +0.01f);
+			//move enemy toward player
+			spawned_model.MoveToward(model, creep);
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
 
 			//check if there was a collision
-			auto spawned_xx = spawned_model.Getxx();
-			auto spawned_yy = spawned_model.Getyy();
-			auto spawned_sx = spawned_model.Getsx();
-			auto spawned_sy = spawned_model.Getsy();
-			auto xx = model.Getxx();
-			auto yy = model.Getyy();
-			auto sx = model.Getsx();
-			auto sy = model.Getsy();
-			if ((spawned_xx + spawned_sx >= xx && spawned_xx <= xx + sx)) {
-				if (spawned_yy + spawned_sy >= yy && spawned_yy <= yy + sy) {
-					spawn_alive_mask = 0;
-				}
+			if (spawned_model.IsIntersecting(model)) {
+				spawn_alive_mask = 0;
 			}
 		}
 

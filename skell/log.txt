@@ -574,3 +574,15 @@ error: "color" not declared as an output from the previous stage
 [2020-01-19 19:22:33.132] [file_logger] [info] vertex shader compiled successfully
 [2020-01-19 19:22:33.132] [file_logger] [info] fragment shader compiled successfully
 [2020-01-19 19:22:33.133] [file_logger] [info] program linked successfully
+[2020-01-19 19:35:42.751] [file_logger] [info] XInput Controller
+[2020-01-19 19:35:43.316] [file_logger] [info] vertex shader compiled successfully
+[2020-01-19 19:35:43.316] [file_logger] [info] fragment shader compiled successfully
+[2020-01-19 19:35:43.317] [file_logger] [info] program linked successfully
+[2020-01-19 19:36:25.003] [file_logger] [info] XInput Controller
+[2020-01-19 19:36:25.605] [file_logger] [info] vertex shader compiled successfully
+[2020-01-19 19:36:25.605] [file_logger] [info] fragment shader compiled successfully
+[2020-01-19 19:36:25.607] [file_logger] [info] program linked successfully
+[2020-01-19 19:37:25.838] [file_logger] [info] XInput Controller
+[2020-01-19 19:37:26.414] [file_logger] [info] vertex shader compiled successfully
+[2020-01-19 19:37:26.414] [file_logger] [info] fragment shader compiled successfully
+[2020-01-19 19:37:26.415] [file_logger] [info] program linked successfully
