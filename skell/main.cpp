@@ -270,7 +270,10 @@ int main(int argc, char* argv[]) {
 	GLfloat creep = +0.01f;
 
 	//spawn "enemies" with some uncertainty
-	Model<GLfloat> spawned_model;
+	Model<GLfloat> spawned_model_i;
+	Model<GLfloat> spawned_model_ii;
+	Model<GLfloat> spawned_model_iii;
+	Model<GLfloat> spawned_model_iv;
 	std::random_device rand_dev;
 	std::default_random_engine rand_eng(rand_dev());
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
@@ -384,24 +387,39 @@ int main(int argc, char* argv[]) {
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
 		}
 
-		if (button_mask > 0 && spawn_alive_mask == 0) {
-			//button pressed, but spawn is new
-			spawned_model = Model<GLfloat>();
-			auto rand_xx = rand_uniform(rand_eng);
-			auto rand_yy = rand_uniform(rand_eng);
-
+		if (button_mask > 0) {
 			switch (button_mask) {
 			case 0x1: //x spawns in quadrant ii
-				spawned_model.Translate(-rand_xx, +rand_yy, +0.00f);
+				if ((spawn_alive_mask & 0x1) == 0) {
+					spawned_model_ii = Model<GLfloat>();
+					auto rand_xx = rand_uniform(rand_eng);
+					auto rand_yy = rand_uniform(rand_eng);
+					spawned_model_ii.Translate(-rand_xx, +rand_yy, +0.00f);
+				}
 				break;
 			case 0x2: //y spawns in quadrant i
-				spawned_model.Translate(+rand_xx, +rand_yy, +0.00f);
+				if ((spawn_alive_mask & 0x2) == 0) {
+					spawned_model_i = Model<GLfloat>();
+					auto rand_xx = rand_uniform(rand_eng);
+					auto rand_yy = rand_uniform(rand_eng);
+					spawned_model_i.Translate(+rand_xx, +rand_yy, +0.00f);
+				}
 				break;
 			case 0x4: //a spawns in quadrant iii
-				spawned_model.Translate(-rand_xx, -rand_yy, +0.00f);
+				if ((spawn_alive_mask & 0x4) == 0) {
+					spawned_model_iii = Model<GLfloat>();
+					auto rand_xx = rand_uniform(rand_eng);
+					auto rand_yy = rand_uniform(rand_eng);
+					spawned_model_iii.Translate(-rand_xx, -rand_yy, +0.00f);
+				}
 				break;
 			case 0x8: //b spawns in quadrant iv
-				spawned_model.Translate(+rand_xx, -rand_yy, +0.00f);
+				if ((spawn_alive_mask & 0x8) == 0) {
+					spawned_model_iv = Model<GLfloat>();
+					auto rand_xx = rand_uniform(rand_eng);
+					auto rand_yy = rand_uniform(rand_eng);
+					spawned_model_iv.Translate(+rand_xx, -rand_yy, +0.00f);
+				}
 				break;
 				//case 0x3: //x and y
 				//	break;
@@ -426,7 +444,7 @@ int main(int argc, char* argv[]) {
 				//case 0xf: //x, a, b, and y
 				//	break;
 			}
-			spawn_alive_mask = button_mask;
+			spawn_alive_mask |= button_mask;
 		}
 
 		//wipe frame
@@ -438,15 +456,43 @@ int main(int argc, char* argv[]) {
 		
 		if (spawn_alive_mask > 0) {
 			//move enemy toward player
-			spawned_model.MoveToward(model, creep);
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model.GetPointerToData());
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
-
-			//check if there was a collision
-			if (spawned_model.IsIntersecting(model)) {
-				spawn_alive_mask = 0;
+			if (spawn_alive_mask & 0x1) {
+				spawned_model_ii.MoveToward(model, creep);
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_ii.GetPointerToData());
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				//check if there was a collision
+				if (spawned_model_ii.IsIntersecting(model)) {
+					spawn_alive_mask ^= 0x1;
+				}
 			}
+			if (spawn_alive_mask & 0x2) {
+				spawned_model_i.MoveToward(model, creep);
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_i.GetPointerToData());
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+							//check if there was a collision
+				if (spawned_model_i.IsIntersecting(model)) {
+					spawn_alive_mask ^= 0x2;
+				}
+			}
+			if (spawn_alive_mask & 0x4) {
+				spawned_model_iii.MoveToward(model, creep);
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iii.GetPointerToData());
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				//check if there was a collision
+				if (spawned_model_iii.IsIntersecting(model)) {
+					spawn_alive_mask ^= 0x4;
+				}
+			}
+			if (spawn_alive_mask & 0x8) {
+				spawned_model_iv.MoveToward(model, creep);
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iv.GetPointerToData());
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				//check if there was a collision
+				if (spawned_model_iv.IsIntersecting(model)) {
+					spawn_alive_mask ^= 0x8;
+				}
+			}
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
 		}
 
 		//progress
