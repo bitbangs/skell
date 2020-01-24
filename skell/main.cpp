@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	//sdl window creation
-	int width = 640;
-	int height = 480;
+	int width = 1280;
+	int height = 960;
 	SDL_Window* window = SDL_CreateWindow(
 		"sdl_window",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -268,6 +268,7 @@ int main(int argc, char* argv[]) {
 	//translations
 	GLfloat step = +0.15f;
 	GLfloat creep = +0.01f;
+	GLfloat shoot = +0.05f;
 
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model_i;
@@ -278,6 +279,9 @@ int main(int argc, char* argv[]) {
 	std::default_random_engine rand_eng(rand_dev());
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
 
+	//player can fire projectiles
+	Model<GLfloat> fire_model;
+
 	//main loop events
 	SDL_Event event;
 	SDL_PollEvent(&event);
@@ -285,6 +289,7 @@ int main(int argc, char* argv[]) {
 	unsigned char dpad_mask = 0;
 	bool quit = false;
 	unsigned char spawn_alive_mask = 0;
+	bool fire = false;
 
 	//main loop
 	while (!quit) {
@@ -317,6 +322,16 @@ int main(int argc, char* argv[]) {
 				break;
 			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
 				quit = true;
+				break;
+			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				if (!fire) {
+					fire = true;
+					auto player_position = model.GetCentroid();
+					fire_model = Model<GLfloat>();
+					fire_model.Scale(+0.75f, +0.75f, +0.75f);
+					fire_model.Translate(player_position[0], player_position[1], player_position[2]);
+					
+				}
 				break;
 			default:
 				break;
@@ -451,9 +466,11 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-		//drawing begins
+		//draw the player
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
-		
+
+		//draw the enemies
 		if (spawn_alive_mask > 0) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
@@ -461,17 +478,19 @@ int main(int argc, char* argv[]) {
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_ii.GetPointerToData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
-				if (spawned_model_ii.IsIntersecting(model)) {
+				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x1;
+					fire = false;
 				}
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(model, creep);
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_i.GetPointerToData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
-							//check if there was a collision
-				if (spawned_model_i.IsIntersecting(model)) {
+				//check if there was a collision
+				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
+					fire = false;
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
@@ -479,8 +498,9 @@ int main(int argc, char* argv[]) {
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iii.GetPointerToData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
-				if (spawned_model_iii.IsIntersecting(model)) {
+				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x4;
+					fire = false;
 				}
 			}
 			if (spawn_alive_mask & 0x8) {
@@ -488,11 +508,21 @@ int main(int argc, char* argv[]) {
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iv.GetPointerToData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
-				if (spawned_model_iv.IsIntersecting(model)) {
+				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
+					fire = false;
 				}
 			}
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
+		}
+
+		//draw the projectile
+		if (fire) {
+			fire_model.Translate(0.0f, +shoot, 0.0f);
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, fire_model.GetPointerToData());
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+			if (fire_model.GetCentroid()[1] > +5.0f) {
+				fire = false;
+			}
 		}
 
 		//progress

@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <LinearAlgebra/Matrix.hpp>
 #include <LinearAlgebra/Vector.hpp>
 
@@ -57,6 +58,15 @@ public:
 		sx *= dx;
 		sy *= dy;
 		sz *= dz;
+	}
+
+	void RotateZ(T dz) {
+		model *= LinearAlgebra::Matrix<T>(4, 4, {
+			+std::cos(dz), +std::sin(dz), 0, 0,
+			-std::sin(dz), +std::cos(dz), 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		});
 	}
 
 	bool IsIntersecting(const Model<T>& other) const {
