@@ -328,9 +328,8 @@ int main(int argc, char* argv[]) {
 					fire = true;
 					auto player_position = model.GetCentroid();
 					fire_model = Model<GLfloat>();
-					fire_model.Scale(+0.75f, +0.75f, +0.75f);
+					fire_model.Scale(+0.8f, +0.8f, +0.8f);
 					fire_model.Translate(player_position[0], player_position[1], player_position[2]);
-					
 				}
 				break;
 			default:
@@ -482,6 +481,9 @@ int main(int argc, char* argv[]) {
 					spawn_alive_mask ^= 0x1;
 					fire = false;
 				}
+				else if (spawned_model_ii.IsIntersecting(model)) {
+					quit = true;
+				}
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(model, creep);
@@ -491,6 +493,9 @@ int main(int argc, char* argv[]) {
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
 					fire = false;
+				}
+				else if (spawned_model_i.IsIntersecting(model)) {
+					quit = true;
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
@@ -502,6 +507,9 @@ int main(int argc, char* argv[]) {
 					spawn_alive_mask ^= 0x4;
 					fire = false;
 				}
+				else if (spawned_model_iii.IsIntersecting(model)) {
+					quit = true;
+				}
 			}
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(model, creep);
@@ -511,6 +519,9 @@ int main(int argc, char* argv[]) {
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
 					fire = false;
+				}
+				else if (spawned_model_iv.IsIntersecting(model)) {
+					quit = true;
 				}
 			}
 		}
