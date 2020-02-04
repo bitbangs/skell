@@ -43,7 +43,8 @@ public:
 		zz(*(list.begin() + 14)),
 		sx(*(list.begin())),
 		sy(*(list.begin() + 5)),
-		sz(*(list.begin() + 10))
+		sz(*(list.begin() + 10)),
+		rotz(0)
 	{}
 
 	void Translate(T dx, T dy, T dz) {

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <GL/glew.h>
 #include <iostream>
@@ -48,8 +49,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	//sdl window creation
-	int width = 1920;
-	int height = 1280;
+	int width = 1680;
+	int height = 1050;
 	SDL_Window* window = SDL_CreateWindow(
 		"sdl_window",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -77,7 +78,7 @@ int main(int argc, char* argv[]) {
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
 		"void main() {\n"
-		"gl_Position = projection * model * view * vec4(pos, 1.0);\n"
+		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 		"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
@@ -239,11 +240,12 @@ int main(int argc, char* argv[]) {
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
 	Model<GLfloat> model;
-	model.Translate(+0.0f, +0.0f, +8.1f);
+	model.Translate(+0.0f, -6.0f, +8.1f);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
 
 	//view matrix for the eye
 	GLint view_id = glGetUniformLocation(program, "view");
+	glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 
 	//projection matrix
 	GLint projection_id = glGetUniformLocation(program, "projection");
@@ -273,6 +275,14 @@ int main(int argc, char* argv[]) {
 	std::random_device rand_dev;
 	std::default_random_engine rand_eng(rand_dev());
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
+
+	//brickbreaker bricks
+	std::vector<Model<GLfloat>> bricks;
+	for (int ii = 0; ii < 8; ++ii) {
+		Model<GLfloat> brick;
+		brick.Translate(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
+		bricks.push_back(std::move(brick));
+	}
 
 	//player can fire projectiles
 	Model<GLfloat> fire_model;
@@ -370,8 +380,7 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				//model.Translate(+0.0f, -step, +0.0f);
-				model.RotateZ(+3.1415f / +16.0f);
+				model.Translate(+0.0f, -step, +0.0f);
 				break;
 			case 0x2: //4
 				model.Translate(-step, +0.0f, +0.0f);
@@ -396,7 +405,6 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
-			glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 		}
 
 		if (button_mask > 0) {
@@ -406,7 +414,7 @@ int main(int argc, char* argv[]) {
 					spawned_model_ii = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_ii.Translate(-rand_xx, +rand_yy, +0.00f);
+					spawned_model_ii.Translate(-rand_xx, +rand_yy, +8.1f);
 				}
 				break;
 			case 0x2: //y spawns in quadrant i
@@ -414,7 +422,7 @@ int main(int argc, char* argv[]) {
 					spawned_model_i = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_i.Translate(+rand_xx, +rand_yy, +0.00f);
+					spawned_model_i.Translate(+rand_xx, +rand_yy, +8.1f);
 				}
 				break;
 			case 0x4: //a spawns in quadrant iii
@@ -422,7 +430,7 @@ int main(int argc, char* argv[]) {
 					spawned_model_iii = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iii.Translate(-rand_xx, -rand_yy, +0.00f);
+					spawned_model_iii.Translate(-rand_xx, -rand_yy, +8.1f);
 				}
 				break;
 			case 0x8: //b spawns in quadrant iv
@@ -430,7 +438,7 @@ int main(int argc, char* argv[]) {
 					spawned_model_iv = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iv.Translate(+rand_xx, -rand_yy, +0.00f);
+					spawned_model_iv.Translate(+rand_xx, -rand_yy, +8.1f);
 				}
 				break;
 				//case 0x3: //x and y
@@ -465,8 +473,13 @@ int main(int argc, char* argv[]) {
 
 		//draw the player
 		glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData()); //set player model back
-		glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
+
+		//draw the bricks
+		for (const auto& brick : bricks) {
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, brick.GetPointerToModelData());
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw square mesh
+		}
 
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -474,7 +487,6 @@ int main(int argc, char* argv[]) {
 			if (spawn_alive_mask & 0x1) {
 				spawned_model_ii.MoveToward(model, creep);
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_ii.GetPointerToModelData());
-				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_ii.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
@@ -488,7 +500,6 @@ int main(int argc, char* argv[]) {
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(model, creep);
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_i.GetPointerToModelData());
-				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_i.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
@@ -502,7 +513,6 @@ int main(int argc, char* argv[]) {
 			if (spawn_alive_mask & 0x4) {
 				spawned_model_iii.MoveToward(model, creep);
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iii.GetPointerToModelData());
-				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_iii.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
@@ -516,7 +526,6 @@ int main(int argc, char* argv[]) {
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(model, creep);
 				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iv.GetPointerToModelData());
-				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_iv.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
@@ -533,9 +542,16 @@ int main(int argc, char* argv[]) {
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, fire_model.GetPointerToModelData());
-			glUniformMatrix4fv(view_id, 1, GL_FALSE, fire_model.GetPointerToViewData());
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw projectile
 			if (fire_model.GetCentroid()[1] > +5.0f) {
+				fire = false;
+			}
+			//check for collision with bricks
+			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick){
+				return fire_model.IsIntersecting(brick);
+			});
+			if (dead_brick != bricks.end()) {
+				bricks.erase(dead_brick);
 				fire = false;
 			}
 		}
