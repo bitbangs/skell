@@ -10,6 +10,7 @@ private:
 	LinearAlgebra::Matrix<T> view;
 	T xx, yy, zz;
 	T sx, sy, sz;
+	T rotz;
 public:
 	Model() :
 		model(LinearAlgebra::Matrix<T>(4, 4, {
@@ -22,10 +23,11 @@ public:
 			+1.0f, +0.0f, +0.0f, +0.0f,
 			+0.0f, +1.0f, +0.0f, +0.0f,
 			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +3.5f, +1.0f //our position
+			+0.0f, +0.0f, +0.5f, +1.0f //our position
 			})),
 		xx(0), yy(0), zz(0),
-		sx(1), sy(1), sz(1)
+		sx(1), sy(1), sz(1),
+		rotz(0)
 	{}
 
 	Model(std::initializer_list<T> list) :
@@ -34,7 +36,7 @@ public:
 			+1.0f, +0.0f, +0.0f, +0.0f,
 			+0.0f, +1.0f, +0.0f, +0.0f,
 			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +3.5f, +1.0f //our position
+			+0.0f, +0.0f, +0.5f, +1.0f //our position
 			})),
 		xx(*(list.begin() + 12)),
 		yy(*(list.begin() + 13)),
@@ -81,6 +83,7 @@ public:
 			0, 0, 1, 0,
 			0, 0, 0, 1
 			});
+		rotz += dz;
 	}
 
 	bool IsIntersecting(const Model<T>& other) const {
@@ -99,6 +102,10 @@ public:
 			zz + (sz / (T)2)
 			});
 		return centroid;
+	}
+
+	T GetRotation() const {
+		return rotz;
 	}
 
 	const T* GetPointerToModelData() const { //not a fan of doing this...

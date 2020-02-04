@@ -48,8 +48,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	//sdl window creation
-	int width = 1280;
-	int height = 960;
+	int width = 1920;
+	int height = 1280;
 	SDL_Window* window = SDL_CreateWindow(
 		"sdl_window",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -239,6 +239,7 @@ int main(int argc, char* argv[]) {
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
 	Model<GLfloat> model;
+	model.Translate(+0.0f, +0.0f, +8.1f);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
 
 	//view matrix for the eye
@@ -247,10 +248,10 @@ int main(int argc, char* argv[]) {
 	//projection matrix
 	GLint projection_id = glGetUniformLocation(program, "projection");
 	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
-		+1.0f / (+aspect_ratio * std::tanf(3.14159f / 5.2f)), +0.0f, +0.0f, +0.0f,
-		0.0f, +1.0f / std::tanf(3.14159f / 5.2f), +0.0f, +0.0f,
-		+0.0f, +0.0f, (-1.0f - 5.0f) / (1.0f - 5.0f), +1.0f,
-		+0.0f, +0.0f, (+2.0f * 5.0f * 1.0f) / (1.0f - 5.0f), +0.0f
+		+1.0f / (+aspect_ratio * std::tanf(3.14159f / 4.0f)), +0.0f, +0.0f, +0.0f,
+		0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
+		+0.0f, +0.0f, (1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
+		+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
 		});
 	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection.GetPointerToData());
 
@@ -323,6 +324,7 @@ int main(int argc, char* argv[]) {
 					auto player_position = model.GetCentroid();
 					fire_model = Model<GLfloat>();
 					fire_model.Scale(+0.8f, +0.8f, +0.8f);
+					fire_model.RotateZ(model.GetRotation());
 					fire_model.Translate(player_position[0], player_position[1], player_position[2]);
 				}
 				break;
