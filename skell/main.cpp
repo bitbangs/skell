@@ -77,9 +77,9 @@ int main(int argc, char* argv[]) {
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
 		"void main() {\n"
-		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
+		"gl_Position = projection * model * view * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
-	"}";
+		"}";
 	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
 	glCompileShader(vert_shader_id);
 	GLint is_vert_shader_compiled = GL_FALSE;
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 		"uniform vec4 ambient;\n"
 		"void main() {\n"
 		"frag_color = ambient * color;"
-	"}";
+		"}";
 	glShaderSource(frag_shader_id, 1, &frag_shader_src, NULL);
 	glCompileShader(frag_shader_id);
 	GLint is_frag_shader_compiled = GL_FALSE;
@@ -239,24 +239,10 @@ int main(int argc, char* argv[]) {
 	//create multiple instances of the mesh via the model uniform
 	GLint model_id = glGetUniformLocation(program, "model");
 	Model<GLfloat> model;
-	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
 
 	//view matrix for the eye
 	GLint view_id = glGetUniformLocation(program, "view");
-	LinearAlgebra::Matrix<GLfloat> left_view(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f, //our right
-		+0.0f, +1.0f, +0.0f, +0.0f, //up
-		+0.0f, +0.0f, +1.0f, +0.0f, //look in this direction
-		+0.0f, +0.0f, +0.0f, +1.0f
-	});
-	LinearAlgebra::Matrix<GLfloat> right_view(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.0f, +0.0f, +3.5f, +1.0f //our position
-	});
-	LinearAlgebra::Matrix<GLfloat> view = right_view * left_view;
-	glUniformMatrix4fv(view_id, 1, GL_FALSE, view.GetPointerToData());
 
 	//projection matrix
 	GLint projection_id = glGetUniformLocation(program, "projection");
@@ -265,7 +251,7 @@ int main(int argc, char* argv[]) {
 		0.0f, +1.0f / std::tanf(3.14159f / 5.2f), +0.0f, +0.0f,
 		+0.0f, +0.0f, (-1.0f - 5.0f) / (1.0f - 5.0f), +1.0f,
 		+0.0f, +0.0f, (+2.0f * 5.0f * 1.0f) / (1.0f - 5.0f), +0.0f
-	});
+		});
 	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection.GetPointerToData());
 
 	//set the ambient light
@@ -407,7 +393,8 @@ int main(int argc, char* argv[]) {
 				model.Translate(+step, +step, +0.0f);
 				break;
 			}
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData());
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
+			glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 		}
 
 		if (button_mask > 0) {
@@ -472,10 +459,11 @@ int main(int argc, char* argv[]) {
 
 		//wipe frame
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//draw the player
-		glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToData()); //set player model back
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData()); //set player model back
+		glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
 
 		//draw the enemies
@@ -483,7 +471,8 @@ int main(int argc, char* argv[]) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
 				spawned_model_ii.MoveToward(model, creep);
-				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_ii.GetPointerToData());
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_ii.GetPointerToModelData());
+				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_ii.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
@@ -496,7 +485,8 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(model, creep);
-				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_i.GetPointerToData());
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_i.GetPointerToModelData());
+				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_i.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
@@ -509,7 +499,8 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x4) {
 				spawned_model_iii.MoveToward(model, creep);
-				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iii.GetPointerToData());
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iii.GetPointerToModelData());
+				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_iii.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
@@ -522,7 +513,8 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(model, creep);
-				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iv.GetPointerToData());
+				glUniformMatrix4fv(model_id, 1, GL_FALSE, spawned_model_iv.GetPointerToModelData());
+				glUniformMatrix4fv(view_id, 1, GL_FALSE, spawned_model_iv.GetPointerToViewData());
 				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
@@ -538,7 +530,8 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, fire_model.GetPointerToData());
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, fire_model.GetPointerToModelData());
+			glUniformMatrix4fv(view_id, 1, GL_FALSE, fire_model.GetPointerToViewData());
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 			if (fire_model.GetCentroid()[1] > +5.0f) {
 				fire = false;
