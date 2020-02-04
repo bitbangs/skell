@@ -134,21 +134,29 @@ int main(int argc, char* argv[]) {
 	GLuint vbo;
 	glGenBuffers(1, &vbo); //get a vbo from opengl
 	GLfloat mesh[] = {
-		+0.0f, +0.0f, +0.0f,
+		//+0.0f, +0.0f, +0.0f,
+		-0.5f, -0.5f, +0.0f,
 		+1.0f, +0.0f, +0.0f, +1.0f, //red
-		+0.0f, +1.0f, +0.0f,
+		//+0.0f, +1.0f, +0.0f,
+		-0.5f, +0.5f, +0.0f,
 		+0.0f, +1.0f, +0.0f, +1.0f, //green
-		+1.0f, +0.0f, +0.0f,
+		//+1.0f, +0.0f, +0.0f,
+		+0.5f, -0.5f, 0.0f,
 		+0.0f, +0.0f, +1.0f, +1.0f, //blue
-		+1.0f, +1.0f, +0.0f,
+		//+1.0f, +1.0f, +0.0f,
+		+0.5f, +0.5f, +0.0f,
 		+1.0f, +0.0f, +1.0f, +1.0f, //purple
-		+1.0f, +0.0f, +1.0f,
+		//+1.0f, +0.0f, +1.0f,
+		+0.5f, -0.5f, +1.0f,
 		+1.0f, +0.0f, +0.0f, +1.0f, //red
-		+1.0f, +1.0f, +1.0f,
+		//+1.0f, +1.0f, +1.0f,
+		+0.5f, +0.5f, +1.0f,
 		+0.0f, +1.0f, +0.0f, +1.0f, //green
-		+0.0f, +0.0f, +1.0f,
+		//+0.0f, +0.0f, +1.0f,
+		-0.5f, -0.5f, +1.0f,
 		+0.0f, +0.0f, +1.0f, +1.0f, //blue
-		+0.0f, +1.0f, +1.0f,
+		//+0.0f, +1.0f, +1.0f,
+		-0.5f, +0.5f, +1.0f,
 		+1.0f, +0.0f, +1.0f, +1.0f //purple
 
 	};
@@ -374,7 +382,8 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				model.Translate(+0.0f, -step, +0.0f);
+				//model.Translate(+0.0f, -step, +0.0f);
+				model.RotateZ(+3.1415f / +16.0f);
 				break;
 			case 0x2: //4
 				model.Translate(-step, +0.0f, +0.0f);
@@ -528,7 +537,7 @@ int main(int argc, char* argv[]) {
 
 		//draw the projectile
 		if (fire) {
-			fire_model.Translate(0.0f, +shoot, 0.0f);
+			fire_model.Translate(+0.0f, +shoot, +0.0f);
 			glUniformMatrix4fv(model_id, 1, GL_FALSE, fire_model.GetPointerToData());
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
 			if (fire_model.GetCentroid()[1] > +5.0f) {
