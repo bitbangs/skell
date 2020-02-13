@@ -11,7 +11,9 @@
 
 #include <LinearAlgebra/Vector.hpp>
 #include <LinearAlgebra/Matrix.hpp>
+#include "Mesh.hpp"
 #include "Model.hpp"
+//#include "ShaderProgram.h"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -132,81 +134,53 @@ int main(int argc, char* argv[]) {
 	logger->info("fragment shader compiled successfully");
 
 	//vertex data initialization for triangle
-	GLuint vbo;
-	glGenBuffers(1, &vbo); //get a vbo from opengl
-	GLfloat mesh[] = {
-		//+0.0f, +0.0f, +0.0f,
-		-0.5f, -0.5f, +0.0f,
-		+1.0f, +0.0f, +0.0f, +1.0f, //red
-		//+0.0f, +1.0f, +0.0f,
-		-0.5f, +0.5f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +1.0f, //green
-		//+1.0f, +0.0f, +0.0f,
-		+0.5f, -0.5f, 0.0f,
-		+0.0f, +0.0f, +1.0f, +1.0f, //blue
-		//+1.0f, +1.0f, +0.0f,
-		+0.5f, +0.5f, +0.0f,
-		+1.0f, +0.0f, +1.0f, +1.0f, //purple
-		//+1.0f, +0.0f, +1.0f,
-		+0.5f, -0.5f, +1.0f,
-		+1.0f, +0.0f, +0.0f, +1.0f, //red
-		//+1.0f, +1.0f, +1.0f,
-		+0.5f, +0.5f, +1.0f,
-		+0.0f, +1.0f, +0.0f, +1.0f, //green
-		//+0.0f, +0.0f, +1.0f,
-		-0.5f, -0.5f, +1.0f,
-		+0.0f, +0.0f, +1.0f, +1.0f, //blue
-		//+0.0f, +1.0f, +1.0f,
-		-0.5f, +0.5f, +1.0f,
-		+1.0f, +0.0f, +1.0f, +1.0f //purple
+	Mesh<GLfloat> block(
+		{
+			{"pos", 0, 3},
+			{"pass_color", 1, 4}
+		},
+		{ //inputs
+			//+0.0f, +0.0f, +0.0f,
+			-0.5f, -0.5f, +0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+0.0f, +1.0f, +0.0f,
+			-0.5f, +0.5f, +0.0f,
+			+0.0f, +1.0f, +0.0f, +1.0f, //green
+			//+1.0f, +0.0f, +0.0f,
+			+0.5f, -0.5f, 0.0f,
+			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			//+1.0f, +1.0f, +0.0f,
+			+0.5f, +0.5f, +0.0f,
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			//+1.0f, +0.0f, +1.0f,
+			+0.5f, -0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+1.0f, +1.0f, +1.0f,
+			+0.5f, +0.5f, +1.0f,
+			+0.0f, +1.0f, +0.0f, +1.0f, //green
+			//+0.0f, +0.0f, +1.0f,
+			-0.5f, -0.5f, +1.0f,
+			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			//+0.0f, +1.0f, +1.0f,
+			-0.5f, +0.5f, +1.0f,
+			+1.0f, +0.0f, +1.0f, +1.0f //purple
 
-	};
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); //must bind so next call knows where to put data
-	glBufferData(GL_ARRAY_BUFFER, //glBufferData is used for mutable storage
-		sizeof(mesh), //sizeof(positions), //size in bytes
-		&mesh, //&positions, //const void*
-		GL_STATIC_DRAW
-	);
-	GLuint vao;
-	glGenVertexArrays(1, &vao); //get a vao from opengl
-	glBindVertexArray(vao); //must bind vao before configuring it
-	glVertexAttribPointer(0, //attribute index 0
-		3, GL_FLOAT, //vbo is already bound in current state; contains 3 floats for each vertex position
-		GL_FALSE, //do not normalize
-		7 * sizeof(GLfloat), //stride in bytes
-		0 //no offset
-	);
-	glEnableVertexAttribArray(0); //must enable attribute 0 (positions)
-	glVertexAttribPointer(1, //attribute index 1
-		4, GL_FLOAT, //vbo is already bound in current state; contains 4 floats for each vertex color, rgba
-		GL_FALSE, //do not normalize
-		7 * sizeof(GLfloat), //stride in bytes
-		(void*)(3 * sizeof(GLfloat)) //byte offset
-	);
-	glEnableVertexAttribArray(1); //must enable attribute 0 (positions)
-
-	//create indices, which must be done after vao is bound
-	GLuint ibo;
-	glGenBuffers(1, &ibo);
-	GLuint indices[] = {
-		0u, 1u, 2u,
-		1u, 3u, 2u,
-		2u, 3u, 4u,
-		3u, 5u, 4u,
-		4u, 5u, 6u,
-		5u, 7u, 6u,
-		6u, 7u, 0u,
-		7u, 1u, 0u,
-		1u, 7u, 3u,
-		7u, 5u, 3u,
-		6u, 0u, 4u,
-		0u, 2u, 4u
-	};
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //binding here attaches us to vao
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(indices),
-		&indices,
-		GL_STATIC_DRAW
+		},
+		{ //indices
+			0u, 1u, 2u,
+			1u, 3u, 2u,
+			2u, 3u, 4u,
+			3u, 5u, 4u,
+			4u, 5u, 6u,
+			5u, 7u, 6u,
+			6u, 7u, 0u,
+			7u, 1u, 0u,
+			1u, 7u, 3u,
+			7u, 5u, 3u,
+			6u, 0u, 4u,
+			0u, 2u, 4u
+		},
+		7
 	);
 
 	//bind to a program before you link
