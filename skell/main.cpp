@@ -14,7 +14,7 @@
 #include "Mesh.hpp"
 #include "Model.hpp"
 #include "ShaderProgram.h"
-//shader factory pending
+//shader factory pending :p
 #include "VertexShader.h"
 #include "FragmentShader.h"
 
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 			{"pos", 0, 3},
 			{"pass_color", 1, 4}
 		},
-		{ //inputs
+		{
 			//+0.0f, +0.0f, +0.0f,
 			-0.5f, -0.5f, +0.0f,
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
@@ -141,8 +141,7 @@ int main(int argc, char* argv[]) {
 			7u, 5u, 3u,
 			6u, 0u, 4u,
 			0u, 2u, 4u
-		},
-		7
+		}
 	);
 
 	//bind to a program before you link

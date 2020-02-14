@@ -1236,3 +1236,13 @@ error: "color" not declared as an output from the previous stage
 [2020-02-13 20:29:25.356] [file_logger] [info] program linked successfully
 [2020-02-13 20:32:43.885] [file_logger] [info] XInput Controller
 [2020-02-13 20:32:44.437] [file_logger] [info] program linked successfully
+[2020-02-14 17:36:20.780] [file_logger] [info] XInput Controller
+[2020-02-14 17:36:21.330] [file_logger] [info] program linked successfully
+[2020-02-14 18:37:47.145] [file_logger] [info] XInput Controller
+[2020-02-14 18:37:47.633] [file_logger] [info] program linked successfully
+[2020-02-14 18:40:32.562] [file_logger] [info] XInput Controller
+[2020-02-14 18:40:33.042] [file_logger] [info] program linked successfully
+[2020-02-14 18:50:52.176] [file_logger] [info] XInput Controller
+[2020-02-14 18:50:52.759] [file_logger] [info] program linked successfully
+[2020-02-14 18:51:11.421] [file_logger] [info] XInput Controller
+[2020-02-14 18:51:12.016] [file_logger] [info] program linked successfully
