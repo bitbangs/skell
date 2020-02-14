@@ -13,7 +13,10 @@
 #include <LinearAlgebra/Matrix.hpp>
 #include "Mesh.hpp"
 #include "Model.hpp"
-//#include "ShaderProgram.h"
+#include "ShaderProgram.h"
+//shader factory pending
+#include "VertexShader.h"
+#include "FragmentShader.h"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -71,8 +74,7 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	//vertex shader compilation
-	GLuint vert_shader_id = glCreateShader(GL_VERTEX_SHADER);
-	const GLchar* vert_shader_src = "#version 450\n"
+	VertexShader vert_shader("#version 450\n"
 		"in vec3 pos;\n"
 		"in vec4 pass_color;\n"
 		"out vec4 color;\n"
@@ -82,58 +84,18 @@ int main(int argc, char* argv[]) {
 		"void main() {\n"
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
-		"}";
-	glShaderSource(vert_shader_id, 1, &vert_shader_src, NULL);
-	glCompileShader(vert_shader_id);
-	GLint is_vert_shader_compiled = GL_FALSE;
-	glGetShaderiv(vert_shader_id, GL_COMPILE_STATUS, &is_vert_shader_compiled);
-	if (is_vert_shader_compiled == GL_FALSE) {
-		GLint err_msg_size = 0;
-		glGetShaderiv(vert_shader_id, GL_INFO_LOG_LENGTH, &err_msg_size);
-		GLchar* err_msg = new GLchar[err_msg_size];
-		glGetShaderInfoLog(vert_shader_id, err_msg_size, NULL, err_msg);
-
-		logger->warn("vertex shader did not compile");
-		if (err_msg == NULL) {
-			logger->warn("could not get vertex shader compilation error message");
-		}
-		else {
-			logger->warn(err_msg);
-		}
-		delete[] err_msg;
-	}
-	logger->info("vertex shader compiled successfully");
+	"}");
+	
 	//fragment shader compilation
-	GLuint frag_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
-	const GLchar* frag_shader_src = "#version 450\n"
+	FragmentShader frag_shader("#version 450\n"
 		"in vec4 color;\n"
 		"out vec4 frag_color;\n"
 		"uniform vec4 ambient;\n"
 		"void main() {\n"
 		"frag_color = ambient * color;"
-		"}";
-	glShaderSource(frag_shader_id, 1, &frag_shader_src, NULL);
-	glCompileShader(frag_shader_id);
-	GLint is_frag_shader_compiled = GL_FALSE;
-	glGetShaderiv(frag_shader_id, GL_COMPILE_STATUS, &is_frag_shader_compiled);
-	if (is_frag_shader_compiled == GL_FALSE) {
-		GLint err_msg_size = 0;
-		glGetShaderiv(frag_shader_id, GL_INFO_LOG_LENGTH, &err_msg_size);
-		GLchar* err_msg = new GLchar[err_msg_size];
-		glGetShaderInfoLog(frag_shader_id, err_msg_size, NULL, err_msg);
+	"}");
 
-		logger->warn("fragment shader did not compile");
-		if (err_msg == NULL) {
-			logger->warn("could not get fragment shader compilation error message");
-		}
-		else {
-			logger->warn(err_msg);
-		}
-		delete[] err_msg;
-	}
-	logger->info("fragment shader compiled successfully");
-
-	//vertex data initialization for triangle
+	//mesh data initialization
 	Mesh<GLfloat> block(
 		{
 			{"pos", 0, 3},
@@ -185,10 +147,14 @@ int main(int argc, char* argv[]) {
 
 	//bind to a program before you link
 	GLuint program = glCreateProgram();
-	glAttachShader(program, vert_shader_id);
-	glAttachShader(program, frag_shader_id);
-	glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
-	glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
+	glAttachShader(program, vert_shader.GetId());
+	glAttachShader(program, frag_shader.GetId());
+	GLuint attrib_id = 0;
+	for (const auto attrib : vert_shader.GetAttributes()) {
+		glBindAttribLocation(program, attrib_id++, attrib.c_str());
+	}
+	//glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
+	//glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
 	glLinkProgram(program);
 	GLint is_program_linked = GL_FALSE;
 	glGetProgramiv(program, GL_LINK_STATUS, &is_program_linked);

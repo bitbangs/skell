@@ -1,0 +1,3 @@
+[2020-02-13 20:29:20.712] [shader2_logger] [info] shader2 compiled successfully
+[2020-02-13 20:29:25.355] [shader2_logger] [info] shader2 compiled successfully
+[2020-02-13 20:32:44.358] [shader2_logger] [info] shader2 compiled successfully
