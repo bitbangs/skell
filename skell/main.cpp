@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 		"void main() {\n"
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
-		"norm = vec4(pass_norm, 1.0);\n"
+		"norm = vec4(pass_norm, 0.0);\n"
 		"frag_pos = model * vec4(pos, 1.0);\n"
 		"}");
 

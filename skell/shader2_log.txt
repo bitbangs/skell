@@ -57,3 +57,5 @@
 [2020-02-15 13:37:19.530] [shader2_logger] [info] shader2 compiled successfully
 [2020-02-15 13:37:47.210] [shader2_logger] [info] shader2 compiled successfully
 [2020-02-15 13:38:17.271] [shader2_logger] [info] shader2 compiled successfully
+[2020-02-15 13:40:27.153] [shader2_logger] [info] shader2 compiled successfully
+[2020-02-15 13:40:55.087] [shader2_logger] [info] shader2 compiled successfully

@@ -39,7 +39,7 @@ public:
 		shader_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
 
 		//set the light position for diffuse lighting
-		shader_program.SetVectorBuffer("light_pos", +5.0f, +0.0f, -5.0f, +1.0f);
+		shader_program.SetVectorBuffer("light_pos", -5.0f, +0.0f, -5.0f, +1.0f);
 	}
 
 	void Draw(const GLfloat* model_data, GLsizei num_indices, GLuint vao, GLuint ibo) {
