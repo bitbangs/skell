@@ -14,6 +14,7 @@ private:
 	GLsizei stride;
 	GLsizei num_indices;
 	GLuint vao;
+	GLuint ibo;
 
 public:
 	Mesh() = delete;
@@ -60,7 +61,6 @@ public:
 			glEnableVertexAttribArray(ii); //must enable attribute ii
 			offset += attribs[ii].num_elements;
 		}
-		GLuint ibo;
 		glGenBuffers(1, &ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //binding here attaches us to vao
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -76,5 +76,9 @@ public:
 
 	GLuint GetVao() const {
 		return vao;
+	}
+
+	GLuint GetIbo() const {
+		return ibo;
 	}
 };

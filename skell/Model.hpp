@@ -11,6 +11,7 @@ private:
 	T xx, yy, zz;
 	T sx, sy, sz;
 	T rotz;
+
 public:
 	Model() :
 		model(LinearAlgebra::Matrix<T>(4, 4, {
@@ -46,6 +47,7 @@ public:
 		yy += dy;
 		zz += dz;
 	}
+
 	void MoveToward(const Model<T>& dest, const T step) {
 		auto toward = dest.GetCentroid() - GetCentroid();
 		auto norm_toward = toward.Normalize();

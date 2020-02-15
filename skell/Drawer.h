@@ -39,8 +39,9 @@ public:
 		shader_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
 	}
 
-	void Draw(const GLfloat* model_data, GLsizei num_indices, GLuint vao) {
+	void Draw(const GLfloat* model_data, GLsizei num_indices, GLuint vao, GLuint ibo) {
 		glBindVertexArray(vao);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		shader_program.Use(); //wasteful
 		shader_program.SetMatrixBuffer("model", model_data); //set player model back
 		glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0); //draw the main square mesh
