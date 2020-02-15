@@ -35,8 +35,11 @@ public:
 		shader_program.SetMatrixBuffer("projection", projection.GetPointerToData());
 
 		//set the ambient light
-		GLfloat ambient = 0.6f;
+		GLfloat ambient = 0.4f;
 		shader_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
+
+		//set the light position for diffuse lighting
+		shader_program.SetVectorBuffer("light_pos", +5.0f, +0.0f, -5.0f, +1.0f);
 	}
 
 	void Draw(const GLfloat* model_data, GLsizei num_indices, GLuint vao, GLuint ibo) {

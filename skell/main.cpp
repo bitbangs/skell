@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
 		"in vec4 color;\n"
 		"out vec4 frag_color;\n"
 		"uniform vec4 ambient;\n"
+		"uniform vec4 light_pos;\n"
 		"void main() {\n"
 		"frag_color = ambient * color;"
 		"}");
@@ -100,6 +101,7 @@ int main(int argc, char* argv[]) {
 		"in vec4 pass_color;\n"
 		"out vec4 color;\n"
 		"out vec4 norm;\n"
+		"out vec4 frag_pos;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
@@ -107,16 +109,23 @@ int main(int argc, char* argv[]) {
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 		"norm = vec4(pass_norm, 1.0);\n"
+		"frag_pos = model * vec4(pos, 1.0);\n"
 		"}");
 
 	//fragment shader compilation
 	FragmentShader red_frag_shader("#version 450\n"
 		"in vec4 color;\n"
 		"in vec4 norm;\n"
+		"in vec4 frag_pos;\n"
 		"out vec4 frag_color;\n"
 		"uniform vec4 ambient;\n"
+		"uniform vec4 light_pos;\n"
 		"void main() {\n"
-		"frag_color = ambient * color;"
+		"vec4 light_dir = normalize(light_pos - frag_pos);\n"
+		"vec4 norm_dir = normalize(norm);\n"
+		"float diff = max(dot(norm_dir, light_dir), 0.0);\n"
+		"vec4 diffuse = diff * vec4(0.8, 0.8, 0.8, 1.0);\n"
+		"frag_color = (ambient + diffuse) * color;"
 		"}");
 
 	//create an all red block
