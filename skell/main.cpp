@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 		"norm = vec4(pass_norm, 0.0);\n"
-		"frag_pos = model * vec4(pos, 1.0);\n"
+		"frag_pos = model * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
 		"}");
 
 	//fragment shader compilation
@@ -314,8 +314,8 @@ int main(int argc, char* argv[]) {
 		);
 
 	//drawing classes
-	Drawer red_block_drawer(ShaderProgram(red_vert_shader, red_frag_shader), aspect_ratio);
-	Drawer block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
+	Drawer<GLfloat> red_block_drawer(ShaderProgram(red_vert_shader, red_frag_shader), aspect_ratio);
+	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
 	Model<GLfloat> player;
@@ -529,11 +529,11 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//draw the player
-		block_drawer.Draw(player.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+		block_drawer.Draw(player, block);
 
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			red_block_drawer.Draw(brick.GetPointerToModelData(), red_block.GetNumIndices(), red_block.GetVao(), red_block.GetIbo());
+			red_block_drawer.Draw(brick, red_block);
 		}
 
 		//draw the enemies
@@ -541,7 +541,7 @@ int main(int argc, char* argv[]) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
 				spawned_model_ii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_ii.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+				block_drawer.Draw(spawned_model_ii, block);
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x1;
@@ -553,7 +553,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_i.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+				block_drawer.Draw(spawned_model_i, block);
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
@@ -565,7 +565,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x4) {
 				spawned_model_iii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iii.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+				block_drawer.Draw(spawned_model_iii, block);
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x4;
@@ -577,7 +577,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iv.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+				block_drawer.Draw(spawned_model_iv, block);
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
@@ -592,7 +592,7 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			block_drawer.Draw(fire_model.GetPointerToModelData(), block.GetNumIndices(), block.GetVao(), block.GetIbo());
+			block_drawer.Draw(fire_model, block);
 			if (fire_model.GetCentroid()[1] > +5.0f) {
 				fire = false;
 			}
