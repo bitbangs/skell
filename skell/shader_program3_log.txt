@@ -1,0 +1,2 @@
+[2020-02-14 19:43:26.923] [shader_program3_logger] [info] program linked successfully
+[2020-02-14 19:43:58.149] [shader_program3_logger] [info] program linked successfully

@@ -142,49 +142,21 @@ int main(int argc, char* argv[]) {
 	);
 
 	//bind to a program before you link
-	GLuint program = glCreateProgram();
-	glAttachShader(program, vert_shader.GetId());
-	glAttachShader(program, frag_shader.GetId());
-	GLuint attrib_id = 0;
-	//for (const auto attrib : vert_shader.GetAttributes()) {
-	//	glBindAttribLocation(program, attrib_id++, attrib.c_str());
-	//}
-	glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
-	glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
-	glLinkProgram(program);
-	GLint is_program_linked = GL_FALSE;
-	glGetProgramiv(program, GL_LINK_STATUS, &is_program_linked);
-	if (is_program_linked == GL_FALSE) {
-		GLint err_msg_size = 0;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &err_msg_size);
-
-		GLchar* err_msg = new GLchar[err_msg_size];
-		glGetProgramInfoLog(program, err_msg_size, NULL, err_msg);
-
-		logger->warn("program did not link");
-		if (err_msg == NULL) {
-			logger->warn("could not get program link error message");
-		}
-		else {
-			logger->warn(err_msg);
-		}
-		delete[] err_msg;
-	}
-	logger->info("program linked successfully");
-	glUseProgram(program);
+	ShaderProgram program(vert_shader, frag_shader);
+	program.Use();
 
 	//create multiple instances of the mesh via the model uniform
-	GLint model_id = glGetUniformLocation(program, "model");
+	GLint model_id = glGetUniformLocation(program.GetId(), "model");
 	Model<GLfloat> model;
 	model.Translate(+0.0f, -6.0f, +8.1f);
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, model.GetPointerToModelData());
 
 	//view matrix for the eye
-	GLint view_id = glGetUniformLocation(program, "view");
+	GLint view_id = glGetUniformLocation(program.GetId(), "view");
 	glUniformMatrix4fv(view_id, 1, GL_FALSE, model.GetPointerToViewData());
 
 	//projection matrix
-	GLint projection_id = glGetUniformLocation(program, "projection");
+	GLint projection_id = glGetUniformLocation(program.GetId(), "projection");
 	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
 		+1.0f / (+aspect_ratio * std::tanf(3.14159f / 4.0f)), +0.0f, +0.0f, +0.0f,
 		0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
@@ -194,7 +166,7 @@ int main(int argc, char* argv[]) {
 	glUniformMatrix4fv(projection_id, 1, GL_FALSE, projection.GetPointerToData());
 
 	//set the ambient light
-	GLint ambient_id = glGetUniformLocation(program, "ambient");
+	GLint ambient_id = glGetUniformLocation(program.GetId(), "ambient");
 	GLfloat ambient = 0.6f;
 	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
 

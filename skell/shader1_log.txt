@@ -7,3 +7,5 @@
 [2020-02-14 18:50:52.757] [shader1_logger] [info] shader1 compiled successfully
 [2020-02-14 18:51:12.014] [shader1_logger] [info] shader1 compiled successfully
 [2020-02-14 19:29:37.045] [shader1_logger] [info] shader1 compiled successfully
+[2020-02-14 19:43:26.855] [shader1_logger] [info] shader1 compiled successfully
+[2020-02-14 19:43:58.147] [shader1_logger] [info] shader1 compiled successfully
