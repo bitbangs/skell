@@ -10,7 +10,6 @@ private:
 	LinearAlgebra::Matrix<T> model;
 	T xx, yy, zz;
 	T sx, sy, sz;
-	T rotz;
 
 public:
 	Model() :
@@ -21,19 +20,18 @@ public:
 			0, 0, 0, 1
 		})),
 		xx(0), yy(0), zz(0),
-		sx(1), sy(1), sz(1),
-		rotz(0)
+		sx(1), sy(1), sz(1)
 	{}
 
-	Model(std::initializer_list<T> list) :
-		model(LinearAlgebra::Matrix<T>(4, 4, list)),
-		xx(*(list.begin() + 12)),
-		yy(*(list.begin() + 13)),
-		zz(*(list.begin() + 14)),
-		sx(*(list.begin())),
-		sy(*(list.begin() + 5)),
-		sz(*(list.begin() + 10)),
-		rotz(0)
+	Model(T xx, T yy, T zz) :
+		model(LinearAlgebra::Matrix<T>(4, 4, {
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		})),
+		xx(xx), yy(yy), zz(zz),
+		sx(0), sy(0), sz(0)
 	{}
 
 	void Translate(T dx, T dy, T dz) {

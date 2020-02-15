@@ -458,8 +458,7 @@ int main(int argc, char* argv[]) {
 	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
-	Model<GLfloat> player;
-	player.Translate(+0.0f, -6.0f, +8.1f);
+	Model<GLfloat> player(+0.0f, -6.0f, +8.1f);
 
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model_i;
@@ -473,16 +472,14 @@ int main(int argc, char* argv[]) {
 	//brickbreaker bricks
 	std::vector<Model<GLfloat>> bricks;
 	for (int ii = 0; ii < 8; ++ii) {
-		Model<GLfloat> brick;
-		brick.Translate(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
+		Model<GLfloat> brick(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
 		bricks.push_back(std::move(brick));
 	}
 
 	//wall bricks
 	std::vector<Model<GLfloat>> wall_bricks;
 	for (int ii = 0; ii < 28; ++ii) {
-		Model<GLfloat> wall_brick;
-		wall_brick.Translate(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
+		Model<GLfloat> wall_brick(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
 
