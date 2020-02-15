@@ -29,7 +29,8 @@ public:
 				GLsizei num_elements = (GLsizei)(line.back() - 48);
 				vert_shader_file >> line; //get name
 				line.pop_back(); //remove ';'
-				attributes.push_back({ line.c_str(), index++, num_elements});
+				//attributes.push_back({ line.c_str(), index++, num_elements});
+				attributes.push_back({ line, index++, num_elements });
 			}
 			vert_shader_file >> line;
 		}

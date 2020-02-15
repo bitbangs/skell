@@ -3,14 +3,25 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <string>
+#include <sstream>
+#include <vector>
+
+struct Uniform {
+	//const GLchar* name;
+	std::string name;
+	const GLsizei num_elements;
+};
 
 class Shader
 {
 private:
 	std::shared_ptr<spdlog::logger> logger;
+	std::vector<Uniform> uniforms;
 
 protected:
 	GLuint id;
+
 	Shader(const GLchar* src, GLuint id) :
 		id(id)
 	{
@@ -23,6 +34,7 @@ protected:
 			std::cout << "spdlog init failed: " << ex.what() << '\n';
 		}
 
+		//shader compilation
 		glShaderSource(id, 1, &src, NULL);
 		glCompileShader(id);
 		GLint is_shader_compiled = GL_FALSE;
@@ -43,6 +55,27 @@ protected:
 			delete[] err_msg;
 		}
 		logger->info(name + " compiled successfully");
+
+		//parse out uniforms
+		std::stringstream shader_file(src);
+		std::string line;
+		shader_file >> line;
+		GLuint index = 0;
+		while (line != "void") { //until start of main() signature
+			if (line == "uniform") {
+				shader_file >> line; //get type
+				GLsizei num_elements = (GLsizei)(line.back() - 48);
+				if (line.front() == 'm') {
+					num_elements *= num_elements; //square matrix
+				}
+				shader_file >> line; //get name
+				line.pop_back(); //remove ';'
+				//const GLchar* name = line.c_str();
+				//const GLint uniform_id = glGetUniformLocation(id, name);
+				uniforms.push_back({line, num_elements});
+			}
+			shader_file >> line;
+		}
 	}
 
 public:
@@ -50,6 +83,10 @@ public:
 
 	const GLuint GetId() const {
 		return id;
+	}
+
+	std::vector<Uniform> GetUniforms() const {
+		return uniforms;
 	}
 };
 

@@ -1250,3 +1250,4 @@ error: "color" not declared as an output from the previous stage
 [2020-02-14 19:29:37.048] [file_logger] [info] program linked successfully
 [2020-02-14 19:43:26.361] [file_logger] [info] XInput Controller
 [2020-02-14 19:43:57.667] [file_logger] [info] XInput Controller
+[2020-02-15 05:34:00.572] [file_logger] [info] XInput Controller
