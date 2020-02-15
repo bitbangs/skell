@@ -454,7 +454,7 @@ int main(int argc, char* argv[]) {
 	);
 
 	//drawing classes
-	Drawer<GLfloat> red_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
+	Drawer<GLfloat> diffuse_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
@@ -476,6 +476,14 @@ int main(int argc, char* argv[]) {
 		Model<GLfloat> brick;
 		brick.Translate(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
 		bricks.push_back(std::move(brick));
+	}
+
+	//wall bricks
+	std::vector<Model<GLfloat>> wall_bricks;
+	for (int ii = 0; ii < 28; ++ii) {
+		Model<GLfloat> wall_brick;
+		wall_brick.Translate(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
+		wall_bricks.push_back(std::move(wall_brick));
 	}
 
 	//player can fire projectiles
@@ -671,7 +679,12 @@ int main(int argc, char* argv[]) {
 
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			red_block_drawer.Draw(brick, red_block);
+			diffuse_block_drawer.Draw(brick, red_block);
+		}
+
+		//draw the wall
+		for (const auto& wall_brick : wall_bricks) {
+			diffuse_block_drawer.Draw(wall_brick, projectile);
 		}
 
 		//draw the enemies
@@ -730,17 +743,25 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			red_block_drawer.Draw(fire_model, projectile);
-			if (fire_model.GetCentroid()[1] > +5.0f) { //let's get rid of this in favor of checking a collision
-				fire = false;
-			}
+			diffuse_block_drawer.Draw(fire_model, projectile);
+
 			//check for collision with bricks
-			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick){
+			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
 				return fire_model.IsIntersecting(brick);
 			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
 				fire = false;
+			}
+
+			if (fire) { //may have hit a brick...
+				//check for collision with wall
+				for (const auto& wall_brick : wall_bricks) {
+					if (fire_model.IsIntersecting(wall_brick)) {
+						fire = false;
+						break;
+					}
+				}
 			}
 		}
 
