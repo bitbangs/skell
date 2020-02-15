@@ -30,6 +30,9 @@
     <ClCompile Include="FragmentShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Drawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.hpp">
@@ -52,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="Attribute.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

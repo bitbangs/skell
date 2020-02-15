@@ -8,9 +8,7 @@
 #include <SDL.h>
 #include <string>
 #include <vector>
-
-#include <LinearAlgebra/Vector.hpp>
-#include <LinearAlgebra/Matrix.hpp>
+#include "Drawer.h"
 #include "Mesh.hpp"
 #include "Model.hpp"
 #include "ShaderProgram.h"
@@ -142,39 +140,11 @@ int main(int argc, char* argv[]) {
 	);
 
 	//bind to a program
-	ShaderProgram block_program(vert_shader, frag_shader);
-	block_program.Use();
-
-	//view matrix for the eye
-	LinearAlgebra::Matrix<GLfloat> view(4, 4, {
-		+1.0f, +0.0f, +0.0f, +0.0f,
-		+0.0f, +1.0f, +0.0f, +0.0f,
-		+0.0f, +0.0f, +1.0f, +0.0f,
-		+0.0f, +0.0f, +0.5f, +1.0f //our position
-	});
-	block_program.SetMatrixBuffer("view", view.GetPointerToData());
-
-	//projection matrix for the eye
-	LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
-		+1.0f / (+aspect_ratio * std::tanf(3.14159f / 4.0f)), +0.0f, +0.0f, +0.0f,
-		0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
-		+0.0f, +0.0f, (1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
-		+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
-	});
-	block_program.SetMatrixBuffer("projection", projection.GetPointerToData());
-
-	//set the ambient light
-	GLfloat ambient = 0.6f;
-	block_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
+	Drawer block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
 	Model<GLfloat> player;
 	player.Translate(+0.0f, -6.0f, +8.1f);
-
-	//translations
-	GLfloat step = +0.15f;
-	GLfloat creep = +0.01f;
-	GLfloat shoot = +0.05f;
 
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model_i;
@@ -195,6 +165,11 @@ int main(int argc, char* argv[]) {
 
 	//player can fire projectiles
 	Model<GLfloat> fire_model;
+
+	//translations
+	GLfloat step = +0.15f;
+	GLfloat creep = +0.01f;
+	GLfloat shoot = +0.05f;
 
 	//main loop events
 	SDL_Event event;
@@ -379,13 +354,11 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//draw the player
-		block_program.SetMatrixBuffer("model", player.GetPointerToModelData()); //set player model back
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw the main square mesh
+		block_drawer.Draw(player.GetPointerToModelData(), block.GetNumIndices());
 
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			block_program.SetMatrixBuffer("model", brick.GetPointerToModelData());
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw square mesh
+			block_drawer.Draw(brick.GetPointerToModelData(), block.GetNumIndices());
 		}
 
 		//draw the enemies
@@ -393,8 +366,7 @@ int main(int argc, char* argv[]) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
 				spawned_model_ii.MoveToward(player, creep);
-				block_program.SetMatrixBuffer("model", spawned_model_ii.GetPointerToModelData());
-				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				block_drawer.Draw(spawned_model_ii.GetPointerToModelData(), block.GetNumIndices());
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x1;
@@ -406,8 +378,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(player, creep);
-				block_program.SetMatrixBuffer("model", spawned_model_i.GetPointerToModelData());
-				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				block_drawer.Draw(spawned_model_i.GetPointerToModelData(), block.GetNumIndices());
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
@@ -419,8 +390,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x4) {
 				spawned_model_iii.MoveToward(player, creep);
-				block_program.SetMatrixBuffer("model", spawned_model_iii.GetPointerToModelData());
-				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				block_drawer.Draw(spawned_model_iii.GetPointerToModelData(), block.GetNumIndices());
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x4;
@@ -432,8 +402,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(player, creep);
-				block_program.SetMatrixBuffer("model", spawned_model_iv.GetPointerToModelData());
-				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw a spawned enemy (or whatever)
+				block_drawer.Draw(spawned_model_iv.GetPointerToModelData(), block.GetNumIndices());
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
@@ -448,8 +417,7 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			block_program.SetMatrixBuffer("model", fire_model.GetPointerToModelData());
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0); //draw projectile
+			block_drawer.Draw(fire_model.GetPointerToModelData(), block.GetNumIndices());
 			if (fire_model.GetCentroid()[1] > +5.0f) {
 				fire = false;
 			}

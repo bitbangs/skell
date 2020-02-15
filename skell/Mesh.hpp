@@ -12,6 +12,7 @@ private:
 	std::unique_ptr<T[]> elements;
 	std::unique_ptr<GLuint[]> indices;
 	GLsizei stride;
+	GLsizei num_indices;
 
 public:
 	Mesh() = delete;
@@ -21,7 +22,8 @@ public:
 		attribs(attribs),
 		elements(std::make_unique<T[]>(element_list.size())),
 		indices(std::make_unique<GLuint[]>(index_list.size())),
-		stride(0)
+		stride(0),
+		num_indices(index_list.size())
 	{
 		for (size_t ii = 0; ii < attribs.size(); ++ii) {
 			stride += attribs[ii].num_elements;
@@ -67,5 +69,7 @@ public:
 		);
 	}
 
-	//need to expose attributes...if we're ever going to change bufferdata
+	GLsizei GetNumIndices() const {
+		return num_indices;
+	}
 };
