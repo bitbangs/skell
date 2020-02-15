@@ -313,146 +313,6 @@ int main(int argc, char* argv[]) {
 		}
 		);
 
-	//mesh for projectile
-	Mesh<GLfloat> projectile(
-		diffuse_vert_shader.GetAttributes(),
-		{
-			//front face
-			-0.5f, -0.5f, +0.0f, //0
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +0.0f, //1
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +0.0f, //2
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +0.0f, //1
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +0.0f, //3
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +0.0f, //2
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-
-			//right face
-			+0.5f, -0.5f, +0.0f, //2
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +0.0f, //3
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +1.0f, //4
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +0.0f, //3
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +1.0f, //5
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +1.0f, //4
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-
-			//top face
-			-0.5f, +0.5f, +0.0f, //0
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +1.0f, //...
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +0.0f, //...
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +1.0f, //
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +1.0f, //
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +0.0f, //
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-
-			//left face
-			-0.5f, +0.5f, +0.0f, //...
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +0.0f, //...
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +1.0f, //
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +0.0f, //...
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +1.0f, //
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +1.0f, //
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-
-			//back face
-			+0.5f, -0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, +0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, +0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +1.0f, //
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-
-			//bottom face
-			-0.5f, -0.5f, +1.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +0.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +1.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			-0.5f, -0.5f, +0.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +0.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			+0.5f, -0.5f, +1.0f, //
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-		},
-		{
-			0u, 1u, 2u,
-			3u, 4u, 5u,
-			6u, 7u, 8u,
-			9u, 10u, 11u,
-			12u, 13u, 14u,
-			15u, 16u, 17u,
-			18u, 19u, 20u,
-			21u, 22u, 23u,
-			24u, 25u, 26u,
-			27u, 28u, 29u,
-			30u, 31u, 32u,
-			33u, 34u, 35u
-		}
-	);
-
 	//drawing classes
 	Drawer<GLfloat> diffuse_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
@@ -486,7 +346,7 @@ int main(int argc, char* argv[]) {
 	//player can fire projectiles
 	Model<GLfloat> fire_model;
 
-	//translations
+	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
 	GLfloat creep = +0.01f;
 	GLfloat shoot = +0.05f;
@@ -611,58 +471,32 @@ int main(int argc, char* argv[]) {
 			switch (button_mask) {
 			case 0x1: //x spawns in quadrant ii
 				if ((spawn_alive_mask & 0x1) == 0) {
-					spawned_model_ii = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_ii.Translate(-rand_xx, +rand_yy, +8.1f);
+					spawned_model_ii = Model<GLfloat>(-rand_xx, +rand_yy, +8.1f);
 				}
 				break;
 			case 0x2: //y spawns in quadrant i
 				if ((spawn_alive_mask & 0x2) == 0) {
-					spawned_model_i = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_i.Translate(+rand_xx, +rand_yy, +8.1f);
+					spawned_model_i = Model<GLfloat>(+rand_xx, +rand_yy, +8.1f);
 				}
 				break;
 			case 0x4: //a spawns in quadrant iii
 				if ((spawn_alive_mask & 0x4) == 0) {
-					spawned_model_iii = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iii.Translate(-rand_xx, -rand_yy, +8.1f);
+					spawned_model_iii = Model<GLfloat>(-rand_xx, -rand_yy, +8.1f);
 				}
 				break;
 			case 0x8: //b spawns in quadrant iv
 				if ((spawn_alive_mask & 0x8) == 0) {
-					spawned_model_iv = Model<GLfloat>();
 					auto rand_xx = rand_uniform(rand_eng);
 					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iv.Translate(+rand_xx, -rand_yy, +8.1f);
+					spawned_model_iv = Model<GLfloat>(+rand_xx, -rand_yy, +8.1f);
 				}
 				break;
-				//case 0x3: //x and y
-				//	break;
-				//case 0x5: //x and a
-				//	break;
-				//case 0x6: //y and a
-				//	break;
-				//case 0x9: //x and b
-				//	break;
-				//case 0xa: //y and b
-				//	break;
-				//case 0xc: //a and b
-				//	break;
-				//case 0x7: //x, y, and a
-				//	break;
-				//case 0xb: //x, y, and b
-				//	break;
-				//case 0xd: //x, a, and b
-				//	break;
-				//case 0xe: //y, a, and b
-				//	break;
-				//case 0xf: //x, a, b, and y
-				//	break;
 			}
 			spawn_alive_mask |= button_mask;
 		}
@@ -681,15 +515,13 @@ int main(int argc, char* argv[]) {
 
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
-			diffuse_block_drawer.Draw(wall_brick, projectile);
+			diffuse_block_drawer.Draw(wall_brick, red_block);
 		}
 
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
-				spawned_model_ii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_ii, block);
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x1;
@@ -698,10 +530,12 @@ int main(int argc, char* argv[]) {
 				else if (spawned_model_ii.IsIntersecting(player)) {
 					quit = true;
 				}
+				else {
+					spawned_model_ii.MoveToward(player, creep);
+					block_drawer.Draw(spawned_model_ii, block);
+				}
 			}
 			if (spawn_alive_mask & 0x2) {
-				spawned_model_i.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_i, block);
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
@@ -710,10 +544,12 @@ int main(int argc, char* argv[]) {
 				else if (spawned_model_i.IsIntersecting(player)) {
 					quit = true;
 				}
+				else {
+					spawned_model_i.MoveToward(player, creep);
+					block_drawer.Draw(spawned_model_i, block);
+				}
 			}
 			if (spawn_alive_mask & 0x4) {
-				spawned_model_iii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iii, block);
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x4;
@@ -722,10 +558,12 @@ int main(int argc, char* argv[]) {
 				else if (spawned_model_iii.IsIntersecting(player)) {
 					quit = true;
 				}
+				else {
+					spawned_model_iii.MoveToward(player, creep);
+					block_drawer.Draw(spawned_model_iii, block);
+				}
 			}
 			if (spawn_alive_mask & 0x8) {
-				spawned_model_iv.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iv, block);
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
@@ -734,14 +572,15 @@ int main(int argc, char* argv[]) {
 				else if (spawned_model_iv.IsIntersecting(player)) {
 					quit = true;
 				}
+				else {
+					spawned_model_iv.MoveToward(player, creep);
+					block_drawer.Draw(spawned_model_iv, block);
+				}
 			}
 		}
 
 		//draw the projectile
 		if (fire) {
-			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			diffuse_block_drawer.Draw(fire_model, projectile);
-
 			//check for collision with bricks
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
 				return fire_model.IsIntersecting(brick);
@@ -759,6 +598,11 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 				}
+			}
+
+			if (fire) {
+				fire_model.Translate(+0.0f, +shoot, +0.0f);
+				diffuse_block_drawer.Draw(fire_model, red_block);
 			}
 		}
 
