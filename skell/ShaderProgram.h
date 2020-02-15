@@ -87,8 +87,8 @@ public:
 		glUniformMatrix4fv(buffers.at(name).index, 1, GL_FALSE, data);
 	}
 
-	void SetVectorBuffer(const GLchar* name, const GLfloat* data) {
-
+	void SetVectorBuffer(std::string name, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+		glUniform4f(buffers.at(name).index, v0, v1, v2, v3);
 	}
 };
 

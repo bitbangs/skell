@@ -163,9 +163,8 @@ int main(int argc, char* argv[]) {
 	program.SetMatrixBuffer("projection", projection.GetPointerToData());
 
 	//set the ambient light
-	GLint ambient_id = glGetUniformLocation(program.GetId(), "ambient");
 	GLfloat ambient = 0.6f;
-	glUniform4f(ambient_id, ambient, ambient, ambient, 1.0f);
+	program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
 
 	//translations
 	GLfloat step = +0.15f;
