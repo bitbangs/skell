@@ -97,10 +97,7 @@ int main(int argc, char* argv[]) {
 
 	//mesh data initialization
 	Mesh<GLfloat> block(
-		{
-			{"pos", 0, 3},
-			{"pass_color", 1, 4}
-		},
+		vert_shader.GetAttributes(),
 		{
 			//+0.0f, +0.0f, +0.0f,
 			-0.5f, -0.5f, +0.0f,
@@ -149,11 +146,11 @@ int main(int argc, char* argv[]) {
 	glAttachShader(program, vert_shader.GetId());
 	glAttachShader(program, frag_shader.GetId());
 	GLuint attrib_id = 0;
-	for (const auto attrib : vert_shader.GetAttributes()) {
-		glBindAttribLocation(program, attrib_id++, attrib.c_str());
-	}
-	//glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
-	//glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
+	//for (const auto attrib : vert_shader.GetAttributes()) {
+	//	glBindAttribLocation(program, attrib_id++, attrib.c_str());
+	//}
+	glBindAttribLocation(program, 0, "pos"); //bind attribute 0 to "pos" shader variable
+	glBindAttribLocation(program, 1, "pass_color"); //bind attribute 1 to "color"
 	glLinkProgram(program);
 	GLint is_program_linked = GL_FALSE;
 	glGetProgramiv(program, GL_LINK_STATUS, &is_program_linked);

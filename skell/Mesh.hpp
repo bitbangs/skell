@@ -3,12 +3,7 @@
 #include <type_traits>
 #include <vector>
 #include <GL/glew.h>
-
-struct Attribute {
-	const GLchar* name;
-	const GLuint index;
-	const GLsizei num_elements;
-};
+#include "Attribute.h"
 
 template <typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
 class Mesh {
@@ -20,15 +15,15 @@ private:
 
 public:
 	Mesh() = delete;
-	Mesh(std::initializer_list<Attribute> attrib_list,
+	Mesh(std::vector<Attribute> attribs,
 		std::initializer_list<T> element_list,
 		std::initializer_list<GLuint> index_list) :
+		attribs(attribs),
 		elements(std::make_unique<T[]>(element_list.size())),
 		indices(std::make_unique<GLuint[]>(index_list.size())),
 		stride(0)
 	{
-		for (size_t ii = 0; ii < attrib_list.size(); ++ii) {
-			attribs.push_back(*(attrib_list.begin() + ii));
+		for (size_t ii = 0; ii < attribs.size(); ++ii) {
 			stride += attribs[ii].num_elements;
 		}
 		for (size_t ii = 0; ii < element_list.size(); ++ii) {

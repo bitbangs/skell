@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include "Attribute.h"
 //#include <fstream>
 #include <GL/glew.h>
 #include "Shader.h"
@@ -11,7 +12,7 @@ class VertexShader :
 	public Shader
 {
 private:
-	std::vector<std::string> attributes;
+	std::vector<Attribute> attributes;
 
 public:
 	VertexShader(const GLchar* src) :
@@ -19,23 +20,23 @@ public:
 	{
 		//get what is needed from vertex shader src or compiled shader ??
 		std::stringstream vert_shader_file(src);
-		//if (vert_shader_file.is_open()) {
-			std::string line;
-			vert_shader_file >> line;
-			while (line != "void") { //until start of main() signature
-				if (line == "in") {
-					vert_shader_file >> line; //get precision
-					vert_shader_file >> line; //get name
-					attributes.push_back(line); //need to remove ";"
-				}
-				vert_shader_file >> line;
+		std::string line;
+		vert_shader_file >> line;
+		GLuint index = 0;
+		while (line != "void") { //until start of main() signature
+			if (line == "in") {
+				vert_shader_file >> line; //get precision
+				GLsizei num_elements = (GLsizei)(line.back() - 48);
+				vert_shader_file >> line; //get name
+				line.pop_back(); //remove ';'
+				attributes.push_back({ line.c_str(), index++, num_elements});
 			}
-		//	vert_shader_file.close();
-		//}
+			vert_shader_file >> line;
+		}
 	}
 
 	//this seems kind of clunky...can we make this a generator and just return strings?
-	std::vector<std::string> GetAttributes() const {
+	std::vector<Attribute> GetAttributes() const {
 		return attributes;
 	}
 };
