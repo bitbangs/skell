@@ -48,6 +48,11 @@ public:
 		zz += dz;
 	}
 
+	void TranslateTo(const Model<T>& here) {
+		auto dest = here.GetCentroid();
+		Translate(dest[0], dest[1], dest[2]);
+	}
+
 	void MoveToward(const Model<T>& dest, const T step) {
 		auto toward = dest.GetCentroid() - GetCentroid();
 		auto norm_toward = toward.Normalize();

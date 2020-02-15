@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 		"}");
 
 	//vertex shader compilation
-	VertexShader red_vert_shader("#version 450\n"
+	VertexShader diffuse_vert_shader("#version 450\n"
 		"in vec3 pos;\n"
 		"in vec3 pass_norm;\n"
 		"in vec4 pass_color;\n"
@@ -113,7 +113,7 @@ int main(int argc, char* argv[]) {
 		"}");
 
 	//fragment shader compilation
-	FragmentShader red_frag_shader("#version 450\n"
+	FragmentShader diffuse_frag_shader("#version 450\n"
 		"in vec4 color;\n"
 		"in vec4 norm;\n"
 		"in vec4 frag_pos;\n"
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
 
 	//create an all red block
 	Mesh<GLfloat> red_block(
-		red_vert_shader.GetAttributes(),
+		diffuse_vert_shader.GetAttributes(),
 		{
 			//front face
 			-0.5f, -0.5f, +0.0f, //0
@@ -193,22 +193,22 @@ int main(int argc, char* argv[]) {
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//left face
-			-0.5f, -0.5f, +1.0f, //...
+			-0.5f, +0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			+0.5f, +0.5f, +1.0f, //...
+			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			-0.5f, -0.5f, +0.0f, //
+			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			+0.5f, +0.5f, +1.0f, //...
+			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			-0.5f, +0.5f, +0.0f, //
+			-0.5f, -0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			-0.5f, -0.5f, +0.0f, //
+			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
 			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
@@ -268,7 +268,7 @@ int main(int argc, char* argv[]) {
 		}
 		);
 
-	//mesh data initialization
+	//mesh data initialization for player
 	Mesh<GLfloat> block(
 		vert_shader.GetAttributes(),
 		{
@@ -313,8 +313,148 @@ int main(int argc, char* argv[]) {
 		}
 		);
 
+	//mesh for projectile
+	Mesh<GLfloat> projectile(
+		diffuse_vert_shader.GetAttributes(),
+		{
+			//front face
+			-0.5f, -0.5f, +0.0f, //0
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +0.0f, //1
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +0.0f, //2
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +0.0f, //1
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +0.0f, //3
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +0.0f, //2
+			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+
+			//right face
+			+0.5f, -0.5f, +0.0f, //2
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +0.0f, //3
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +1.0f, //4
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +0.0f, //3
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +1.0f, //5
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +1.0f, //4
+			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+
+			//top face
+			-0.5f, +0.5f, +0.0f, //0
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +1.0f, //...
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +0.0f, //...
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +1.0f, //
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +1.0f, //
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +0.0f, //
+			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+
+			//left face
+			-0.5f, +0.5f, +0.0f, //...
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +0.0f, //...
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +1.0f, //
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +0.0f, //...
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +1.0f, //
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +1.0f, //
+			-1.0f, +0.0f, +0.0f, //left
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+
+			//back face
+			+0.5f, -0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, +0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, +0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +1.0f, //
+			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+
+			//bottom face
+			-0.5f, -0.5f, +1.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +0.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +1.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			-0.5f, -0.5f, +0.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +0.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +1.0f, //
+			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+		},
+		{
+			0u, 1u, 2u,
+			3u, 4u, 5u,
+			6u, 7u, 8u,
+			9u, 10u, 11u,
+			12u, 13u, 14u,
+			15u, 16u, 17u,
+			18u, 19u, 20u,
+			21u, 22u, 23u,
+			24u, 25u, 26u,
+			27u, 28u, 29u,
+			30u, 31u, 32u,
+			33u, 34u, 35u
+		}
+	);
+
 	//drawing classes
-	Drawer<GLfloat> red_block_drawer(ShaderProgram(red_vert_shader, red_frag_shader), aspect_ratio);
+	Drawer<GLfloat> red_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
@@ -390,10 +530,8 @@ int main(int argc, char* argv[]) {
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
 				if (!fire) {
 					fire = true;
-					auto player_position = player.GetCentroid();
 					fire_model = Model<GLfloat>();
-					fire_model.Scale(+0.8f, +0.8f, +0.8f);
-					fire_model.Translate(player_position[0], player_position[1], player_position[2]);
+					fire_model.TranslateTo(player);
 				}
 				break;
 			default:
@@ -592,8 +730,8 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			block_drawer.Draw(fire_model, block);
-			if (fire_model.GetCentroid()[1] > +5.0f) {
+			red_block_drawer.Draw(fire_model, projectile);
+			if (fire_model.GetCentroid()[1] > +5.0f) { //let's get rid of this in favor of checking a collision
 				fire = false;
 			}
 			//check for collision with bricks
