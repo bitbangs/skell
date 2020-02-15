@@ -8,7 +8,6 @@ template <typename T, typename = typename std::enable_if<std::is_arithmetic<T>::
 class Model {
 private:
 	LinearAlgebra::Matrix<T> model;
-	LinearAlgebra::Matrix<T> view;
 	T xx, yy, zz;
 	T sx, sy, sz;
 	T rotz;
@@ -19,13 +18,7 @@ public:
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1
-			})),
-		view(LinearAlgebra::Matrix<T>(4, 4, {
-			+1.0f, +0.0f, +0.0f, +0.0f,
-			+0.0f, +1.0f, +0.0f, +0.0f,
-			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +0.5f, +1.0f //our position
-			})),
+		})),
 		xx(0), yy(0), zz(0),
 		sx(1), sy(1), sz(1),
 		rotz(0)
@@ -33,12 +26,6 @@ public:
 
 	Model(std::initializer_list<T> list) :
 		model(LinearAlgebra::Matrix<T>(4, 4, list)),
-		view(LinearAlgebra::Matrix<T>(4, 4, {
-			+1.0f, +0.0f, +0.0f, +0.0f,
-			+0.0f, +1.0f, +0.0f, +0.0f,
-			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +0.5f, +1.0f //our position
-			})),
 		xx(*(list.begin() + 12)),
 		yy(*(list.begin() + 13)),
 		zz(*(list.begin() + 14)),
@@ -78,16 +65,6 @@ public:
 		sz *= dz;
 	}
 
-	void RotateZ(T dz) {
-		view *= LinearAlgebra::Matrix<T>(4, 4, {
-			+std::cos(dz), +std::sin(dz), 0, 0,
-			-std::sin(dz), +std::cos(dz), 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 1
-			});
-		rotz += dz;
-	}
-
 	bool IsIntersecting(const Model<T>& other) const {
 		if ((other.xx + other.sx >= xx && other.xx <= xx + sx)) {
 			if (other.yy + other.sy >= yy && other.yy <= yy + sy) {
@@ -106,14 +83,7 @@ public:
 		return centroid;
 	}
 
-	T GetRotation() const {
-		return rotz;
-	}
-
 	const T* GetPointerToModelData() const { //not a fan of doing this...
 		return model.GetPointerToData();
-	}
-	const T* GetPointerToViewData() const {
-		return view.GetPointerToData();
 	}
 };

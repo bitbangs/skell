@@ -18,7 +18,7 @@ private:
 
 public:
 	ShaderProgram() = delete;
-	ShaderProgram(VertexShader& vert_shader, FragmentShader& frag_shader) :
+	ShaderProgram(VertexShader vert_shader, FragmentShader frag_shader) :
 		id(glCreateProgram())
 	{
 		//logger initialization
