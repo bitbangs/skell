@@ -71,6 +71,28 @@ int main(int argc, char* argv[]) {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 
+	////vertex shader compilation
+	VertexShader red_vert_shader("#version 450\n"
+		"in vec3 pos;\n"
+		"in vec4 pass_color;\n"
+		"out vec4 color;\n"
+		"uniform mat4 model;\n"
+		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
+		"void main() {\n"
+		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
+		"color = pass_color;\n"
+		"}");
+
+	////fragment shader compilation
+	FragmentShader red_frag_shader("#version 450\n"
+		"in vec4 color;\n"
+		"out vec4 frag_color;\n"
+		"uniform vec4 ambient;\n"
+		"void main() {\n"
+		"frag_color = ambient * color;"
+		"}");
+
 	//vertex shader compilation
 	VertexShader vert_shader("#version 450\n"
 		"in vec3 pos;\n"
@@ -82,8 +104,8 @@ int main(int argc, char* argv[]) {
 		"void main() {\n"
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
-	"}");
-	
+		"}");
+
 	//fragment shader compilation
 	FragmentShader frag_shader("#version 450\n"
 		"in vec4 color;\n"
@@ -91,7 +113,52 @@ int main(int argc, char* argv[]) {
 		"uniform vec4 ambient;\n"
 		"void main() {\n"
 		"frag_color = ambient * color;"
-	"}");
+		"}");
+
+	//create an all red block
+	Mesh<GLfloat> red_block(
+		red_vert_shader.GetAttributes(),
+		{
+			//+0.0f, +0.0f, +0.0f,
+			-0.5f, -0.5f, +0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+0.0f, +1.0f, +0.0f,
+			-0.5f, +0.5f, +0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+1.0f, +0.0f, +0.0f,
+			+0.5f, -0.5f, 0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+1.0f, +1.0f, +0.0f,
+			+0.5f, +0.5f, +0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+1.0f, +0.0f, +1.0f,
+			+0.5f, -0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+1.0f, +1.0f, +1.0f,
+			+0.5f, +0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+0.0f, +0.0f, +1.0f,
+			-0.5f, -0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			//+0.0f, +1.0f, +1.0f,
+			-0.5f, +0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+		},
+		{ //indices
+			0u, 1u, 2u,
+			1u, 3u, 2u,
+			2u, 3u, 4u,
+			3u, 5u, 4u,
+			4u, 5u, 6u,
+			5u, 7u, 6u,
+			6u, 7u, 0u,
+			7u, 1u, 0u,
+			1u, 7u, 3u,
+			7u, 5u, 3u,
+			6u, 0u, 4u,
+			0u, 2u, 4u
+		}
+		);
 
 	//mesh data initialization
 	Mesh<GLfloat> block(
@@ -137,10 +204,18 @@ int main(int argc, char* argv[]) {
 			6u, 0u, 4u,
 			0u, 2u, 4u
 		}
-	);
+		);
 
-	//bind to a program
-	Drawer block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
+	ShaderProgram red_block_shader(red_vert_shader, red_frag_shader);
+	Drawer red_block_drawer(red_block_shader, aspect_ratio);
+
+	//compile a program and provide a drawing class
+	ShaderProgram block_shader(vert_shader, frag_shader);
+	Drawer block_drawer(block_shader, aspect_ratio);
+
+
+	
+	
 
 	//create the player
 	Model<GLfloat> player;
@@ -354,11 +429,11 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//draw the player
-		block_drawer.Draw(player.GetPointerToModelData(), block.GetNumIndices());
+		block_drawer.Draw(player.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			block_drawer.Draw(brick.GetPointerToModelData(), block.GetNumIndices());
+			red_block_drawer.Draw(brick.GetPointerToModelData(), red_block.GetNumIndices(), red_block.GetVao());
 		}
 
 		//draw the enemies
@@ -366,7 +441,7 @@ int main(int argc, char* argv[]) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
 				spawned_model_ii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_ii.GetPointerToModelData(), block.GetNumIndices());
+				block_drawer.Draw(spawned_model_ii.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 				//check if there was a collision
 				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x1;
@@ -378,7 +453,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x2) {
 				spawned_model_i.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_i.GetPointerToModelData(), block.GetNumIndices());
+				block_drawer.Draw(spawned_model_i.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 				//check if there was a collision
 				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x2;
@@ -390,7 +465,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x4) {
 				spawned_model_iii.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iii.GetPointerToModelData(), block.GetNumIndices());
+				block_drawer.Draw(spawned_model_iii.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 				//check if there was a collision
 				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x4;
@@ -402,7 +477,7 @@ int main(int argc, char* argv[]) {
 			}
 			if (spawn_alive_mask & 0x8) {
 				spawned_model_iv.MoveToward(player, creep);
-				block_drawer.Draw(spawned_model_iv.GetPointerToModelData(), block.GetNumIndices());
+				block_drawer.Draw(spawned_model_iv.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 				//check if there was a collision
 				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
 					spawn_alive_mask ^= 0x8;
@@ -417,7 +492,7 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			fire_model.Translate(+0.0f, +shoot, +0.0f);
-			block_drawer.Draw(fire_model.GetPointerToModelData(), block.GetNumIndices());
+			block_drawer.Draw(fire_model.GetPointerToModelData(), block.GetNumIndices(), block.GetVao());
 			if (fire_model.GetCentroid()[1] > +5.0f) {
 				fire = false;
 			}

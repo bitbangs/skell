@@ -33,7 +33,6 @@ public:
 		//shader mapping
 		glAttachShader(id, vert_shader.GetId());
 		glAttachShader(id, frag_shader.GetId());
-		GLuint attrib_id = 0;
 		auto vert_attribs = vert_shader.GetAttributes();
 		for (int ii = 0; ii < vert_attribs.size(); ++ii) {
 			glBindAttribLocation(id, ii, vert_attribs[ii].name.c_str());
@@ -75,7 +74,7 @@ public:
 		}
 	}
 
-	void Use() const {
+	void Use() {
 		glUseProgram(id);
 	}
 

@@ -13,6 +13,7 @@ private:
 	std::unique_ptr<GLuint[]> indices;
 	GLsizei stride;
 	GLsizei num_indices;
+	GLuint vao;
 
 public:
 	Mesh() = delete;
@@ -44,11 +45,11 @@ public:
 			elements.get(), //const void*
 			GL_STATIC_DRAW //will these always be static_draw?
 		);
-		GLuint vao;
 		glGenVertexArrays(1, &vao); //get a vao from opengl
 		glBindVertexArray(vao); //must bind vao before configuring it
 		int offset = 0;
 		for (GLuint ii = 0; ii < attribs.size(); ++ii) {
+			//glEnableVertexAttribArray(ii); //must enable attribute ii
 			glVertexAttribPointer(ii, //attribute index ii
 				attribs[ii].num_elements, //vbo is already bound in current state; contains 3 floats for each vertex position
 				GL_FLOAT, //get this from T?
@@ -71,5 +72,9 @@ public:
 
 	GLsizei GetNumIndices() const {
 		return num_indices;
+	}
+
+	GLuint GetVao() const {
+		return vao;
 	}
 };

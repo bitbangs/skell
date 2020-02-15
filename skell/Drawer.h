@@ -11,8 +11,8 @@ private:
 
 public:
 	Drawer() = delete;
-	Drawer(ShaderProgram shader_program, GLfloat aspect_ratio) :
-		shader_program(shader_program)
+	Drawer(ShaderProgram shader, GLfloat aspect_ratio) :
+		shader_program(shader)
 	{
 		shader_program.Use();
 
@@ -39,7 +39,8 @@ public:
 		shader_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
 	}
 
-	void Draw(const GLfloat* model_data, GLsizei num_indices) {
+	void Draw(const GLfloat* model_data, GLsizei num_indices, GLuint vao) {
+		glBindVertexArray(vao);
 		shader_program.Use(); //wasteful
 		shader_program.SetMatrixBuffer("model", model_data); //set player model back
 		glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, 0); //draw the main square mesh

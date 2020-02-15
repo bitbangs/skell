@@ -1,0 +1,5 @@
+[2020-02-15 09:13:15.472] [shader3_logger] [info] shader3 compiled successfully
+[2020-02-15 09:13:35.317] [shader3_logger] [info] shader3 compiled successfully
+[2020-02-15 09:38:16.342] [shader3_logger] [info] shader3 compiled successfully
+[2020-02-15 09:38:30.058] [shader3_logger] [info] shader3 compiled successfully
+[2020-02-15 09:46:50.465] [shader3_logger] [info] shader3 compiled successfully

@@ -1,0 +1,13 @@
+[2020-02-15 08:04:18.108] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 08:48:43.213] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 08:51:20.296] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 08:51:48.251] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:06:22.364] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:10:55.090] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:11:15.516] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:11:52.723] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:13:15.472] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:13:35.318] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:38:16.342] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:38:30.059] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-15 09:46:50.466] [shader4_logger] [info] shader4 compiled successfully
