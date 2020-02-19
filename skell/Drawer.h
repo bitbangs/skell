@@ -45,11 +45,12 @@ public:
 		shader_program.SetVectorBuffer("light_pos", -11.0f, -3.0f, -3.0f, +1.0f);
 	}
 
-	void Draw(const Model<T>& model, const Mesh<T>& mesh) {
+	void Draw(const Model<T>& model, const Mesh<T>& mesh, T rr, T gg, T bb, T aa) { //refactor color later
 		glBindVertexArray(mesh.GetVao()); //wasteful
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetIbo()); //wasteful
 		shader_program.Use(); //wasteful
 		shader_program.SetMatrixBuffer("model", model.GetPointerToModelData()); //wasteful
+		shader_program.SetVectorBuffer("pass_color", rr, gg, bb, aa);
 		glDrawElements(GL_TRIANGLES, mesh.GetNumIndices(), GL_UNSIGNED_INT, 0);
 	}
 };

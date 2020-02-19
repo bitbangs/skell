@@ -134,10 +134,10 @@ int main(int argc, char* argv[]) {
 	VertexShader diffuse_vert_shader("#version 450\n"
 		"in vec3 pos;\n"
 		"in vec3 pass_norm;\n"
-		"in vec4 pass_color;\n"
 		"out vec4 color;\n"
 		"out vec4 norm;\n"
 		"out vec4 frag_pos;\n"
+		"uniform vec4 pass_color;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
@@ -169,122 +169,86 @@ int main(int argc, char* argv[]) {
 			//front face
 			-0.5f, -0.5f, +0.0f, //0
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +0.0f, //1
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +0.0f, //2
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +0.0f, //1
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +0.0f, //3
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +0.0f, //2
 			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//right face
 			+0.5f, -0.5f, +0.0f, //2
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +0.0f, //3
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +1.0f, //4
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +0.0f, //3
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +1.0f, //5
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +1.0f, //4
 			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//top face
 			-0.5f, +0.5f, +0.0f, //0
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +1.0f, //...
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +0.0f, //...
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +1.0f, //
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +0.0f, //
 			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//left face
 			-0.5f, +0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//back face
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 
 			//bottom face
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			-0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f, +0.0f, +1.0f //red
 		},
 		{ //indices
 			0u, 1u, 2u,
@@ -488,14 +452,14 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		block_drawer.Draw(player, block);
+		block_drawer.Draw(player, block, 1.0f, 0.0f, 0.0f, 1.0f); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			diffuse_block_drawer.Draw(brick, red_block);
+			diffuse_block_drawer.Draw(brick, red_block, 0.0f, 1.0f, 0.0f, 1.0f);
 		}
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
-			diffuse_block_drawer.Draw(wall_brick, red_block);
+			diffuse_block_drawer.Draw(wall_brick, red_block, 1.0f, 0.0f, 1.0f, 1.0f);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -511,7 +475,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_ii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_ii, block);
+					block_drawer.Draw(spawned_model_ii, block, 1.0f, 1.0f, 0.0f, 1.0f);
 				}
 			}
 			if (spawn_alive_mask & 0x2) {
@@ -525,7 +489,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_i.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_i, block);
+					block_drawer.Draw(spawned_model_i, block, 1.0f, 1.0f, 0.0f, 1.0f);
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
@@ -539,7 +503,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iii, block);
+					block_drawer.Draw(spawned_model_iii, block, 1.0f, 1.0f, 0.0f, 1.0f);
 				}
 			}
 			if (spawn_alive_mask & 0x8) {
@@ -553,7 +517,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iv.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iv, block);
+					block_drawer.Draw(spawned_model_iv, block, 1.0f, 1.0f, 0.0f, 1.0f);
 				}
 			}
 		}
@@ -580,7 +544,7 @@ int main(int argc, char* argv[]) {
 
 			if (fire) {
 				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				diffuse_block_drawer.Draw(fire_model, red_block);
+				diffuse_block_drawer.Draw(fire_model, red_block, 0.0f, 0.0f, 1.0f, 1.0f);
 			}
 		}
 
