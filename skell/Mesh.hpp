@@ -46,11 +46,10 @@ public:
 			elements.get(), //const void*
 			GL_STATIC_DRAW //will these always be static_draw?
 		);
-		glGenVertexArrays(1, &vao); //get a vao from opengl
+		glGenVertexArrays(1, &vao); //get a vao from opengl  wtf!! this keeps throwing an exception!!
 		glBindVertexArray(vao); //must bind vao before configuring it
 		int offset = 0;
 		for (GLuint ii = 0; ii < attribs.size(); ++ii) {
-			//glEnableVertexAttribArray(ii); //must enable attribute ii
 			glVertexAttribPointer(ii, //attribute index ii
 				attribs[ii].num_elements, //vbo is already bound in current state; contains 3 floats for each vertex position
 				GL_FLOAT, //get this from T?

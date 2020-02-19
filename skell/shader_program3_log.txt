@@ -33,3 +33,5 @@
 [2020-02-15 09:10:55.089] [shader_program3_logger] [info] program linked successfully
 [2020-02-15 09:11:15.516] [shader_program3_logger] [info] program linked successfully
 [2020-02-15 09:11:52.722] [shader_program3_logger] [info] program linked successfully
+[2020-02-17 18:50:52.676] [shader_program3_logger] [info] program linked successfully
+[2020-02-17 18:51:32.757] [shader_program3_logger] [info] program linked successfully

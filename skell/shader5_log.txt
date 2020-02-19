@@ -6,3 +6,5 @@
 [2020-02-15 09:10:55.090] [shader5_logger] [info] shader5 compiled successfully
 [2020-02-15 09:11:15.517] [shader5_logger] [info] shader5 compiled successfully
 [2020-02-15 09:11:52.724] [shader5_logger] [info] shader5 compiled successfully
+[2020-02-17 18:50:52.677] [shader5_logger] [info] shader5 compiled successfully
+[2020-02-17 18:51:32.758] [shader5_logger] [info] shader5 compiled successfully

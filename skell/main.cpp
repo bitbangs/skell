@@ -83,7 +83,6 @@ int main(int argc, char* argv[]) {
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
 		"color = pass_color;\n"
 		"}");
-
 	//fragment shader compilation
 	FragmentShader frag_shader("#version 450\n"
 		"in vec4 color;\n"
@@ -93,6 +92,43 @@ int main(int argc, char* argv[]) {
 		"void main() {\n"
 		"frag_color = ambient * color;"
 		"}");
+	//mesh data and drawer initialization for player block
+	Mesh<GLfloat> block(
+		vert_shader.GetAttributes(),
+		{
+			-0.5f, -0.5f, +0.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			-0.5f, +0.5f, +0.0f,
+			+0.0f, +1.0f, +0.0f, +1.0f, //green
+			+0.5f, -0.5f, 0.0f,
+			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			+0.5f, +0.5f, +0.0f,
+			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+0.5f, -0.5f, +1.0f,
+			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			+0.5f, +0.5f, +1.0f,
+			+0.0f, +1.0f, +0.0f, +1.0f, //green
+			-0.5f, -0.5f, +1.0f,
+			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			-0.5f, +0.5f, +1.0f,
+			+1.0f, +0.0f, +1.0f, +1.0f //purple
+		},
+		{ //indices
+			0u, 1u, 2u,
+			1u, 3u, 2u,
+			2u, 3u, 4u,
+			3u, 5u, 4u,
+			4u, 5u, 6u,
+			5u, 7u, 6u,
+			6u, 7u, 0u,
+			7u, 1u, 0u,
+			1u, 7u, 3u,
+			7u, 5u, 3u,
+			6u, 0u, 4u,
+			0u, 2u, 4u
+		}
+		);
+	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//vertex shader compilation
 	VertexShader diffuse_vert_shader("#version 450\n"
@@ -111,7 +147,6 @@ int main(int argc, char* argv[]) {
 		"norm = vec4(pass_norm, 0.0);\n"
 		"frag_pos = model * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
 		"}");
-
 	//fragment shader compilation
 	FragmentShader diffuse_frag_shader("#version 450\n"
 		"in vec4 color;\n"
@@ -127,8 +162,7 @@ int main(int argc, char* argv[]) {
 		"vec4 diffuse = diff * vec4(0.8, 0.8, 0.8, 1.0);\n"
 		"frag_color = (ambient + diffuse) * color;"
 		"}");
-
-	//create an all red block
+	//create an all red block mesh and drawer
 	Mesh<GLfloat> red_block(
 		diffuse_vert_shader.GetAttributes(),
 		{
@@ -267,59 +301,10 @@ int main(int argc, char* argv[]) {
 			33u, 34u, 35u
 		}
 		);
-
-	//mesh data initialization for player
-	Mesh<GLfloat> block(
-		vert_shader.GetAttributes(),
-		{
-			-0.5f, -0.5f, +0.0f,
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
-
-			-0.5f, +0.5f, +0.0f,
-			+0.0f, +1.0f, +0.0f, +1.0f, //green
-
-			+0.5f, -0.5f, 0.0f,
-			+0.0f, +0.0f, +1.0f, +1.0f, //blue
-
-			+0.5f, +0.5f, +0.0f,
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
-			//+1.0f, +0.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f,
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
-			//+1.0f, +1.0f, +1.0f,
-			+0.5f, +0.5f, +1.0f,
-			+0.0f, +1.0f, +0.0f, +1.0f, //green
-			//+0.0f, +0.0f, +1.0f,
-			-0.5f, -0.5f, +1.0f,
-			+0.0f, +0.0f, +1.0f, +1.0f, //blue
-			//+0.0f, +1.0f, +1.0f,
-			-0.5f, +0.5f, +1.0f,
-			+1.0f, +0.0f, +1.0f, +1.0f //purple
-
-		},
-		{ //indices
-			0u, 1u, 2u,
-			1u, 3u, 2u,
-			2u, 3u, 4u,
-			3u, 5u, 4u,
-			4u, 5u, 6u,
-			5u, 7u, 6u,
-			6u, 7u, 0u,
-			7u, 1u, 0u,
-			1u, 7u, 3u,
-			7u, 5u, 3u,
-			6u, 0u, 4u,
-			0u, 2u, 4u
-		}
-		);
-
-	//drawing classes
 	Drawer<GLfloat> diffuse_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
-	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//create the player
 	Model<GLfloat> player(+0.0f, -6.0f, +8.1f);
-
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model_i;
 	Model<GLfloat> spawned_model_ii;
@@ -328,21 +313,18 @@ int main(int argc, char* argv[]) {
 	std::random_device rand_dev;
 	std::default_random_engine rand_eng(rand_dev());
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
-
 	//brickbreaker bricks
 	std::vector<Model<GLfloat>> bricks;
 	for (int ii = 0; ii < 8; ++ii) {
 		Model<GLfloat> brick(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
 		bricks.push_back(std::move(brick));
 	}
-
 	//wall bricks
 	std::vector<Model<GLfloat>> wall_bricks;
 	for (int ii = 0; ii < 28; ++ii) {
 		Model<GLfloat> wall_brick(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
-
 	//player can fire projectiles
 	Model<GLfloat> fire_model;
 
@@ -362,6 +344,7 @@ int main(int argc, char* argv[]) {
 
 	//main loop
 	while (!quit) {
+		//route event
 		if (event.type == SDL_CONTROLLERBUTTONDOWN) {
 			auto button = event.cbutton.button;
 			switch (button) {
@@ -438,6 +421,7 @@ int main(int argc, char* argv[]) {
 			quit = true;
 		}
 
+		//process event
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
@@ -466,7 +450,6 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 		}
-
 		if (button_mask > 0) {
 			switch (button_mask) {
 			case 0x1: //x spawns in quadrant ii
@@ -504,20 +487,16 @@ int main(int argc, char* argv[]) {
 		//wipe frame
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		//draw the player
 		block_drawer.Draw(player, block);
-
 		//draw the bricks
 		for (const auto& brick : bricks) {
 			diffuse_block_drawer.Draw(brick, red_block);
 		}
-
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
 			diffuse_block_drawer.Draw(wall_brick, red_block);
 		}
-
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
 			//move enemy toward player
@@ -578,7 +557,6 @@ int main(int argc, char* argv[]) {
 				}
 			}
 		}
-
 		//draw the projectile
 		if (fire) {
 			//check for collision with bricks
