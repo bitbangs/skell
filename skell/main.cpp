@@ -15,6 +15,7 @@
 //shader factory pending :p
 #include "VertexShader.h"
 #include "FragmentShader.h"
+#include "PPM.h"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -74,44 +75,46 @@ int main(int argc, char* argv[]) {
 	//vertex shader compilation
 	VertexShader vert_shader("#version 450\n"
 		"in vec3 pos;\n"
-		"in vec4 pass_color;\n"
-		"out vec4 color;\n"
+		"in vec2 pass_text;\n"
+		"out vec2 text;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
 		"void main() {\n"
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
-		"color = pass_color;\n"
+		"text = pass_text;\n"
 		"}");
 	//fragment shader compilation
 	FragmentShader frag_shader("#version 450\n"
 		"in vec4 color;\n"
+		"in vec2 text;\n"
 		"out vec4 frag_color;\n"
 		"uniform vec4 ambient;\n"
 		"uniform vec4 light_pos;\n"
+		"uniform sampler2D texture_image;\n"
 		"void main() {\n"
-		"frag_color = ambient * color;"
+		"frag_color = texture(texture_image, text);"
 		"}");
 	//mesh data and drawer initialization for player block
 	Mesh<GLfloat> block(
 		vert_shader.GetAttributes(),
 		{
 			-0.5f, -0.5f, +0.0f,
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +0.0f,
-			+0.0f, +1.0f, +0.0f, +1.0f, //green
-			+0.5f, -0.5f, 0.0f,
-			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			+0.0f, +1.0f,
+			+0.5f, -0.5f, +0.0f,
+			+1.0f, +0.0f,
 			+0.5f, +0.5f, +0.0f,
-			+1.0f, +0.0f, +1.0f, +1.0f, //purple
+			+1.0f, +1.0f,
 			+0.5f, -0.5f, +1.0f,
-			+1.0f, +0.0f, +0.0f, +1.0f, //red
+			+1.0f, +0.0f,
 			+0.5f, +0.5f, +1.0f,
-			+0.0f, +1.0f, +0.0f, +1.0f, //green
+			+1.0f, +1.0f,
 			-0.5f, -0.5f, +1.0f,
-			+0.0f, +0.0f, +1.0f, +1.0f, //blue
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +1.0f,
-			+1.0f, +0.0f, +1.0f, +1.0f //purple
+			+0.0f, +1.0f,
 		},
 		{ //indices
 			0u, 1u, 2u,
@@ -128,6 +131,14 @@ int main(int argc, char* argv[]) {
 			0u, 2u, 4u
 		}
 		);
+	GLuint texture_id;
+	glGenTextures(1, &texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	PPM text_image("test.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, text_image.GetWidth(), text_image.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, text_image.GetData());
+	glGenerateMipmap(GL_TEXTURE_2D);
 	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
 
 	//vertex shader compilation
@@ -455,11 +466,11 @@ int main(int argc, char* argv[]) {
 		block_drawer.Draw(player, block, 1.0f, 0.0f, 0.0f, 1.0f); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			diffuse_block_drawer.Draw(brick, red_block, 0.0f, 1.0f, 0.0f, 1.0f);
+			block_drawer.Draw(brick, red_block, 0.0f, 1.0f, 0.0f, 1.0f);
 		}
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
-			diffuse_block_drawer.Draw(wall_brick, red_block, 1.0f, 0.0f, 1.0f, 1.0f);
+			block_drawer.Draw(wall_brick, red_block, 1.0f, 0.0f, 1.0f, 1.0f);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -544,7 +555,7 @@ int main(int argc, char* argv[]) {
 
 			if (fire) {
 				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				diffuse_block_drawer.Draw(fire_model, red_block, 0.0f, 0.0f, 1.0f, 1.0f);
+				block_drawer.Draw(fire_model, red_block, 0.0f, 0.0f, 1.0f, 1.0f);
 			}
 		}
 

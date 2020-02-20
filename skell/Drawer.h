@@ -50,7 +50,7 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetIbo()); //wasteful
 		shader_program.Use(); //wasteful
 		shader_program.SetMatrixBuffer("model", model.GetPointerToModelData()); //wasteful
-		shader_program.SetVectorBuffer("pass_color", rr, gg, bb, aa);
+		//shader_program.SetVectorBuffer("pass_color", rr, gg, bb, aa);
 		glDrawElements(GL_TRIANGLES, mesh.GetNumIndices(), GL_UNSIGNED_INT, 0);
 	}
 };
