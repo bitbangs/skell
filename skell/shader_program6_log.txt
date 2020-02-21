@@ -66,3 +66,24 @@
 [2020-02-20 05:44:59.113] [shader_program6_logger] [info] program linked successfully
 [2020-02-20 05:49:56.825] [shader_program6_logger] [info] program linked successfully
 [2020-02-20 05:51:11.120] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 05:55:38.882] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:03:13.397] [shader_program6_logger] [warning] program did not link
+[2020-02-20 19:03:13.397] [shader_program6_logger] [warning] Vertex info
+-----------
+0(14) : error C1503: undefined variable "pass_test"
+0(14) : error C0000: syntax error, unexpected $undefined at token "<undefined>"
+(0) : error C2003: incompatible options for link
+
+[2020-02-20 19:03:13.397] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:12:02.666] [shader_program6_logger] [warning] program did not link
+[2020-02-20 19:12:02.666] [shader_program6_logger] [warning] Vertex info
+-----------
+0(14) : error C1503: undefined variable "pass_test"
+0(14) : error C0000: syntax error, unexpected $undefined at token "<undefined>"
+(0) : error C2003: incompatible options for link
+
+[2020-02-20 19:12:02.666] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:14:30.928] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:15:17.834] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:21:30.355] [shader_program6_logger] [info] program linked successfully
+[2020-02-20 19:22:24.026] [shader_program6_logger] [info] program linked successfully

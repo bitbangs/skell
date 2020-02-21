@@ -45,5 +45,17 @@ public:
 	const char* GetData() const {
 		return data.get();
 	}
+
+	void WriteOutTest(const char* file_name) {
+		std::ofstream image(file_name);
+		if (image.is_open()) {
+			image << "P6\n";
+			image << "# are we good?\n";
+			image << width << ' ' << height << '\n';
+			image << "255\n";
+			image.write(data.get(), width * height * 3);
+			image.close();
+		}
+	}
 };
 

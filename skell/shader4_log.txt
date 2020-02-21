@@ -66,3 +66,18 @@
 [2020-02-20 05:44:59.112] [shader4_logger] [info] shader4 compiled successfully
 [2020-02-20 05:49:56.823] [shader4_logger] [info] shader4 compiled successfully
 [2020-02-20 05:51:11.119] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 05:55:38.881] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:03:13.349] [shader4_logger] [warning] shader4shader did not compile
+[2020-02-20 19:03:13.349] [shader4_logger] [warning] 0(14) : error C1503: undefined variable "pass_test"
+0(14) : error C0000: syntax error, unexpected $undefined at token "<undefined>"
+
+[2020-02-20 19:03:13.349] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:12:02.640] [shader4_logger] [warning] shader4shader did not compile
+[2020-02-20 19:12:02.640] [shader4_logger] [warning] 0(14) : error C1503: undefined variable "pass_test"
+0(14) : error C0000: syntax error, unexpected $undefined at token "<undefined>"
+
+[2020-02-20 19:12:02.640] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:14:30.899] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:15:17.785] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:21:30.340] [shader4_logger] [info] shader4 compiled successfully
+[2020-02-20 19:22:24.014] [shader4_logger] [info] shader4 compiled successfully

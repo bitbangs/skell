@@ -145,33 +145,35 @@ int main(int argc, char* argv[]) {
 	VertexShader diffuse_vert_shader("#version 450\n"
 		"in vec3 pos;\n"
 		"in vec3 pass_norm;\n"
-		"out vec4 color;\n"
+		"in vec2 pass_text;\n"
 		"out vec4 norm;\n"
 		"out vec4 frag_pos;\n"
+		"out vec2 text;\n"
 		"uniform vec4 pass_color;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
 		"void main() {\n"
 		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
-		"color = pass_color;\n"
+		"text = pass_text;\n"
 		"norm = vec4(pass_norm, 0.0);\n"
 		"frag_pos = model * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
 		"}");
 	//fragment shader compilation
 	FragmentShader diffuse_frag_shader("#version 450\n"
-		"in vec4 color;\n"
 		"in vec4 norm;\n"
 		"in vec4 frag_pos;\n"
+		"in vec2 text;\n"
 		"out vec4 frag_color;\n"
 		"uniform vec4 ambient;\n"
 		"uniform vec4 light_pos;\n"
+		"uniform sampler2D texture_image;\n"
 		"void main() {\n"
 		"vec4 light_dir = normalize(light_pos - frag_pos);\n"
 		"vec4 norm_dir = normalize(norm);\n"
 		"float diff = max(dot(norm_dir, light_dir), 0.0);\n"
 		"vec4 diffuse = diff * vec4(0.8, 0.8, 0.8, 1.0);\n"
-		"frag_color = (ambient + diffuse) * color;"
+		"frag_color = texture(texture_image, text);"//(ambient + diffuse) * 
 		"}");
 	//create an all red block mesh and drawer
 	Mesh<GLfloat> red_block(
@@ -180,86 +182,122 @@ int main(int argc, char* argv[]) {
 			//front face
 			-0.5f, -0.5f, +0.0f, //0
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +0.0f, //1
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+0.0f, +1.0f,
 			+0.5f, -0.5f, +0.0f, //2
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f,
 			-0.5f, +0.5f, +0.0f, //1
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+0.0f, +1.0f,
 			+0.5f, +0.5f, +0.0f, //3
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +1.0f,
 			+0.5f, -0.5f, +0.0f, //2
 			+0.0f, +0.0f, -1.0f, //toward camera
+			+1.0f, +0.0f,
 
 			//right face
 			+0.5f, -0.5f, +0.0f, //2
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f,
 			+0.5f, +0.5f, +0.0f, //3
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +1.0f,
 			+0.5f, -0.5f, +1.0f, //4
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f,
 			+0.5f, +0.5f, +0.0f, //3
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +1.0f,
 			+0.5f, +0.5f, +1.0f, //5
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +1.0f,
 			+0.5f, -0.5f, +1.0f, //4
 			+1.0f, +0.0f, +0.0f, //toward right
+			+1.0f, +0.0f,
 
 			//top face
 			-0.5f, +0.5f, +0.0f, //0
 			+0.0f, +1.0f, +0.0f, //up
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +1.0f, //...
 			+0.0f, +1.0f, +0.0f, //up
+			+0.0f, +1.0f,
 			+0.5f, +0.5f, +0.0f, //...
 			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +1.0f,
 			-0.5f, +0.5f, +1.0f, //
 			+0.0f, +1.0f, +0.0f, //up
+			+0.0f, +1.0f,
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +1.0f,
 			+0.5f, +0.5f, +0.0f, //
 			+0.0f, +1.0f, +0.0f, //up
+			+1.0f, +1.0f,
 
 			//left face
 			-0.5f, +0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +1.0f,
 			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +1.0f,
 			-0.5f, -0.5f, +0.0f, //...
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +0.0f,
 			-0.5f, -0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +0.0f,
 			-0.5f, +0.5f, +1.0f, //
 			-1.0f, +0.0f, +0.0f, //left
+			+0.0f, +1.0f,
 
 			//back face
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +0.0f,
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +1.0f,
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+0.0f, +0.0f,
 			+0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+1.0f, +1.0f,
 			-0.5f, +0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+0.0f, +1.0f,
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, +0.0f, +1.0f, //away
+			+0.0f, +0.0f,
 
 			//bottom face
 			-0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+0.0f, +0.0f,
 			-0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+0.0f, +0.0f,
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f,
 			-0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+0.0f, +0.0f,
 			+0.5f, -0.5f, +0.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f,
 			+0.5f, -0.5f, +1.0f, //
 			+0.0f, -1.0f, +0.0f, //down
+			+1.0f, +0.0f,
 		},
 		{ //indices
 			0u, 1u, 2u,
@@ -276,6 +314,15 @@ int main(int argc, char* argv[]) {
 			33u, 34u, 35u
 		}
 		);
+	GLuint diffuse_texture_id;
+	glGenTextures(1, &diffuse_texture_id);
+	glBindTexture(GL_TEXTURE_2D, diffuse_texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	PPM diffuse_text_image("test.ppm");
+	diffuse_text_image.WriteOutTest("are_we_good.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, diffuse_text_image.GetWidth(), diffuse_text_image.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, diffuse_text_image.GetData());
+	glGenerateMipmap(GL_TEXTURE_2D);
 	Drawer<GLfloat> diffuse_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
@@ -463,7 +510,7 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		block_drawer.Draw(player, block, 1.0f, 0.0f, 0.0f, 1.0f); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		diffuse_block_drawer.Draw(player, block, 1.0f, 0.0f, 0.0f, 1.0f); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
 			block_drawer.Draw(brick, red_block, 0.0f, 1.0f, 0.0f, 1.0f);
