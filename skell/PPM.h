@@ -7,14 +7,14 @@
 class PPM
 {
 private:
-	std::unique_ptr<char[]> data;
-	GLint width;
-	GLint height;
+	char* data;
+	size_t width;
+	size_t height;
 
 public:
 	PPM() = delete;
 	PPM(const char* file_name) {
-		std::ifstream image(file_name);
+		std::ifstream image(file_name, std::ios::binary);
 		if (image.is_open()) {
 			std::string line;
 			std::getline(image, line); //skip version
@@ -28,32 +28,37 @@ public:
 			height = std::stoi(line.substr(space_index, line.size() - space_index));
 			std::getline(image, line); //skip bit depth, just assume 3
 
-			data = std::make_unique<char[]>(width * height * 3);
-			image.read(data.get(), width * height * 3);
+			auto shit = width * height * 3;
+			data = new char[shit];
+			image.read(data, shit);
 
 			image.close();
 		}
 	}
+	~PPM() {
+		delete[] data;
+	}
 
-	GLuint GetWidth() const {
+	int GetWidth() const {
 		return width;
 	}
-	GLuint GetHeight() const {
+	int GetHeight() const {
 		return height;
 	}
 
-	const char* GetData() const {
-		return data.get();
+	char* GetData() const {
+		return data;
 	}
 
 	void WriteOutTest(const char* file_name) {
-		std::ofstream image(file_name);
+		std::ofstream image(file_name, std::ios::binary);
 		if (image.is_open()) {
 			image << "P6\n";
 			image << "# are we good?\n";
 			image << width << ' ' << height << '\n';
 			image << "255\n";
-			image.write(data.get(), width * height * 3);
+			auto shit = width * height * 3;
+			image.write(data, shit);
 			image.close();
 		}
 	}
