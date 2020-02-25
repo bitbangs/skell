@@ -152,15 +152,6 @@ int main(int argc, char* argv[]) {
 	auto player_model = std::make_shared<Model<GLfloat>>(+0.0f, -6.0f, +8.1f);
 	Entity<GLfloat> player(sphere, diffuse_drawer, player_model, blue_texture_id);
 
-	//spawn "enemies" with some uncertainty
-	Model<GLfloat> spawned_model_i;
-	Model<GLfloat> spawned_model_ii;
-	Model<GLfloat> spawned_model_iii;
-	Model<GLfloat> spawned_model_iv;
-	std::random_device rand_dev;
-	std::default_random_engine rand_eng(rand_dev());
-	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
-
 	//brickbreaker bricks
 	std::vector<Entity<GLfloat>> bricks;
 	for (int ii = 0; ii < 16; ii += 2) {
@@ -189,7 +180,6 @@ int main(int argc, char* argv[]) {
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
-	GLfloat creep = +0.01f;
 	GLfloat shoot = +0.05f;
 
 	//main loop events
@@ -198,7 +188,6 @@ int main(int argc, char* argv[]) {
 	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
 	bool quit = false;
-	unsigned char spawn_alive_mask = 0;
 	bool fire = false;
 
 	//main loop
@@ -310,36 +299,15 @@ int main(int argc, char* argv[]) {
 		}
 		if (button_mask > 0) {
 			switch (button_mask) {
-			case 0x1: //x spawns in quadrant ii
-				if ((spawn_alive_mask & 0x1) == 0) {
-					auto rand_xx = rand_uniform(rand_eng);
-					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_ii = Model<GLfloat>(-rand_xx, +rand_yy, +8.1f);
-				}
+			case 0x1:
 				break;
-			case 0x2: //y spawns in quadrant i
-				if ((spawn_alive_mask & 0x2) == 0) {
-					auto rand_xx = rand_uniform(rand_eng);
-					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_i = Model<GLfloat>(+rand_xx, +rand_yy, +8.1f);
-				}
+			case 0x2:
 				break;
-			case 0x4: //a spawns in quadrant iii
-				if ((spawn_alive_mask & 0x4) == 0) {
-					auto rand_xx = rand_uniform(rand_eng);
-					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iii = Model<GLfloat>(-rand_xx, -rand_yy, +8.1f);
-				}
+			case 0x4:
 				break;
-			case 0x8: //b spawns in quadrant iv
-				if ((spawn_alive_mask & 0x8) == 0) {
-					auto rand_xx = rand_uniform(rand_eng);
-					auto rand_yy = rand_uniform(rand_eng);
-					spawned_model_iv = Model<GLfloat>(+rand_xx, -rand_yy, +8.1f);
-				}
+			case 0x8:
 				break;
 			}
-			spawn_alive_mask |= button_mask;
 		}
 
 		//wipe frame
@@ -355,66 +323,6 @@ int main(int argc, char* argv[]) {
 		for (auto wall_brick : wall_bricks) {
 			wall_brick.Draw();
 		}
-		//draw the enemies
-		if (spawn_alive_mask > 0) {
-			//move enemy toward player
-			if (spawn_alive_mask & 0x1) {
-				//check if there was a collision
-				if (fire && spawned_model_ii.IsIntersecting(*fire_model)) {
-					spawn_alive_mask ^= 0x1;
-					fire = false;
-				}
-				else if (spawned_model_ii.IsIntersecting(*player_model)) {
-					quit = true;
-				}
-				else {
-					spawned_model_ii.MoveToward(*player_model, creep);
-					diffuse_drawer->Draw(spawned_model_ii, *block, orange_texture_id);
-				}
-			}
-			if (spawn_alive_mask & 0x2) {
-				//check if there was a collision
-				if (fire && spawned_model_i.IsIntersecting(*fire_model)) {
-					spawn_alive_mask ^= 0x2;
-					fire = false;
-				}
-				else if (spawned_model_i.IsIntersecting(*player_model)) {
-					quit = true;
-				}
-				else {
-					spawned_model_i.MoveToward(*player_model, creep);
-					diffuse_drawer->Draw(spawned_model_i, *block, orange_texture_id);
-				}
-			}
-			if (spawn_alive_mask & 0x4) {
-				//check if there was a collision
-				if (fire && spawned_model_iii.IsIntersecting(*fire_model)) {
-					spawn_alive_mask ^= 0x4;
-					fire = false;
-				}
-				else if (spawned_model_iii.IsIntersecting(*player_model)) {
-					quit = true;
-				}
-				else {
-					spawned_model_iii.MoveToward(*player_model, creep);
-					diffuse_drawer->Draw(spawned_model_iii, *block, orange_texture_id);
-				}
-			}
-			if (spawn_alive_mask & 0x8) {
-				//check if there was a collision
-				if (fire && spawned_model_iv.IsIntersecting(*fire_model)) {
-					spawn_alive_mask ^= 0x8;
-					fire = false;
-				}
-				else if (spawned_model_iv.IsIntersecting(*player_model)) {
-					quit = true;
-				}
-				else {
-					spawned_model_iv.MoveToward(*player_model, creep);
-					diffuse_drawer->Draw(spawned_model_iv, *block, orange_texture_id);
-				}
-			}
-		}
 		//draw the projectile
 		if (fire) {
 			//check for collision with bricks
@@ -423,23 +331,24 @@ int main(int argc, char* argv[]) {
 			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
-				fire = false;
+				shoot = -shoot;
 			}
 
-			if (fire) { //may have hit a brick...
-				//check for collision with wall
-				for (auto wall_brick : wall_bricks) {
-					if (projectile.IsIntersecting(wall_brick)) {
-						fire = false;
-						break;
-					}
+			//check for collision with wall
+			for (auto wall_brick : wall_bricks) {
+				if (projectile.IsIntersecting(wall_brick)) {
+					shoot = -shoot;
+					break;
 				}
 			}
 
-			if (fire) {
-				fire_model->Translate(+0.0f, +shoot, +0.0f);
-				projectile.Draw();
+			//check for collision with paddle
+			if (projectile.IsIntersecting(player)) {
+				shoot = -shoot;
 			}
+
+			fire_model->Translate(+0.0f, shoot, +0.0f);
+			projectile.Draw();
 		}
 
 		//progress
