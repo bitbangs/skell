@@ -17,6 +17,7 @@
 #include "FragmentShader.h"
 #include "PPM.h"
 #include "Obj.h"
+#include "Entity.h"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -130,157 +131,27 @@ int main(int argc, char* argv[]) {
 
 	//load a sphere mesh
 	Obj sphere_obj("sphere.obj");
-	Mesh<GLfloat> sphere(
+	auto sphere = std::make_shared<Mesh<GLfloat>>(
 		diffuse_vert_shader.GetAttributes(),
 		sphere_obj.GetElements(),
 		sphere_obj.GetIndices()
 	);
 
 	//create a block mesh
-	Mesh<GLfloat> block(
+	Obj cube_obj("cube.obj");
+	auto block = std::make_shared<Mesh<GLfloat>>(
 		diffuse_vert_shader.GetAttributes(),
-		{
-			//front face
-			-0.5f, -0.5f, +0.0f, //bottom left
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+0.0f, +0.0f,
-			-0.5f, +0.5f, +0.0f, //top left
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+0.0f, +1.0f,
-			+0.5f, -0.5f, +0.0f, //bottom right
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f,
-			-0.5f, +0.5f, +0.0f, //top left
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+0.0f, +1.0f,
-			+0.5f, +0.5f, +0.0f, //top right
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +1.0f,
-			+0.5f, -0.5f, +0.0f, //bottom right
-			+0.0f, +0.0f, -1.0f, //toward camera
-			+1.0f, +0.0f,
-
-			//right face
-			+0.5f, -0.5f, +0.0f, //bottom left
-			+1.0f, +0.0f, +0.0f, //toward right
-			+0.0f, +0.0f,
-			+0.5f, +0.5f, +0.0f, //top left
-			+1.0f, +0.0f, +0.0f, //toward right
-			+0.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f, //bottom right
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f,
-			+0.5f, +0.5f, +0.0f, //top left
-			+1.0f, +0.0f, +0.0f, //toward right
-			+0.0f, +1.0f,
-			+0.5f, +0.5f, +1.0f, //top right
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f, //bottom right
-			+1.0f, +0.0f, +0.0f, //toward right
-			+1.0f, +0.0f,
-
-			//top face
-			-0.5f, +0.5f, +0.0f, //bottom left
-			+0.0f, +1.0f, +0.0f, //up
-			+0.0f, +0.0f,
-			-0.5f, +0.5f, +1.0f, //top left
-			+0.0f, +1.0f, +0.0f, //up
-			+0.0f, +1.0f,
-			+0.5f, +0.5f, +0.0f, //bottom right
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f,
-			-0.5f, +0.5f, +1.0f, //top left
-			+0.0f, +1.0f, +0.0f, //up
-			+0.0f, +1.0f,
-			+0.5f, +0.5f, +1.0f, //top right
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +1.0f,
-			+0.5f, +0.5f, +0.0f, //bottom right
-			+0.0f, +1.0f, +0.0f, //up
-			+1.0f, +0.0f,
-
-			//left face
-			-0.5f, +0.5f, +0.0f, //bottom left
-			-1.0f, +0.0f, +0.0f, //left
-			+0.0f, +0.0f,
-			-0.5f, -0.5f, +0.0f, //top left
-			-1.0f, +0.0f, +0.0f, //left
-			+0.0f, +1.0f,
-			-0.5f, +0.5f, +1.0f, //bottom right
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f,
-			-0.5f, -0.5f, +0.0f, //top left
-			-1.0f, +0.0f, +0.0f, //left
-			+0.0f, +1.0f,
-			-0.5f, -0.5f, +1.0f, //top right
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +1.0f,
-			-0.5f, +0.5f, +1.0f, //bottom right
-			-1.0f, +0.0f, +0.0f, //left
-			+1.0f, +0.0f,
-
-			//back face
-			+0.5f, -0.5f, +1.0f, //bottom left
-			+0.0f, +0.0f, +1.0f, //away
-			+0.0f, +0.0f,
-			+0.5f, +0.5f, +1.0f, //top left
-			+0.0f, +0.0f, +1.0f, //away
-			+0.0f, +1.0f,
-			-0.5f, -0.5f, +1.0f, //bottom right
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f,
-			+0.5f, +0.5f, +1.0f, //top left
-			+0.0f, +0.0f, +1.0f, //away
-			+0.0f, +1.0f,
-			-0.5f, +0.5f, +1.0f, //top right
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +1.0f,
-			-0.5f, -0.5f, +1.0f, //bottom right
-			+0.0f, +0.0f, +1.0f, //away
-			+1.0f, +0.0f,
-
-			//bottom face
-			-0.5f, -0.5f, +1.0f, //bottom left
-			+0.0f, -1.0f, +0.0f, //down
-			+0.0f, +0.0f,
-			-0.5f, -0.5f, +0.0f, //top left
-			+0.0f, -1.0f, +0.0f, //down
-			+0.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f, //bottom right
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f,
-			-0.5f, -0.5f, +0.0f, //top left
-			+0.0f, -1.0f, +0.0f, //down
-			+0.0f, +1.0f,
-			+0.5f, -0.5f, +0.0f, //top right
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f, //bottom right
-			+0.0f, -1.0f, +0.0f, //down
-			+1.0f, +0.0f,
-		},
-		{ //indices
-			0u, 1u, 2u,
-			3u, 4u, 5u,
-			6u, 7u, 8u,
-			9u, 10u, 11u,
-			12u, 13u, 14u,
-			15u, 16u, 17u,
-			18u, 19u, 20u,
-			21u, 22u, 23u,
-			24u, 25u, 26u,
-			27u, 28u, 29u,
-			30u, 31u, 32u,
-			33u, 34u, 35u
-		}
-		);
+		cube_obj.GetElements(),
+		cube_obj.GetIndices()
+	);
 
 	//create shader program
-	Drawer<GLfloat> diffuse_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
+	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
-	Model<GLfloat> player(+0.0f, -6.0f, +8.1f);
+	auto player_model = std::make_shared<Model<GLfloat>>(+0.0f, -6.0f, +8.1f);
+	Entity<GLfloat> player(sphere, diffuse_drawer, player_model, blue_texture_id);
+
 	//spawn "enemies" with some uncertainty
 	Model<GLfloat> spawned_model_i;
 	Model<GLfloat> spawned_model_ii;
@@ -292,28 +163,29 @@ int main(int argc, char* argv[]) {
 
 	//brickbreaker bricks
 	std::vector<Model<GLfloat>> bricks;
-	for (int ii = 0; ii < 8; ++ii) {
-		Model<GLfloat> brick(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
+	for (int ii = 0; ii < 16; ii += 2) {
+		Model<GLfloat> brick(-8.0f + (GLfloat)ii, +1.0f, +8.1f);
 		bricks.push_back(std::move(brick));
 	}
 
 	//wall bricks
 	std::vector<Model<GLfloat>> wall_bricks;
-	for (int ii = 0; ii < 28; ++ii) { //back wall
+	for (int ii = 0; ii < 28; ii += 2) { //back wall
 		Model<GLfloat> wall_brick(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
-	for (int ii = 0; ii < 14; ++ii) { //left wall
-		Model<GLfloat> wall_brick(-14.0f, -9.0f + (GLfloat)ii, +8.1f);
+	for (int ii = 0; ii < 14; ii += 2) { //left wall
+		Model<GLfloat> wall_brick(-12.0f, -9.0f + (GLfloat)ii, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
-	for (int ii = 0; ii < 14; ++ii) { //right wall
-		Model<GLfloat> wall_brick(+13.0f, +4.0f - (GLfloat)ii, +8.1f);
+	for (int ii = 0; ii < 14; ii += 2) { //right wall
+		Model<GLfloat> wall_brick(+14.0f, +4.0f - (GLfloat)ii, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
 
 	//player can fire projectiles
-	Model<GLfloat> fire_model;
+	auto fire_model = std::make_shared<Model<GLfloat>>();
+	Entity<GLfloat> projectile(sphere, diffuse_drawer, fire_model, orange_texture_id);
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
@@ -365,8 +237,7 @@ int main(int argc, char* argv[]) {
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
 				if (!fire) {
 					fire = true;
-					fire_model = Model<GLfloat>();
-					fire_model.TranslateTo(player);
+					fire_model->TranslateTo(*player_model);
 				}
 				break;
 			default:
@@ -412,28 +283,28 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				player.Translate(+0.0f, -step, +0.0f);
+				player_model->Translate(+0.0f, -step, +0.0f);
 				break;
 			case 0x2: //4
-				player.Translate(-step, +0.0f, +0.0f);
+				player_model->Translate(-step, +0.0f, +0.0f);
 				break;
 			case 0x3: //1
-				player.Translate(-step, -step, +0.0f);
+				player_model->Translate(-step, -step, +0.0f);
 				break;
 			case 0x4: //6
-				player.Translate(+step, +0.0f, +0.0f);
+				player_model->Translate(+step, +0.0f, +0.0f);
 				break;
 			case 0x5: //3
-				player.Translate(+step, -step, +0.0f);
+				player_model->Translate(+step, -step, +0.0f);
 				break;
 			case 0x8: //8
-				player.Translate(+0.0f, +step, +0.0f);
+				player_model->Translate(+0.0f, +step, +0.0f);
 				break;
 			case 0xa: //7
-				player.Translate(-step, +step, +0.0f);
+				player_model->Translate(-step, +step, +0.0f);
 				break;
 			case 0xc: //9
-				player.Translate(+step, +step, +0.0f);
+				player_model->Translate(+step, +step, +0.0f);
 				break;
 			}
 		}
@@ -475,73 +346,73 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		diffuse_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		player.Draw(); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			diffuse_drawer.Draw(brick, block, blue_texture_id);
+			diffuse_drawer->Draw(brick, *block, blue_texture_id);
 		}
 		//draw the wall
 		for (auto wall_brick = wall_bricks.begin(); wall_brick != wall_bricks.end(); wall_brick += 2) {
-			diffuse_drawer.Draw(*wall_brick, block, blue_texture_id);
-			diffuse_drawer.Draw(*(wall_brick + 1), block, orange_texture_id);
+			diffuse_drawer->Draw(*wall_brick, *block, blue_texture_id);
+			diffuse_drawer->Draw(*(wall_brick + 1), *block, orange_texture_id);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
 			//move enemy toward player
 			if (spawn_alive_mask & 0x1) {
 				//check if there was a collision
-				if (fire && spawned_model_ii.IsIntersecting(fire_model)) {
+				if (fire && spawned_model_ii.IsIntersecting(*fire_model)) {
 					spawn_alive_mask ^= 0x1;
 					fire = false;
 				}
-				else if (spawned_model_ii.IsIntersecting(player)) {
+				else if (spawned_model_ii.IsIntersecting(*player_model)) {
 					quit = true;
 				}
 				else {
-					spawned_model_ii.MoveToward(player, creep);
-					diffuse_drawer.Draw(spawned_model_ii, block, orange_texture_id);
+					spawned_model_ii.MoveToward(*player_model, creep);
+					diffuse_drawer->Draw(spawned_model_ii, *block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x2) {
 				//check if there was a collision
-				if (fire && spawned_model_i.IsIntersecting(fire_model)) {
+				if (fire && spawned_model_i.IsIntersecting(*fire_model)) {
 					spawn_alive_mask ^= 0x2;
 					fire = false;
 				}
-				else if (spawned_model_i.IsIntersecting(player)) {
+				else if (spawned_model_i.IsIntersecting(*player_model)) {
 					quit = true;
 				}
 				else {
-					spawned_model_i.MoveToward(player, creep);
-					diffuse_drawer.Draw(spawned_model_i, block, orange_texture_id);
+					spawned_model_i.MoveToward(*player_model, creep);
+					diffuse_drawer->Draw(spawned_model_i, *block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
 				//check if there was a collision
-				if (fire && spawned_model_iii.IsIntersecting(fire_model)) {
+				if (fire && spawned_model_iii.IsIntersecting(*fire_model)) {
 					spawn_alive_mask ^= 0x4;
 					fire = false;
 				}
-				else if (spawned_model_iii.IsIntersecting(player)) {
+				else if (spawned_model_iii.IsIntersecting(*player_model)) {
 					quit = true;
 				}
 				else {
-					spawned_model_iii.MoveToward(player, creep);
-					diffuse_drawer.Draw(spawned_model_iii, block, orange_texture_id);
+					spawned_model_iii.MoveToward(*player_model, creep);
+					diffuse_drawer->Draw(spawned_model_iii, *block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x8) {
 				//check if there was a collision
-				if (fire && spawned_model_iv.IsIntersecting(fire_model)) {
+				if (fire && spawned_model_iv.IsIntersecting(*fire_model)) {
 					spawn_alive_mask ^= 0x8;
 					fire = false;
 				}
-				else if (spawned_model_iv.IsIntersecting(player)) {
+				else if (spawned_model_iv.IsIntersecting(*player_model)) {
 					quit = true;
 				}
 				else {
-					spawned_model_iv.MoveToward(player, creep);
-					diffuse_drawer.Draw(spawned_model_iv, block, orange_texture_id);
+					spawned_model_iv.MoveToward(*player_model, creep);
+					diffuse_drawer->Draw(spawned_model_iv, *block, orange_texture_id);
 				}
 			}
 		}
@@ -549,7 +420,7 @@ int main(int argc, char* argv[]) {
 		if (fire) {
 			//check for collision with bricks
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
-				return fire_model.IsIntersecting(brick);
+				return fire_model->IsIntersecting(brick);
 			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
@@ -559,7 +430,7 @@ int main(int argc, char* argv[]) {
 			if (fire) { //may have hit a brick...
 				//check for collision with wall
 				for (const auto& wall_brick : wall_bricks) {
-					if (fire_model.IsIntersecting(wall_brick)) {
+					if (fire_model->IsIntersecting(wall_brick)) {
 						fire = false;
 						break;
 					}
@@ -567,8 +438,8 @@ int main(int argc, char* argv[]) {
 			}
 
 			if (fire) {
-				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				diffuse_drawer.Draw(fire_model, sphere, orange_texture_id);
+				fire_model->Translate(+0.0f, +shoot, +0.0f);
+				projectile.Draw();
 			}
 		}
 

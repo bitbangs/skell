@@ -45,6 +45,10 @@ public:
 		shader_program.SetVectorBuffer("light_pos", +0.0f, +3.0f, -3.0f, +1.0f);
 	}
 
+	ShaderProgram GetShaderProgram() const {
+		return shader_program;
+	}
+
 	void Draw(const Model<T>& model, const Mesh<T>& mesh, const GLuint texture_id) { //refactor color later
 		glBindVertexArray(mesh.GetVao()); //wasteful
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetIbo()); //wasteful

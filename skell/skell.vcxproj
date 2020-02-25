@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Drawer.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FragmentShader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obj.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Attribute.h" />
     <ClInclude Include="Drawer.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Model.hpp" />
