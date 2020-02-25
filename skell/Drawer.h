@@ -24,15 +24,15 @@ public:
 			+1.0f, +0.0f, +0.0f, +0.0f,
 			+0.0f, +1.0f, +0.0f, +0.0f,
 			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +0.5f, +1.0f //our position
+			+0.0f, +0.0f, +10.0f, +1.0f //our position
 		});
 		shader_program.SetMatrixBuffer("view", view.GetPointerToData());
 
 		//projection matrix for the eye
 		LinearAlgebra::Matrix<T> projection(4, 4, {
-			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 4.0f)), +0.0f, +0.0f, +0.0f,
-			0.0f, +1.0f / std::tanf(3.14159f / 4.0f), +0.0f, +0.0f,
-			+0.0f, +0.0f, (1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
+			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 6.0f)), +0.0f, +0.0f, +0.0f,
+			0.0f, +1.0f / std::tanf(3.14159f / 6.0f), +0.0f, +0.0f,
+			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
 			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
 		});
 		shader_program.SetMatrixBuffer("projection", projection.GetPointerToData());
