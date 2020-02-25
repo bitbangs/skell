@@ -73,75 +73,6 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	//vertex shader compilation
-	VertexShader vert_shader("#version 450\n"
-		"in vec3 pos;\n"
-		"in vec2 pass_text;\n"
-		"out vec2 text;\n"
-		"uniform mat4 model;\n"
-		"uniform mat4 view;\n"
-		"uniform mat4 projection;\n"
-		"void main() {\n"
-		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
-		"text = pass_text;\n"
-		"}");
-	//fragment shader compilation
-	FragmentShader frag_shader("#version 450\n"
-		"in vec4 color;\n"
-		"in vec2 text;\n"
-		"out vec4 frag_color;\n"
-		"uniform vec4 ambient;\n"
-		"uniform vec4 light_pos;\n"
-		"uniform sampler2D texture_image;\n"
-		"void main() {\n"
-		"frag_color = texture(texture_image, text);"
-		"}");
-	//mesh data and drawer initialization for player block
-	Mesh<GLfloat> block(
-		vert_shader.GetAttributes(),
-		{
-			-0.5f, -0.5f, +0.0f,
-			+0.0f, +0.0f,
-			-0.5f, +0.5f, +0.0f,
-			+0.0f, +1.0f,
-			+0.5f, -0.5f, +0.0f,
-			+1.0f, +0.0f,
-			+0.5f, +0.5f, +0.0f,
-			+1.0f, +1.0f,
-			+0.5f, -0.5f, +1.0f,
-			+1.0f, +0.0f,
-			+0.5f, +0.5f, +1.0f,
-			+1.0f, +1.0f,
-			-0.5f, -0.5f, +1.0f,
-			+0.0f, +0.0f,
-			-0.5f, +0.5f, +1.0f,
-			+0.0f, +1.0f,
-		},
-		{ //indices
-			0u, 1u, 2u,
-			1u, 3u, 2u,
-			2u, 3u, 4u,
-			3u, 5u, 4u,
-			4u, 5u, 6u,
-			5u, 7u, 6u,
-			6u, 7u, 0u,
-			7u, 1u, 0u,
-			1u, 7u, 3u,
-			7u, 5u, 3u,
-			6u, 0u, 4u,
-			0u, 2u, 4u
-		}
-		);
-	GLuint texture_id;
-	glGenTextures(1, &texture_id);
-	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	PPM text_image("test.ppm");
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, text_image.GetWidth(), text_image.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, text_image.GetData());
-	glGenerateMipmap(GL_TEXTURE_2D);
-	Drawer<GLfloat> block_drawer(ShaderProgram(vert_shader, frag_shader), aspect_ratio);
-
-	//vertex shader compilation
 	VertexShader diffuse_vert_shader("#version 450\n"
 		"in vec3 pos;\n"
 		"in vec3 pass_norm;\n"
@@ -172,11 +103,31 @@ int main(int argc, char* argv[]) {
 		"vec4 light_dir = normalize(light_pos - frag_pos);\n"
 		"vec4 norm_dir = normalize(norm);\n"
 		"float diff = max(dot(norm_dir, light_dir), 0.0);\n"
-		"vec4 diffuse = diff * vec4(0.8, 0.8, 0.8, 1.0);\n"
-		"frag_color = texture(texture_image, text);"//(ambient + diffuse) * 
+		"vec4 diffuse = diff * vec4(1.1, 1.1, 1.1, 1.0);\n"
+		"frag_color = ambient * diffuse * texture(texture_image, text);"//(ambient + diffuse) * 
 		"}");
-	//create an all red block mesh and drawer
-	Mesh<GLfloat> red_block(
+
+	//create an orange block mesh and drawer
+	GLuint orange_texture_id;
+	glGenTextures(1, &orange_texture_id);
+	glBindTexture(GL_TEXTURE_2D, orange_texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	PPM orange_text("test.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, orange_text.GetWidth(), orange_text.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, orange_text.GetData());
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//create a blue block texture
+	GLuint blue_texture_id;
+	glGenTextures(1, &blue_texture_id);
+	glBindTexture(GL_TEXTURE_2D, blue_texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	PPM blue_text("skell_blue_test_texture.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, blue_text.GetWidth(), blue_text.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, blue_text.GetData());
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	Mesh<GLfloat> block(
 		diffuse_vert_shader.GetAttributes(),
 		{
 			//front face
@@ -314,16 +265,7 @@ int main(int argc, char* argv[]) {
 			33u, 34u, 35u
 		}
 		);
-	GLuint diffuse_texture_id;
-	glGenTextures(1, &diffuse_texture_id);
-	glBindTexture(GL_TEXTURE_2D, diffuse_texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	PPM diffuse_text_image("test.ppm");
-	diffuse_text_image.WriteOutTest("are_we_good.ppm");
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, diffuse_text_image.GetWidth(), diffuse_text_image.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, diffuse_text_image.GetData());
-	glGenerateMipmap(GL_TEXTURE_2D);
-	Drawer<GLfloat> diffuse_block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
+	Drawer<GLfloat> block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
 	Model<GLfloat> player(+0.0f, -6.0f, +8.1f);
@@ -510,14 +452,14 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		diffuse_block_drawer.Draw(player, red_block, 1.0f, 0.0f, 0.0f, 1.0f); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		block_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			block_drawer.Draw(brick, block, 0.0f, 1.0f, 0.0f, 1.0f);
+			block_drawer.Draw(brick, block, blue_texture_id);
 		}
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
-			block_drawer.Draw(wall_brick, block, 1.0f, 0.0f, 1.0f, 1.0f);
+			block_drawer.Draw(wall_brick, block, blue_texture_id);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -533,7 +475,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_ii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_ii, block, 1.0f, 1.0f, 0.0f, 1.0f);
+					block_drawer.Draw(spawned_model_ii, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x2) {
@@ -547,7 +489,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_i.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_i, block, 1.0f, 1.0f, 0.0f, 1.0f);
+					block_drawer.Draw(spawned_model_i, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
@@ -561,7 +503,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iii, block, 1.0f, 1.0f, 0.0f, 1.0f);
+					block_drawer.Draw(spawned_model_iii, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x8) {
@@ -575,7 +517,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iv.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iv, block, 1.0f, 1.0f, 0.0f, 1.0f);
+					block_drawer.Draw(spawned_model_iv, block, orange_texture_id);
 				}
 			}
 		}
@@ -602,7 +544,7 @@ int main(int argc, char* argv[]) {
 
 			if (fire) {
 				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				block_drawer.Draw(fire_model, block, 0.0f, 0.0f, 1.0f, 1.0f);
+				block_drawer.Draw(fire_model, block, orange_texture_id);
 			}
 		}
 

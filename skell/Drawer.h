@@ -38,19 +38,19 @@ public:
 		shader_program.SetMatrixBuffer("projection", projection.GetPointerToData());
 
 		//set the ambient light
-		T ambient = 0.4f;
+		T ambient = 1.2f;
 		shader_program.SetVectorBuffer("ambient", ambient, ambient, ambient, 1.0f);
 
 		//set the light position for diffuse lighting
-		shader_program.SetVectorBuffer("light_pos", -11.0f, -3.0f, -3.0f, +1.0f);
+		shader_program.SetVectorBuffer("light_pos", +0.0f, +3.0f, -3.0f, +1.0f);
 	}
 
-	void Draw(const Model<T>& model, const Mesh<T>& mesh, T rr, T gg, T bb, T aa) { //refactor color later
+	void Draw(const Model<T>& model, const Mesh<T>& mesh, const GLuint texture_id) { //refactor color later
 		glBindVertexArray(mesh.GetVao()); //wasteful
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.GetIbo()); //wasteful
+		glBindTexture(GL_TEXTURE_2D, texture_id);
 		shader_program.Use(); //wasteful
 		shader_program.SetMatrixBuffer("model", model.GetPointerToModelData()); //wasteful
-		//shader_program.SetVectorBuffer("pass_color", rr, gg, bb, aa);
 		glDrawElements(GL_TRIANGLES, mesh.GetNumIndices(), GL_UNSIGNED_INT, 0);
 	}
 };
