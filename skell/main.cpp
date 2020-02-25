@@ -162,25 +162,25 @@ int main(int argc, char* argv[]) {
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
 
 	//brickbreaker bricks
-	std::vector<Model<GLfloat>> bricks;
+	std::vector<Entity<GLfloat>> bricks;
 	for (int ii = 0; ii < 16; ii += 2) {
-		Model<GLfloat> brick(-8.0f + (GLfloat)ii, +1.0f, +8.1f);
-		bricks.push_back(std::move(brick));
+		auto brick = std::make_shared<Model<GLfloat>>(-8.0f + (GLfloat)ii, +1.0f, +8.1f);
+		bricks.push_back({ block, diffuse_drawer, brick, blue_texture_id });
 	}
 
 	//wall bricks
-	std::vector<Model<GLfloat>> wall_bricks;
-	for (int ii = 0; ii < 28; ii += 2) { //back wall
-		Model<GLfloat> wall_brick(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
-		wall_bricks.push_back(std::move(wall_brick));
+	std::vector<Entity<GLfloat>> wall_bricks;
+	for (int ii = 0; ii < 15; ++ii) { //back wall
+		auto wall_brick = std::make_shared<Model<GLfloat>>(-14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f);
+		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
-	for (int ii = 0; ii < 14; ii += 2) { //left wall
-		Model<GLfloat> wall_brick(-12.0f, -9.0f + (GLfloat)ii, +8.1f);
-		wall_bricks.push_back(std::move(wall_brick));
+	for (int ii = 0; ii < 8; ++ii) { //left wall
+		auto wall_brick = std::make_shared<Model<GLfloat>>(-14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f);
+		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
-	for (int ii = 0; ii < 14; ii += 2) { //right wall
-		Model<GLfloat> wall_brick(+14.0f, +4.0f - (GLfloat)ii, +8.1f);
-		wall_bricks.push_back(std::move(wall_brick));
+	for (int ii = 0; ii < 8; ++ii) { //right wall
+		auto wall_brick = std::make_shared<Model<GLfloat>>(+14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f);
+		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
 
 	//player can fire projectiles
@@ -346,15 +346,14 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		player.Draw(); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		player.Draw();
 		//draw the bricks
-		for (const auto& brick : bricks) {
-			diffuse_drawer->Draw(brick, *block, blue_texture_id);
+		for (auto brick : bricks) {
+			brick.Draw();
 		}
 		//draw the wall
-		for (auto wall_brick = wall_bricks.begin(); wall_brick != wall_bricks.end(); wall_brick += 2) {
-			diffuse_drawer->Draw(*wall_brick, *block, blue_texture_id);
-			diffuse_drawer->Draw(*(wall_brick + 1), *block, orange_texture_id);
+		for (auto wall_brick : wall_bricks) {
+			wall_brick.Draw();
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -419,23 +418,23 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			//check for collision with bricks
-			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
+			/*auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
 				return fire_model->IsIntersecting(brick);
 			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
 				fire = false;
-			}
+			}*/
 
-			if (fire) { //may have hit a brick...
-				//check for collision with wall
-				for (const auto& wall_brick : wall_bricks) {
-					if (fire_model->IsIntersecting(wall_brick)) {
-						fire = false;
-						break;
-					}
-				}
-			}
+			//if (fire) { //may have hit a brick...
+			//	//check for collision with wall
+			//	for (auto wall_brick : wall_bricks) {
+			//		if (fire_model->IsIntersecting(wall_brick)) {
+			//			fire = false;
+			//			break;
+			//		}
+			//	}
+			//}
 
 			if (fire) {
 				fire_model->Translate(+0.0f, +shoot, +0.0f);
