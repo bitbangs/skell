@@ -16,6 +16,7 @@
 #include "VertexShader.h"
 #include "FragmentShader.h"
 #include "PPM.h"
+#include "Obj.h"
 
 int main(int argc, char* argv[]) {
 	//logger initialization
@@ -107,7 +108,7 @@ int main(int argc, char* argv[]) {
 		"frag_color = ambient * diffuse * texture(texture_image, text);"//(ambient + diffuse) * 
 		"}");
 
-	//create an orange block mesh and drawer
+	//create an orange block texture
 	GLuint orange_texture_id;
 	glGenTextures(1, &orange_texture_id);
 	glBindTexture(GL_TEXTURE_2D, orange_texture_id);
@@ -127,6 +128,15 @@ int main(int argc, char* argv[]) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, blue_text.GetWidth(), blue_text.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, blue_text.GetData());
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	//load a sphere mesh
+	Obj sphere_obj("sphere.obj");
+	Mesh<GLfloat> sphere(
+		diffuse_vert_shader.GetAttributes(),
+		sphere_obj.GetElements(),
+		sphere_obj.GetIndices()
+	);
+
+	//create a block mesh
 	Mesh<GLfloat> block(
 		diffuse_vert_shader.GetAttributes(),
 		{
@@ -265,6 +275,8 @@ int main(int argc, char* argv[]) {
 			33u, 34u, 35u
 		}
 		);
+
+	//create shader program
 	Drawer<GLfloat> diffuse_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
@@ -452,7 +464,7 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		diffuse_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		diffuse_drawer.Draw(player, sphere, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
 			diffuse_drawer.Draw(brick, block, blue_texture_id);

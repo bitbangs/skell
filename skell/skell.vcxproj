@@ -149,6 +149,7 @@
     <ClCompile Include="Drawer.cpp" />
     <ClCompile Include="FragmentShader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Obj.cpp" />
     <ClCompile Include="PPM.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Model.hpp" />
+    <ClInclude Include="Obj.h" />
     <ClInclude Include="PPM.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />

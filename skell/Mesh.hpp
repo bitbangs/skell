@@ -19,8 +19,8 @@ private:
 public:
 	Mesh() = delete;
 	Mesh(std::vector<Attribute> attribs,
-		std::initializer_list<T> element_list,
-		std::initializer_list<GLuint> index_list) :
+		std::vector<T> element_list,
+		std::vector<GLuint> index_list) :
 		attribs(attribs),
 		elements(std::make_unique<T[]>(element_list.size())),
 		indices(std::make_unique<GLuint[]>(index_list.size())),
@@ -42,7 +42,7 @@ public:
 		glGenBuffers(1, &vbo); //get a vbo from opengl
 		glBindBuffer(GL_ARRAY_BUFFER, vbo); //must bind so next call knows where to put data
 		glBufferData(GL_ARRAY_BUFFER, //glBufferData is used for mutable storage
-			sizeof(elements) * element_list.size(), //size in bytes
+			sizeof(T) * element_list.size(), //size in bytes
 			elements.get(), //const void*
 			GL_STATIC_DRAW //will these always be static_draw?
 		);
@@ -63,7 +63,7 @@ public:
 		glGenBuffers(1, &ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //binding here attaches us to vao
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-			sizeof(indices) * index_list.size(),
+			sizeof(GLuint) * index_list.size(),
 			indices.get(),
 			GL_STATIC_DRAW
 		);
