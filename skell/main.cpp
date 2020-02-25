@@ -289,18 +289,29 @@ int main(int argc, char* argv[]) {
 	std::random_device rand_dev;
 	std::default_random_engine rand_eng(rand_dev());
 	std::uniform_real_distribution<GLfloat> rand_uniform(+1.00f, +3.50f);
+
 	//brickbreaker bricks
 	std::vector<Model<GLfloat>> bricks;
 	for (int ii = 0; ii < 8; ++ii) {
 		Model<GLfloat> brick(-6.0f + (GLfloat)(ii * 2), +1.0f, +8.1f);
 		bricks.push_back(std::move(brick));
 	}
+
 	//wall bricks
 	std::vector<Model<GLfloat>> wall_bricks;
-	for (int ii = 0; ii < 28; ++ii) {
+	for (int ii = 0; ii < 28; ++ii) { //back wall
 		Model<GLfloat> wall_brick(-14.0f + (GLfloat)ii, +5.0f, +8.1f);
 		wall_bricks.push_back(std::move(wall_brick));
 	}
+	for (int ii = 0; ii < 14; ++ii) { //left wall
+		Model<GLfloat> wall_brick(-14.0f, -9.0f + (GLfloat)ii, +8.1f);
+		wall_bricks.push_back(std::move(wall_brick));
+	}
+	for (int ii = 0; ii < 14; ++ii) { //right wall
+		Model<GLfloat> wall_brick(+13.0f, +4.0f - (GLfloat)ii, +8.1f);
+		wall_bricks.push_back(std::move(wall_brick));
+	}
+
 	//player can fire projectiles
 	Model<GLfloat> fire_model;
 
@@ -464,14 +475,15 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		diffuse_drawer.Draw(player, sphere, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		diffuse_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
 			diffuse_drawer.Draw(brick, block, blue_texture_id);
 		}
 		//draw the wall
-		for (const auto& wall_brick : wall_bricks) {
-			diffuse_drawer.Draw(wall_brick, block, blue_texture_id);
+		for (auto wall_brick = wall_bricks.begin(); wall_brick != wall_bricks.end(); wall_brick += 2) {
+			diffuse_drawer.Draw(*wall_brick, block, blue_texture_id);
+			diffuse_drawer.Draw(*(wall_brick + 1), block, orange_texture_id);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -556,7 +568,7 @@ int main(int argc, char* argv[]) {
 
 			if (fire) {
 				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				diffuse_drawer.Draw(fire_model, block, orange_texture_id);
+				diffuse_drawer.Draw(fire_model, sphere, orange_texture_id);
 			}
 		}
 
