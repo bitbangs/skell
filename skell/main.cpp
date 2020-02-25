@@ -265,7 +265,7 @@ int main(int argc, char* argv[]) {
 			33u, 34u, 35u
 		}
 		);
-	Drawer<GLfloat> block_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
+	Drawer<GLfloat> diffuse_drawer(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
 	Model<GLfloat> player(+0.0f, -6.0f, +8.1f);
@@ -452,14 +452,14 @@ int main(int argc, char* argv[]) {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
-		block_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
+		diffuse_drawer.Draw(player, block, orange_texture_id); //maybe eventually refactor color into some sort of properties class that composes the (in this case) player entity
 		//draw the bricks
 		for (const auto& brick : bricks) {
-			block_drawer.Draw(brick, block, blue_texture_id);
+			diffuse_drawer.Draw(brick, block, blue_texture_id);
 		}
 		//draw the wall
 		for (const auto& wall_brick : wall_bricks) {
-			block_drawer.Draw(wall_brick, block, blue_texture_id);
+			diffuse_drawer.Draw(wall_brick, block, blue_texture_id);
 		}
 		//draw the enemies
 		if (spawn_alive_mask > 0) {
@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_ii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_ii, block, orange_texture_id);
+					diffuse_drawer.Draw(spawned_model_ii, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x2) {
@@ -489,7 +489,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_i.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_i, block, orange_texture_id);
+					diffuse_drawer.Draw(spawned_model_i, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x4) {
@@ -503,7 +503,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iii.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iii, block, orange_texture_id);
+					diffuse_drawer.Draw(spawned_model_iii, block, orange_texture_id);
 				}
 			}
 			if (spawn_alive_mask & 0x8) {
@@ -517,7 +517,7 @@ int main(int argc, char* argv[]) {
 				}
 				else {
 					spawned_model_iv.MoveToward(player, creep);
-					block_drawer.Draw(spawned_model_iv, block, orange_texture_id);
+					diffuse_drawer.Draw(spawned_model_iv, block, orange_texture_id);
 				}
 			}
 		}
@@ -544,7 +544,7 @@ int main(int argc, char* argv[]) {
 
 			if (fire) {
 				fire_model.Translate(+0.0f, +shoot, +0.0f);
-				block_drawer.Draw(fire_model, block, orange_texture_id);
+				diffuse_drawer.Draw(fire_model, block, orange_texture_id);
 			}
 		}
 
