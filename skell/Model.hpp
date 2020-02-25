@@ -47,7 +47,7 @@ public:
 	}
 
 	void TranslateTo(const Model<T>& here) {
-		auto dest = here.GetCentroid();
+		auto dest = here.GetCentroid() - GetCentroid();
 		Translate(dest[0], dest[1], dest[2]);
 	}
 

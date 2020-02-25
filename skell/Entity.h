@@ -34,5 +34,9 @@ public:
 		drawer->GetShaderProgram().SetMatrixBuffer("model", model->GetPointerToModelData()); //wasteful
 		glDrawElements(GL_TRIANGLES, mesh->GetNumIndices(), GL_UNSIGNED_INT, 0);
 	}
+
+	bool IsIntersecting(const Entity<T>& other) const {
+		return model->IsIntersecting(*(other.model));
+	}
 };
 

@@ -418,23 +418,23 @@ int main(int argc, char* argv[]) {
 		//draw the projectile
 		if (fire) {
 			//check for collision with bricks
-			/*auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
-				return fire_model->IsIntersecting(brick);
+			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
+				return projectile.IsIntersecting(brick);
 			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
 				fire = false;
-			}*/
+			}
 
-			//if (fire) { //may have hit a brick...
-			//	//check for collision with wall
-			//	for (auto wall_brick : wall_bricks) {
-			//		if (fire_model->IsIntersecting(wall_brick)) {
-			//			fire = false;
-			//			break;
-			//		}
-			//	}
-			//}
+			if (fire) { //may have hit a brick...
+				//check for collision with wall
+				for (auto wall_brick : wall_bricks) {
+					if (projectile.IsIntersecting(wall_brick)) {
+						fire = false;
+						break;
+					}
+				}
+			}
 
 			if (fire) {
 				fire_model->Translate(+0.0f, +shoot, +0.0f);
