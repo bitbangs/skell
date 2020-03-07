@@ -82,7 +82,6 @@ int main(int argc, char* argv[]) {
 		"out vec4 norm;\n"
 		"out vec4 frag_pos;\n"
 		"out vec2 text;\n"
-		"uniform vec4 pass_color;\n"
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
@@ -106,7 +105,7 @@ int main(int argc, char* argv[]) {
 		"vec4 norm_dir = normalize(norm);\n"
 		"float diff = max(dot(norm_dir, light_dir), 0.0);\n"
 		"vec4 diffuse = diff * vec4(1.1, 1.1, 1.1, 1.0);\n"
-		"frag_color = ambient * diffuse * texture(texture_image, text);"//(ambient + diffuse) * 
+		"frag_color = ambient * diffuse * texture(texture_image, text);\n"//(ambient + diffuse) * 
 		"}");
 
 	//create an orange block texture
@@ -145,8 +144,61 @@ int main(int argc, char* argv[]) {
 		cube_obj.GetIndices()
 	);
 
-	//create shader program
+	//create shader program for diffuse shaded meshes
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
+
+	//vertex shader compilation
+	VertexShader wire_vert_shader("#version 450\n"
+		"in vec3 pos;\n"
+		"out vec4 pass_color;\n"
+		"uniform mat4 model;\n"
+		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
+		"void main() {\n"
+		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
+		"pass_color = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"}");
+	//fragment shader compilation
+	FragmentShader wire_frag_shader("#version 450\n"
+		"in vec4 pass_color;\n"
+		"out vec4 color;\n" //adding this loses the colorless wireframe
+		"void main() {\n"
+		"color = pass_color;\n"
+		"}");
+	std::vector<GLfloat> frame_elements{
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, +0.5f, -0.5f,
+		+0.5f, +0.5f, -0.5f,
+		+0.5f, -0.5f, -0.5f, //front face
+
+		+0.5f, -0.5f, +0.5f,
+		+0.5f, +0.5f, +0.5f,
+		-0.5f, +0.5f, +0.5f,
+		-0.5f, -0.5f, +0.5f, //back face
+	};
+	std::vector<GLuint> frame_indices{
+		0u, 1u,
+		1u, 2u,
+		2u, 3u,
+		3u, 0u, //front
+
+		4u, 5u,
+		5u, 6u,
+		6u, 7u,
+		7u, 4u, //back
+
+		2u, 5u,
+		3u, 4u, //right
+
+		6u, 1u,
+		7u, 0u, //left
+	};
+	auto frame = std::make_shared<Mesh<GLfloat>>(
+		wire_vert_shader.GetAttributes(),
+		frame_elements,
+		frame_indices
+	);
+	ShaderProgram frame_shader(wire_vert_shader, wire_frag_shader);
 
 	//create the player
 	auto player_model = std::make_shared<Model<GLfloat>>(+0.0f, -6.0f, +8.1f);
@@ -224,10 +276,7 @@ int main(int argc, char* argv[]) {
 				quit = true;
 				break;
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-				if (!fire) {
-					fire = true;
-					fire_model->TranslateTo(*player_model);
-				}
+				button_mask |= 0x10;
 				break;
 			default:
 				break;
@@ -259,6 +308,9 @@ int main(int argc, char* argv[]) {
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 				dpad_mask ^= 0x1;
+				break;
+			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				button_mask ^= 0x10;
 				break;
 			default:
 				break;
@@ -307,28 +359,20 @@ int main(int argc, char* argv[]) {
 				break;
 			case 0x8:
 				break;
+			case 0x10:
+				if (!fire) {
+					fire = true;
+					fire_model->TranslateTo(*player_model);
+					fire_model->Translate(0.0f, 1.4f, 0.0f);
+				}
+				break;
 			}
 		}
-
-		//wipe frame
-		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//draw the player
-		player.Draw();
-		//draw the bricks
-		for (auto brick : bricks) {
-			brick.Draw();
-		}
-		//draw the wall
-		for (auto wall_brick : wall_bricks) {
-			wall_brick.Draw();
-		}
-		//draw the projectile
 		if (fire) {
 			//check for collision with bricks
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
 				return projectile.IsIntersecting(brick);
-			});
+				});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
 				shoot = -shoot;
@@ -348,6 +392,46 @@ int main(int argc, char* argv[]) {
 			}
 
 			fire_model->Translate(+0.0f, shoot, +0.0f);
+		}
+
+		//wipe frame
+		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//draw the player
+		player.Draw();
+		glBindVertexArray(frame->GetVao()); //wasteful
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frame->GetIbo()); //wasteful
+		frame_shader.Use(); //wasteful
+		//view matrix for the eye
+		LinearAlgebra::Matrix<GLfloat> view(4, 4, {
+			+1.0f, +0.0f, +0.0f, +0.0f,
+			+0.0f, +1.0f, +0.0f, +0.0f,
+			+0.0f, +0.0f, +1.0f, +0.0f,
+			+0.0f, +0.0f, +10.0f, +1.0f //our position
+			});
+		frame_shader.SetMatrixBuffer("view", view.GetPointerToData());
+
+		//projection matrix for the eye
+		LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
+			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 6.0f)), +0.0f, +0.0f, +0.0f,
+			0.0f, +1.0f / std::tanf(3.14159f / 6.0f), +0.0f, +0.0f,
+			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
+			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
+			});
+		frame_shader.SetMatrixBuffer("projection", projection.GetPointerToData());
+		frame_shader.SetMatrixBuffer("model", player_model->GetPointerToModelData()); //wasteful
+		glDrawElements(GL_LINES, frame->GetNumIndices(), GL_UNSIGNED_INT, 0);
+		
+		//draw the bricks
+		for (auto brick : bricks) {
+			brick.Draw();
+		}
+		//draw the wall
+		for (auto wall_brick : wall_bricks) {
+			wall_brick.Draw();
+		}
+		//draw the projectile
+		if (fire) {
 			projectile.Draw();
 		}
 

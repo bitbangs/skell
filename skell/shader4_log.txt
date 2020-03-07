@@ -107,3 +107,40 @@
 [2020-02-25 03:10:32.613] [shader4_logger] [info] shader4 compiled successfully
 [2020-02-25 03:11:17.818] [shader4_logger] [info] shader4 compiled successfully
 [2020-02-25 03:13:20.939] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-02 20:13:34.228] [shader4_logger] [warning] shader4shader did not compile
+[2020-03-02 20:13:34.228] [shader4_logger] [warning] 0(7) : error C1068: too much data in type constructor
+0(7) : error C1035: assignment of incompatible types
+
+[2020-03-02 20:13:34.228] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-02 20:15:05.979] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-02 20:16:40.250] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-02 20:18:46.654] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-02 20:19:30.402] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:38:42.576] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:39:07.459] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:41:02.265] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:41:22.939] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:41:37.389] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:41:53.366] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-04 02:42:12.367] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:07:29.487] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:10:45.170] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:11:21.524] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:14:56.319] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:15:23.800] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:15:47.471] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:16:01.294] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:16:56.757] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:17:14.704] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:17:27.697] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:17:47.646] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:18:39.322] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:24:30.498] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:29:07.647] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:29:46.400] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:30:55.798] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:33:17.874] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:33:52.182] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:35:47.166] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:37:22.650] [shader4_logger] [info] shader4 compiled successfully
+[2020-03-06 20:38:22.280] [shader4_logger] [info] shader4 compiled successfully
