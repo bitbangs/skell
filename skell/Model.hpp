@@ -61,7 +61,7 @@ public:
 		})),
 		mvp(projection * view * model),
 		xx(xx), yy(yy), zz(zz),
-		sx(0), sy(0), sz(0)
+		sx(1), sy(1), sz(1)
 	{}
 
 	void Translate(T dx, T dy, T dz) {

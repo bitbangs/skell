@@ -1514,3 +1514,6 @@ error: "color" not declared as an output from the previous stage
 [2020-03-06 23:10:35.771] [file_logger] [info] XInput Controller
 [2020-03-06 23:11:17.642] [file_logger] [info] XInput Controller
 [2020-03-06 23:42:59.732] [file_logger] [info] XInput Controller
+[2020-03-06 23:46:27.199] [file_logger] [info] XInput Controller
+[2020-03-06 23:49:51.770] [file_logger] [info] XInput Controller
+[2020-03-06 23:50:06.467] [file_logger] [info] XInput Controller
