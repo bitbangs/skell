@@ -31,7 +31,8 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIbo()); //wasteful
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 		drawer->GetShaderProgram().Use(); //wasteful
-		drawer->GetShaderProgram().SetMatrixBuffer("model", model->GetPointerToModelData()); //wasteful
+		drawer->GetShaderProgram().SetMatrixBuffer("mvp", model->GetMVP()); //wasteful
+		//drawer->GetShaderProgram().SetMatrixBuffer("model", model->GetModel());
 		glDrawElements(GL_TRIANGLES, mesh->GetNumIndices(), GL_UNSIGNED_INT, 0);
 	}
 

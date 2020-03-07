@@ -8,28 +8,58 @@ template <typename T, typename = typename std::enable_if<std::is_arithmetic<T>::
 class Model {
 private:
 	LinearAlgebra::Matrix<T> model;
+	LinearAlgebra::Matrix<T> view;
+	LinearAlgebra::Matrix<T> projection;
+	LinearAlgebra::Matrix<T> mvp;
 	T xx, yy, zz;
 	T sx, sy, sz;
 
 public:
-	Model() :
+	Model() = delete;
+	Model(T aspect_ratio) :
 		model(LinearAlgebra::Matrix<T>(4, 4, {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1
 		})),
+		view(LinearAlgebra::Matrix<T>(4, 4, {
+			+1.0f, +0.0f, +0.0f, +0.0f,
+			+0.0f, +1.0f, +0.0f, +0.0f,
+			+0.0f, +0.0f, +1.0f, +0.0f,
+			+0.0f, +0.0f, +10.0f, +1.0f //our position
+		})),
+		projection(LinearAlgebra::Matrix<T>(4, 4, {
+			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 6.0f)), +0.0f, +0.0f, +0.0f,
+			0.0f, +1.0f / std::tanf(3.14159f / 6.0f), +0.0f, +0.0f,
+			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
+			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
+		})),
+		mvp(projection * view * model),
 		xx(0), yy(0), zz(0),
 		sx(1), sy(1), sz(1)
 	{}
 
-	Model(T xx, T yy, T zz) :
+	Model(T aspect_ratio, T xx, T yy, T zz) :
 		model(LinearAlgebra::Matrix<T>(4, 4, {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
 			xx, yy, zz, 1
 		})),
+		view(LinearAlgebra::Matrix<T>(4, 4, {
+			+1.0f, +0.0f, +0.0f, +0.0f,
+			+0.0f, +1.0f, +0.0f, +0.0f,
+			+0.0f, +0.0f, +1.0f, +0.0f,
+			+0.0f, +0.0f, +10.0f, +1.0f //our position
+		})),
+		projection(LinearAlgebra::Matrix<T>(4, 4, {
+			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 6.0f)), +0.0f, +0.0f, +0.0f,
+			0.0f, +1.0f / std::tanf(3.14159f / 6.0f), +0.0f, +0.0f,
+			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
+			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
+		})),
+		mvp(projection * view * model),
 		xx(xx), yy(yy), zz(zz),
 		sx(0), sy(0), sz(0)
 	{}
@@ -88,7 +118,12 @@ public:
 		return centroid;
 	}
 
-	const T* GetPointerToModelData() const { //not a fan of doing this...
-		return model.GetPointerToData();
+	const T* GetModel() const {
+		return model.GetPointerToData(); //this probably doesn't need to happen...the problem was more likely that mvp gets destroyed in GetMVP
+	}
+
+	const T* GetMVP() {
+		mvp = LinearAlgebra::Matrix<T>(projection * view * model);
+		return mvp.GetPointerToData();
 	}
 };

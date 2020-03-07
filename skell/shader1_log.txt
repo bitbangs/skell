@@ -254,3 +254,25 @@
 [2020-03-06 20:35:47.061] [shader1_logger] [info] shader1 compiled successfully
 [2020-03-06 20:37:22.568] [shader1_logger] [info] shader1 compiled successfully
 [2020-03-06 20:38:22.197] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:02:24.230] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:19:18.894] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:37:43.243] [shader1_logger] [warning] shader1shader did not compile
+[2020-03-06 22:37:43.243] [shader1_logger] [warning] 0(13) : error C1503: undefined variable "model"
+
+[2020-03-06 22:37:43.243] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:39:39.209] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:42:11.788] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:46:13.008] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:46:38.688] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:49:19.855] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:49:56.038] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:50:33.023] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:52:09.971] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:52:33.585] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:52:50.708] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:56:26.873] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:58:11.650] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 22:59:21.077] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 23:08:42.771] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 23:10:36.383] [shader1_logger] [info] shader1 compiled successfully
+[2020-03-06 23:11:18.207] [shader1_logger] [info] shader1 compiled successfully

@@ -206,3 +206,28 @@
 [2020-03-06 20:35:47.144] [shader_program3_logger] [info] program linked successfully
 [2020-03-06 20:37:22.649] [shader_program3_logger] [info] program linked successfully
 [2020-03-06 20:38:22.280] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:02:24.335] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:19:18.981] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:37:43.365] [shader_program3_logger] [warning] program did not link
+[2020-03-06 22:37:43.365] [shader_program3_logger] [warning] Vertex info
+-----------
+0(13) : error C1503: undefined variable "model"
+(0) : error C2003: incompatible options for link
+
+[2020-03-06 22:37:43.365] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:39:39.318] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:42:11.875] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:46:13.104] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:46:38.778] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:49:19.937] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:49:56.118] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:50:33.104] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:52:10.053] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:52:33.665] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:52:50.796] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:56:26.981] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:58:11.731] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 22:59:21.164] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 23:08:42.851] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 23:10:36.515] [shader_program3_logger] [info] program linked successfully
+[2020-03-06 23:11:18.293] [shader_program3_logger] [info] program linked successfully

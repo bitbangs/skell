@@ -82,14 +82,13 @@ int main(int argc, char* argv[]) {
 		"out vec4 norm;\n"
 		"out vec4 frag_pos;\n"
 		"out vec2 text;\n"
-		"uniform mat4 model;\n"
-		"uniform mat4 view;\n"
-		"uniform mat4 projection;\n"
+		"uniform mat4 mvp;\n"
+		//"uniform mat4 model;\n"
 		"void main() {\n"
-		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
+		"gl_Position = mvp * vec4(pos, 1.0);\n"
 		"text = pass_text;\n"
 		"norm = vec4(pass_norm, 0.0);\n"
-		"frag_pos = model * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
+		"frag_pos = mvp * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
 		"}");
 	//fragment shader compilation
 	FragmentShader diffuse_frag_shader("#version 450\n"
@@ -144,90 +143,37 @@ int main(int argc, char* argv[]) {
 		cube_obj.GetIndices()
 	);
 
-	//create shader program for diffuse shaded meshes
+	//create mesh drawer
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
-	//vertex shader compilation
-	VertexShader wire_vert_shader("#version 450\n"
-		"in vec3 pos;\n"
-		"out vec4 pass_color;\n"
-		"uniform mat4 model;\n"
-		"uniform mat4 view;\n"
-		"uniform mat4 projection;\n"
-		"void main() {\n"
-		"gl_Position = projection * view * model * vec4(pos, 1.0);\n"
-		"pass_color = vec4(1.0, 1.0, 1.0, 1.0);\n"
-		"}");
-	//fragment shader compilation
-	FragmentShader wire_frag_shader("#version 450\n"
-		"in vec4 pass_color;\n"
-		"out vec4 color;\n" //adding this loses the colorless wireframe
-		"void main() {\n"
-		"color = pass_color;\n"
-		"}");
-	std::vector<GLfloat> frame_elements{
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, +0.5f, -0.5f,
-		+0.5f, +0.5f, -0.5f,
-		+0.5f, -0.5f, -0.5f, //front face
-
-		+0.5f, -0.5f, +0.5f,
-		+0.5f, +0.5f, +0.5f,
-		-0.5f, +0.5f, +0.5f,
-		-0.5f, -0.5f, +0.5f, //back face
-	};
-	std::vector<GLuint> frame_indices{
-		0u, 1u,
-		1u, 2u,
-		2u, 3u,
-		3u, 0u, //front
-
-		4u, 5u,
-		5u, 6u,
-		6u, 7u,
-		7u, 4u, //back
-
-		2u, 5u,
-		3u, 4u, //right
-
-		6u, 1u,
-		7u, 0u, //left
-	};
-	auto frame = std::make_shared<Mesh<GLfloat>>(
-		wire_vert_shader.GetAttributes(),
-		frame_elements,
-		frame_indices
-	);
-	ShaderProgram frame_shader(wire_vert_shader, wire_frag_shader);
-
 	//create the player
-	auto player_model = std::make_shared<Model<GLfloat>>(+0.0f, -6.0f, +8.1f);
+	auto player_model = std::make_shared<Model<GLfloat>>(aspect_ratio, +0.0f, -6.0f, +8.1f);
 	Entity<GLfloat> player(sphere, diffuse_drawer, player_model, blue_texture_id);
 
 	//brickbreaker bricks
 	std::vector<Entity<GLfloat>> bricks;
 	for (int ii = 0; ii < 16; ii += 2) {
-		auto brick = std::make_shared<Model<GLfloat>>(-8.0f + (GLfloat)ii, +1.0f, +8.1f);
+		auto brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f);
 		bricks.push_back({ block, diffuse_drawer, brick, blue_texture_id });
 	}
 
 	//wall bricks
 	std::vector<Entity<GLfloat>> wall_bricks;
 	for (int ii = 0; ii < 15; ++ii) { //back wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(-14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f);
+		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f);
 		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(-14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f);
+		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f);
 		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(+14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f);
+		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f);
 		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
 	}
 
 	//player can fire projectiles
-	auto fire_model = std::make_shared<Model<GLfloat>>();
+	auto fire_model = std::make_shared<Model<GLfloat>>(aspect_ratio);
 	Entity<GLfloat> projectile(sphere, diffuse_drawer, fire_model, orange_texture_id);
 
 	//translations (these should be controlled by the system...)
@@ -399,29 +345,6 @@ int main(int argc, char* argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw the player
 		player.Draw();
-		glBindVertexArray(frame->GetVao()); //wasteful
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frame->GetIbo()); //wasteful
-		frame_shader.Use(); //wasteful
-		//view matrix for the eye
-		LinearAlgebra::Matrix<GLfloat> view(4, 4, {
-			+1.0f, +0.0f, +0.0f, +0.0f,
-			+0.0f, +1.0f, +0.0f, +0.0f,
-			+0.0f, +0.0f, +1.0f, +0.0f,
-			+0.0f, +0.0f, +10.0f, +1.0f //our position
-			});
-		frame_shader.SetMatrixBuffer("view", view.GetPointerToData());
-
-		//projection matrix for the eye
-		LinearAlgebra::Matrix<GLfloat> projection(4, 4, {
-			+1.0f / (+aspect_ratio * std::tanf(3.14159f / 6.0f)), +0.0f, +0.0f, +0.0f,
-			0.0f, +1.0f / std::tanf(3.14159f / 6.0f), +0.0f, +0.0f,
-			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
-			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
-			});
-		frame_shader.SetMatrixBuffer("projection", projection.GetPointerToData());
-		frame_shader.SetMatrixBuffer("model", player_model->GetPointerToModelData()); //wasteful
-		glDrawElements(GL_LINES, frame->GetNumIndices(), GL_UNSIGNED_INT, 0);
-		
 		//draw the bricks
 		for (auto brick : bricks) {
 			brick.Draw();
