@@ -270,28 +270,28 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				player_model->Translate(+0.0f, -step, +0.0f);
+				player_model->Translate({ +0.0f, -step, +0.0f });
 				break;
 			case 0x2: //4
-				player_model->Translate(-step, +0.0f, +0.0f);
+				player_model->Translate({ -step, +0.0f, +0.0f });
 				break;
 			case 0x3: //1
-				player_model->Translate(-step, -step, +0.0f);
+				player_model->Translate({ -step, -step, +0.0f });
 				break;
 			case 0x4: //6
-				player_model->Translate(+step, +0.0f, +0.0f);
+				player_model->Translate({ +step, +0.0f, +0.0f });
 				break;
 			case 0x5: //3
-				player_model->Translate(+step, -step, +0.0f);
+				player_model->Translate({ +step, -step, +0.0f });
 				break;
 			case 0x8: //8
-				player_model->Translate(+0.0f, +step, +0.0f);
+				player_model->Translate({ +0.0f, +step, +0.0f });
 				break;
 			case 0xa: //7
-				player_model->Translate(-step, +step, +0.0f);
+				player_model->Translate({ -step, +step, +0.0f });
 				break;
 			case 0xc: //9
-				player_model->Translate(+step, +step, +0.0f);
+				player_model->Translate({ +step, +step, +0.0f });
 				break;
 			}
 		}
@@ -309,7 +309,7 @@ int main(int argc, char* argv[]) {
 				if (!fire) {
 					fire = true;
 					fire_model->TranslateTo(*player_model);
-					fire_model->Translate(0.0f, 1.4f, 0.0f);
+					fire_model->Translate({ 0.0f, 1.4f, 0.0f });
 				}
 				break;
 			}
@@ -337,7 +337,7 @@ int main(int argc, char* argv[]) {
 				shoot = -shoot;
 			}
 
-			fire_model->Translate(+0.0f, shoot, +0.0f);
+			fire_model->Translate({ +0.0f, shoot, +0.0f });
 		}
 
 		//wipe frame

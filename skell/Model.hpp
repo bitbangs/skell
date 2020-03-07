@@ -64,22 +64,21 @@ public:
 		sx(1), sy(1), sz(1)
 	{}
 
-	void Translate(T dx, T dy, T dz) {
+	void Translate(LinearAlgebra::Vector<T> dt) {
 		model *= LinearAlgebra::Matrix<T>(4, 4, {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
-			dx, dy, dz, 1
+			dt[0], dt[1], dt[2], 1
 			});
-		xx += dx;
-		yy += dy;
-		zz += dz;
+		xx += dt[0];
+		yy += dt[1];
+		zz += dt[2];
 	}
 
 	void TranslateTo(const Model<T>& here) {
-		auto dest = LinearAlgebra::Vector<T>({ here.xx, here.yy, here.zz }) -
-			LinearAlgebra::Vector<T>({ xx, yy, zz });
-		Translate(dest[0], dest[1], dest[2]);
+		Translate(LinearAlgebra::Vector<T>({ here.xx, here.yy, here.zz }) -
+			LinearAlgebra::Vector<T>({ xx, yy, zz }));
 	}
 
 	void MoveToward(const Model<T>& dest, const T step) {
@@ -87,7 +86,7 @@ public:
 			LinearAlgebra::Vector<T>({xx, yy, zz}); // dest.GetCentroid() - GetCentroid();
 		auto norm_toward = toward.Normalize();
 		norm_toward.Scale(step);
-		Translate(norm_toward[0], norm_toward[1], norm_toward[2]);
+		Translate(norm_toward);
 	}
 
 	void Scale(T dx, T dy, T dz) {
