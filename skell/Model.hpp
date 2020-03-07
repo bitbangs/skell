@@ -77,12 +77,14 @@ public:
 	}
 
 	void TranslateTo(const Model<T>& here) {
-		auto dest = here.GetCentroid() - GetCentroid();
+		auto dest = LinearAlgebra::Vector<T>({ here.xx, here.yy, here.zz }) -
+			LinearAlgebra::Vector<T>({ xx, yy, zz });
 		Translate(dest[0], dest[1], dest[2]);
 	}
 
 	void MoveToward(const Model<T>& dest, const T step) {
-		auto toward = dest.GetCentroid() - GetCentroid();
+		auto toward = LinearAlgebra::Vector<T>({ dest.xx, dest.yy, dest.zz }) -
+			LinearAlgebra::Vector<T>({xx, yy, zz}); // dest.GetCentroid() - GetCentroid();
 		auto norm_toward = toward.Normalize();
 		norm_toward.Scale(step);
 		Translate(norm_toward[0], norm_toward[1], norm_toward[2]);
@@ -100,6 +102,9 @@ public:
 		sz *= dz;
 	}
 
+	//to make model only about mvmt and location, intersection can be put in a "frame" class
+	//and it will call GetCentroid and GetScale (dne yet) in order to determing the bounding box
+	//frame then can have a wireframe mesh for debug
 	bool IsIntersecting(const Model<T>& other) const {
 		if ((other.xx + other.sx >= xx && other.xx <= xx + sx)) {
 			if (other.yy + other.sy >= yy && other.yy <= yy + sy) {
@@ -107,19 +112,6 @@ public:
 			}
 		}
 		return false;
-	}
-
-	LinearAlgebra::Vector<T> GetCentroid() const {
-		LinearAlgebra::Vector<T> centroid({
-			xx + (sx / (T)2),
-			yy + (sy / (T)2),
-			zz + (sz / (T)2)
-			});
-		return centroid;
-	}
-
-	const T* GetModel() const {
-		return model.GetPointerToData(); //this probably doesn't need to happen...the problem was more likely that mvp gets destroyed in GetMVP
 	}
 
 	const T* GetMVP() {
