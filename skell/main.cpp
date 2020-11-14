@@ -83,13 +83,12 @@ int main(int argc, char* argv[]) {
 		"out vec4 frag_pos;\n"
 		"out vec2 text;\n"
 		"uniform mat4 mvp;\n"
-		//"uniform mat4 model;\n"
 		"void main() {\n"
 		"gl_Position = mvp * vec4(pos, 1.0);\n"
 		"text = pass_text;\n"
 		"norm = vec4(pass_norm, 0.0);\n"
 		"frag_pos = mvp * vec4(pos, 1.0);\n" //model may have non-uniform scaling (norm isn't perpendicular anymore)
-		"}");
+	"}");
 	//fragment shader compilation
 	FragmentShader diffuse_frag_shader("#version 450\n"
 		"in vec4 norm;\n"
@@ -104,8 +103,8 @@ int main(int argc, char* argv[]) {
 		"vec4 norm_dir = normalize(norm);\n"
 		"float diff = max(dot(norm_dir, light_dir), 0.0);\n"
 		"vec4 diffuse = diff * vec4(1.1, 1.1, 1.1, 1.0);\n"
-		"frag_color = ambient * diffuse * texture(texture_image, text);\n"//(ambient + diffuse) * 
-		"}");
+		"frag_color = ambient * diffuse * texture(texture_image, text);\n" 
+	"}");
 
 	//create an orange block texture
 	GLuint orange_texture_id;
@@ -178,7 +177,12 @@ int main(int argc, char* argv[]) {
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
-	GLfloat shoot = +0.05f;
+	GLfloat shoot = +0.05f; //this should be a vector so we can move in xx and yy
+	//that will also allow for us to ricochet when intersecting
+	//....but now we need to know which plane of the bounding box we hit
+	//e.g.: projectile is moving diagonal up-right. intersection occurs.
+	//was this due to hitting a bottom of a bounding box? keep xx and ricochet yy
+	//was this due to hitting left side of a bounding box? ricochet xx and keep yy
 
 	//main loop events
 	SDL_Event event;
@@ -266,7 +270,7 @@ int main(int argc, char* argv[]) {
 			quit = true;
 		}
 
-		//process event
+		//process button events
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
@@ -314,6 +318,9 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 		}
+
+		//deal with projectile and collisions
+		//this is what needs a heavy refactor
 		if (fire) {
 			//check for collision with bricks
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {

@@ -101,9 +101,17 @@ public:
 		sz *= dz;
 	}
 
-	//to make model only about mvmt and location, intersection can be put in a "frame" class
-	//and it will call GetCentroid and GetScale (dne yet) in order to determing the bounding box
-	//frame then can have a wireframe mesh for debug
+	//intersection will now need to care about xx vs yy relative to "other"'s bounding box
+	//depending on direction vector, only need to check 2 planes on each entity
+	//(or one if other component is 0)
+	//depending on location of model, only need to check certain other entities
+	//this means you need a geometry manager that knows everyone
+	//geometry manager needs multiple (how many? ..i first though 2, but it is planes instead...so 4) sorted data structures
+	//see who is in both when moving diagonally; your vector tells you which 2 to check...or possibly just 1
+	//or better yet...if you trigger a swap in one list, then a swap in the other...there's your intersection plane.
+	//if you trigger one, and one of your components (xx/yy) is 0, there's your intersection plane.
+
+	//so what does a model need to provide the other class?
 	bool IsIntersecting(const Model<T>& other) const {
 		if ((other.xx + other.sx >= xx && other.xx <= xx + sx)) {
 			if (other.yy + other.sy >= yy && other.yy <= yy + sy) {

@@ -25,8 +25,8 @@ public:
 		GLuint index = 0;
 		while (line != "void") { //until start of main() signature
 			if (line == "in") {
-				vert_shader_file >> line; //get precision
-				GLsizei num_elements = (GLsizei)(line.back() - 48);
+				vert_shader_file >> line; //we should see if we get a precision, although we're not using this yet in any shaders so for now this is really something like "vec3" or "mat4" in line after this executes
+				GLsizei num_elements = (GLsizei)(line.back() - 48); //because ascii '0' is 48 decimal
 				vert_shader_file >> line; //get name
 				line.pop_back(); //remove ';'
 				//attributes.push_back({ line.c_str(), index++, num_elements});

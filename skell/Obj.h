@@ -56,49 +56,49 @@ public:
 				indices.push_back(index++);
 				size_t first_slash = line.find_first_of('/');
 				size_t second_slash = line.find_last_of('/');
-				int vert_offset = std::stoi(line.substr(0, first_slash)) - 1;
-				elements.push_back(vertices[3 * vert_offset]);
-				elements.push_back(vertices[3 * vert_offset + 1]);
-				elements.push_back(vertices[3 * vert_offset + 2]);
-				int norm_offset = std::stoi(line.substr(second_slash + 1)) - 1;
-				elements.push_back(normals[3 * norm_offset]);
-				elements.push_back(normals[3 * norm_offset + 1]);
-				elements.push_back(normals[3 * norm_offset + 2]);
-				int text_offset = std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1;
-				elements.push_back(textures[2 * text_offset]);
-				elements.push_back(textures[2 * text_offset + 1]);
+				int vert_offset = 3 * (std::stoi(line.substr(0, first_slash)) - 1);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				int norm_offset = 3 * (std::stoi(line.substr(second_slash + 1)) - 1);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				int text_offset = 2 * (std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1);
+				elements.push_back(textures[text_offset++]);
+				elements.push_back(textures[text_offset++]);
 
 				obj_file >> line; //vert1
 				indices.push_back(index++);
 				first_slash = line.find_first_of('/');
 				second_slash = line.find_last_of('/');
-				vert_offset = std::stoi(line.substr(0, first_slash)) - 1;
-				elements.push_back(vertices[3 * vert_offset]);
-				elements.push_back(vertices[3 * vert_offset + 1]);
-				elements.push_back(vertices[3 * vert_offset + 2]);
-				norm_offset = std::stoi(line.substr(second_slash + 1)) - 1;
-				elements.push_back(normals[3 * norm_offset]);
-				elements.push_back(normals[3 * norm_offset + 1]);
-				elements.push_back(normals[3 * norm_offset + 2]);
-				text_offset = std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1;
-				elements.push_back(textures[2 * text_offset]);
-				elements.push_back(textures[2 * text_offset + 1]);
+				vert_offset = 3 * (std::stoi(line.substr(0, first_slash)) - 1);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				norm_offset = 3 * (std::stoi(line.substr(second_slash + 1)) - 1);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				text_offset = 2 * (std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1);
+				elements.push_back(textures[text_offset++]);
+				elements.push_back(textures[text_offset++]);
 
 				obj_file >> line; //vert2
 				indices.push_back(index++);
 				first_slash = line.find_first_of('/');
 				second_slash = line.find_last_of('/');
-				vert_offset = std::stoi(line.substr(0, first_slash)) - 1;
-				elements.push_back(vertices[3 * vert_offset]);
-				elements.push_back(vertices[3 * vert_offset + 1]);
-				elements.push_back(vertices[3 * vert_offset + 2]);
-				norm_offset = std::stoi(line.substr(second_slash + 1)) - 1;
-				elements.push_back(normals[3 * norm_offset]);
-				elements.push_back(normals[3 * norm_offset + 1]);
-				elements.push_back(normals[3 * norm_offset + 2]);
-				text_offset = std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1;
-				elements.push_back(textures[2 * text_offset]);
-				elements.push_back(textures[2 * text_offset + 1]);
+				vert_offset = 3 * (std::stoi(line.substr(0, first_slash)) - 1);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				elements.push_back(vertices[vert_offset++]);
+				norm_offset = 3 * (std::stoi(line.substr(second_slash + 1)) - 1);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				elements.push_back(normals[norm_offset++]);
+				text_offset = 2 * (std::stoi(line.substr(first_slash + 1, second_slash - first_slash - 1)) - 1);
+				elements.push_back(textures[text_offset++]);
+				elements.push_back(textures[text_offset++]);
 				obj_file >> line; //next line
 				
 			}
