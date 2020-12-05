@@ -11,18 +11,18 @@ class Entity
 private:
 	std::shared_ptr<Mesh<T>> mesh;
 	std::shared_ptr<Drawer<T>> drawer;
-	std::shared_ptr<Model<T>> model;
+	std::unique_ptr<Model<T>> model;
 	GLuint texture_id;
 
 public:
 	Entity() = delete;
 	Entity(std::shared_ptr<Mesh<T>> mesh,
 		std::shared_ptr<Drawer<T>> drawer,
-		std::shared_ptr<Model<T>> model,
+		std::unique_ptr<Model<T>> model,
 		GLuint texture_id) :
 		mesh(mesh),
 		drawer(drawer),
-		model(model),
+		model(std::move(model)),
 		texture_id(texture_id)
 	{}
 
@@ -38,5 +38,12 @@ public:
 	bool IsIntersecting(const Entity<T>& other) const {
 		return model->IsIntersecting(*(other.model));
 	}
-};
 
+	void Translate(LinearAlgebra::Vector<T> dt) {
+		model->Translate(std::move(dt));
+	}
+
+	void TranslateTo(const Entity<T>& other) {
+		model->TranslateTo(*(other.model));
+	}
+};

@@ -146,34 +146,52 @@ int main(int argc, char* argv[]) {
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
-	auto player_model = std::make_shared<Model<GLfloat>>(aspect_ratio, +0.0f, -6.0f, +8.1f);
-	Entity<GLfloat> player(sphere, diffuse_drawer, player_model, blue_texture_id);
+	Entity<GLfloat> player(sphere, 
+		diffuse_drawer,
+		std::make_unique<Model<GLfloat>>(aspect_ratio, +0.0f, -6.0f, +8.1f),
+		blue_texture_id
+	);
 
 	//brickbreaker bricks
 	std::vector<Entity<GLfloat>> bricks;
 	for (int ii = 0; ii < 16; ii += 2) {
-		auto brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f);
-		bricks.push_back({ block, diffuse_drawer, brick, blue_texture_id });
+		bricks.push_back({ block,
+			diffuse_drawer,
+			std::make_unique<Model<GLfloat>>(aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f),
+			blue_texture_id
+		});
 	}
 
 	//wall bricks
 	std::vector<Entity<GLfloat>> wall_bricks;
 	for (int ii = 0; ii < 15; ++ii) { //back wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f);
-		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
+		wall_bricks.push_back({ block,
+			diffuse_drawer,
+			std::make_unique<Model<GLfloat>>(aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f),
+			orange_texture_id
+		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f);
-		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
+		wall_bricks.push_back({ block,
+			diffuse_drawer,
+			std::make_unique<Model<GLfloat>>(aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f),
+			orange_texture_id
+		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
-		auto wall_brick = std::make_shared<Model<GLfloat>>(aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f);
-		wall_bricks.push_back({ block, diffuse_drawer, wall_brick, orange_texture_id });
+		wall_bricks.push_back({ block,
+			diffuse_drawer,
+			std::make_unique<Model<GLfloat>>(aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f),
+			orange_texture_id
+		});
 	}
 
 	//player can fire projectiles
-	auto fire_model = std::make_shared<Model<GLfloat>>(aspect_ratio);
-	Entity<GLfloat> projectile(sphere, diffuse_drawer, fire_model, orange_texture_id);
+	Entity<GLfloat> projectile(sphere,
+		diffuse_drawer,
+		std::make_unique<Model<GLfloat>>(aspect_ratio),
+		orange_texture_id
+	);
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
@@ -183,6 +201,12 @@ int main(int argc, char* argv[]) {
 	//e.g.: projectile is moving diagonal up-right. intersection occurs.
 	//was this due to hitting a bottom of a bounding box? keep xx and ricochet yy
 	//was this due to hitting left side of a bounding box? ricochet xx and keep yy
+
+	//^^^I'm starting to think we need another representation of each Model that deals with physics.
+	//This new class can tell the model what transformations to make based on this new class'
+	//state of velocity, forces, and probably much more.
+	//The model shouldn't hold this stuff as it is really more of a bridge to opengl mvp of a "snapshot" for drawing
+	//need to go look below to see where/how we tell Models to update
 
 	//main loop events
 	SDL_Event event;
@@ -271,31 +295,38 @@ int main(int argc, char* argv[]) {
 		}
 
 		//process button events
+		//instead of going directly to the models and translating them, we can create a physics representation
+		//and impart a "button force" on that physics representation.  Let's admit, we'll probably call it Body.
+		//so when we put forces on the Body, the body can later(??) sum them and give the model 1 transformation
+		//so....does that also mean that Body's need to be able to talk to Models?
+		//should we maybe make some sort of composite object?
+		//Entity might be the place for this...currently we're dealing with, for example, player_model and player (Entity)
+		//in main.cpp and these should probably be abstracted away into some single object to represent the player to main.cpp
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				player_model->Translate({ +0.0f, -step, +0.0f });
+				player.Translate({ +0.0f, -step, +0.0f });
 				break;
 			case 0x2: //4
-				player_model->Translate({ -step, +0.0f, +0.0f });
+				player.Translate({ -step, +0.0f, +0.0f });
 				break;
 			case 0x3: //1
-				player_model->Translate({ -step, -step, +0.0f });
+				player.Translate({ -step, -step, +0.0f });
 				break;
 			case 0x4: //6
-				player_model->Translate({ +step, +0.0f, +0.0f });
+				player.Translate({ +step, +0.0f, +0.0f });
 				break;
 			case 0x5: //3
-				player_model->Translate({ +step, -step, +0.0f });
+				player.Translate({ +step, -step, +0.0f });
 				break;
 			case 0x8: //8
-				player_model->Translate({ +0.0f, +step, +0.0f });
+				player.Translate({ +0.0f, +step, +0.0f });
 				break;
 			case 0xa: //7
-				player_model->Translate({ -step, +step, +0.0f });
+				player.Translate({ -step, +step, +0.0f });
 				break;
 			case 0xc: //9
-				player_model->Translate({ +step, +step, +0.0f });
+				player.Translate({ +step, +step, +0.0f });
 				break;
 			}
 		}
@@ -312,8 +343,8 @@ int main(int argc, char* argv[]) {
 			case 0x10:
 				if (!fire) {
 					fire = true;
-					fire_model->TranslateTo(*player_model);
-					fire_model->Translate({ 0.0f, 1.4f, 0.0f });
+					projectile.TranslateTo(player);
+					projectile.Translate({ 0.0f, 1.4f, 0.0f });
 				}
 				break;
 			}
@@ -332,7 +363,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			//check for collision with wall
-			for (auto wall_brick : wall_bricks) {
+			for (const auto& wall_brick : wall_bricks) {
 				if (projectile.IsIntersecting(wall_brick)) {
 					shoot = -shoot;
 					break;
@@ -344,7 +375,7 @@ int main(int argc, char* argv[]) {
 				shoot = -shoot;
 			}
 
-			fire_model->Translate({ +0.0f, shoot, +0.0f });
+			projectile.Translate({ +0.0f, shoot, +0.0f });
 		}
 
 		//wipe frame
@@ -353,11 +384,11 @@ int main(int argc, char* argv[]) {
 		//draw the player
 		player.Draw();
 		//draw the bricks
-		for (auto brick : bricks) {
+		for (auto& brick : bricks) {
 			brick.Draw();
 		}
 		//draw the wall
-		for (auto wall_brick : wall_bricks) {
+		for (auto& wall_brick : wall_bricks) {
 			wall_brick.Draw();
 		}
 		//draw the projectile

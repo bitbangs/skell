@@ -112,6 +112,10 @@ public:
 	//if you trigger one, and one of your components (xx/yy) is 0, there's your intersection plane.
 
 	//so what does a model need to provide the other class?
+	//^^^the answer may be to add another indirection to a physics Body class, which is starting to look better from main
+	//but not sure how it will apply here yet. the direction (did we mean velocity?) vector should live in Body.
+	//maybe even keep the below method and only call it for Models which have nearby positions...that "lazy" collision
+	//calculation algo is still kind of a nightmare to think of right now
 	bool IsIntersecting(const Model<T>& other) const {
 		if ((other.xx + other.sx >= xx && other.xx <= xx + sx)) {
 			if (other.yy + other.sy >= yy && other.yy <= yy + sy) {
