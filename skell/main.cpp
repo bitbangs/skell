@@ -148,6 +148,8 @@ int main(int argc, char* argv[]) {
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
 		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
+		{ 0.0f, 0.0f, 0.0f },
+		10.0f,
 		blue_texture_id
 	);
 
@@ -157,6 +159,8 @@ int main(int argc, char* argv[]) {
 		bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
+			{ 0.0f, 0.0f, 0.0f },
+			1.5f,
 			blue_texture_id
 		});
 	}
@@ -167,6 +171,8 @@ int main(int argc, char* argv[]) {
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
+			{ 0.0f, 0.0f, 0.0f },
+			2.0f,
 			orange_texture_id
 		});
 	}
@@ -174,6 +180,8 @@ int main(int argc, char* argv[]) {
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
+			{ 0.0f, 0.0f, 0.0f },
+			2.0f,
 			orange_texture_id
 		});
 	}
@@ -181,6 +189,8 @@ int main(int argc, char* argv[]) {
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
+			{ 0.0f, 0.0f, 0.0f },
+			2.0f,
 			orange_texture_id
 		});
 	}
@@ -189,12 +199,14 @@ int main(int argc, char* argv[]) {
 	Entity<GLfloat> projectile(sphere,
 		diffuse_drawer,
 		aspect_ratio,
+		{ 0.0f, 0.05f, 0.0f },
+		0.5f,
 		orange_texture_id
 	);
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
-	GLfloat shoot = +0.05f; //this should be a vector so we can move in xx and yy
+	//GLfloat shoot = +0.05f; //this should be a vector so we can move in xx and yy
 	//that will also allow for us to ricochet when intersecting
 	//....but now we need to know which plane of the bounding box we hit
 	//e.g.: projectile is moving diagonal up-right. intersection occurs.
@@ -304,28 +316,36 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				player.Translate({ +0.0f, -step, +0.0f });
+				//player.Translate({ +0.0f, -step, +0.0f });
+				player.ApplyForce({ +0.0f, -step, +0.0f }, 0.1f);
 				break;
 			case 0x2: //4
-				player.Translate({ -step, +0.0f, +0.0f });
+				//player.Translate({ -step, +0.0f, +0.0f });
+				player.ApplyForce({ -step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x3: //1
-				player.Translate({ -step, -step, +0.0f });
+				//player.Translate({ -step, -step, +0.0f });
+				player.ApplyForce({ -step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x4: //6
-				player.Translate({ +step, +0.0f, +0.0f });
+				//player.Translate({ +step, +0.0f, +0.0f });
+				player.ApplyForce({ +step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x5: //3
-				player.Translate({ +step, -step, +0.0f });
+				//player.Translate({ +step, -step, +0.0f });
+				player.ApplyForce({ +step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x8: //8
-				player.Translate({ +0.0f, +step, +0.0f });
+				//player.Translate({ +0.0f, +step, +0.0f });
+				player.ApplyForce({ +0.0f, +step, +0.0f }, 0.1f);
 				break;
 			case 0xa: //7
-				player.Translate({ -step, +step, +0.0f });
+				//player.Translate({ -step, +step, +0.0f });
+				player.ApplyForce({ -step, +step, +0.0f }, 0.1f);
 				break;
 			case 0xc: //9
-				player.Translate({ +step, +step, +0.0f });
+				//player.Translate({ +step, +step, +0.0f });
+				player.ApplyForce({ +step, +step, +0.0f }, 0.1f);
 				break;
 			}
 		}
@@ -351,6 +371,7 @@ int main(int argc, char* argv[]) {
 
 		//deal with projectile and collisions
 		//this is what needs a heavy refactor
+		player.Move();
 		if (fire) {
 			//check for collision with bricks
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
@@ -358,23 +379,24 @@ int main(int argc, char* argv[]) {
 				});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
-				shoot = -shoot;
+				projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
 			}
 
 			//check for collision with wall
 			for (const auto& wall_brick : wall_bricks) {
 				if (projectile.IsIntersecting(wall_brick)) {
-					shoot = -shoot;
+					projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
 					break;
 				}
 			}
 
 			//check for collision with paddle
-			if (projectile.IsIntersecting(player)) {
-				shoot = -shoot;
-			}
+			//if (projectile.IsIntersecting(player)) {
+			//	projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
+			//}
+			player.Collide(projectile);
 
-			projectile.Translate({ +0.0f, shoot, +0.0f });
+			projectile.Move();
 		}
 
 		//wipe frame

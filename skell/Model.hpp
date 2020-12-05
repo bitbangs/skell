@@ -64,7 +64,7 @@ public:
 		sx(1), sy(1), sz(1)
 	{}
 
-	void Translate(LinearAlgebra::Vector<T> dt) {
+	void Translate(const LinearAlgebra::Vector<T>& dt) {
 		model *= LinearAlgebra::Matrix<T>(4, 4, {
 			1, 0, 0, 0,
 			0, 1, 0, 0,
