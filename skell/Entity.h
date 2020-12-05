@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include "Drawer.h"
 #include "Mesh.hpp"
 #include "Model.hpp"
@@ -18,11 +19,22 @@ public:
 	Entity() = delete;
 	Entity(std::shared_ptr<Mesh<T>> mesh,
 		std::shared_ptr<Drawer<T>> drawer,
-		std::unique_ptr<Model<T>> model,
+		//std::unique_ptr<Model<T>> model,
+		T aspect_ratio, //should all models use the same aspect ratio?
 		GLuint texture_id) :
 		mesh(mesh),
 		drawer(drawer),
-		model(std::move(model)),
+		model(std::move(std::make_unique<Model<T>>(aspect_ratio))),
+		texture_id(texture_id)
+	{}
+	
+	Entity(std::shared_ptr<Mesh<T>> mesh,
+		std::shared_ptr<Drawer<T>> drawer,
+		std::vector<T> model_args, //can I do better than vector?
+		GLuint texture_id) :
+		mesh(mesh),
+		drawer(drawer),
+		model(std::make_unique<Model<T>>(model_args[0], model_args[1], model_args[2], model_args[3])),
 		texture_id(texture_id)
 	{}
 

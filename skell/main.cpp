@@ -10,7 +10,6 @@
 #include <vector>
 #include "Drawer.h"
 #include "Mesh.hpp"
-#include "Model.hpp"
 #include "ShaderProgram.h"
 //shader factory pending :p
 #include "VertexShader.h"
@@ -148,7 +147,7 @@ int main(int argc, char* argv[]) {
 	//create the player
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
-		std::make_unique<Model<GLfloat>>(aspect_ratio, +0.0f, -6.0f, +8.1f),
+		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
 		blue_texture_id
 	);
 
@@ -157,7 +156,7 @@ int main(int argc, char* argv[]) {
 	for (int ii = 0; ii < 16; ii += 2) {
 		bricks.push_back({ block,
 			diffuse_drawer,
-			std::make_unique<Model<GLfloat>>(aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f),
+			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
 			blue_texture_id
 		});
 	}
@@ -167,21 +166,21 @@ int main(int argc, char* argv[]) {
 	for (int ii = 0; ii < 15; ++ii) { //back wall
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			std::make_unique<Model<GLfloat>>(aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f),
+			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
 			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			std::make_unique<Model<GLfloat>>(aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f),
+			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
 			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			std::make_unique<Model<GLfloat>>(aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f),
+			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
 			orange_texture_id
 		});
 	}
@@ -189,7 +188,7 @@ int main(int argc, char* argv[]) {
 	//player can fire projectiles
 	Entity<GLfloat> projectile(sphere,
 		diffuse_drawer,
-		std::make_unique<Model<GLfloat>>(aspect_ratio),
+		aspect_ratio,
 		orange_texture_id
 	);
 
