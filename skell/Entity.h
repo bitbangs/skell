@@ -23,6 +23,14 @@ private:
 		return model->IsIntersecting(*(other.model));
 	}
 
+	void Translate(const LinearAlgebra::Vector<T>& dt) {
+		model->Translate(dt);
+	}
+
+	void TranslateTo(const Entity<T>& other) {
+		model->TranslateTo(*(other.model));
+	}
+
 public:
 	Entity() = delete;
 	Entity(std::shared_ptr<Mesh<T>> mesh,
@@ -94,14 +102,6 @@ public:
 		return false;
 	}
 
-	void Translate(const LinearAlgebra::Vector<T>& dt) {
-		model->Translate(dt);
-	}
-
-	void TranslateTo(const Entity<T>& other) {
-		model->TranslateTo(*(other.model));
-	}
-
 	void ApplyForce(LinearAlgebra::Vector<T> force, T how_long) {
 		velocity += force.Scale(how_long / mass); //this is going ok, but we I also need to be able to calculate the equal opposite force
 		//I'm not sure I can do that after I've just modified the current velocity...
@@ -109,11 +109,13 @@ public:
 		//meaning when entity A collides into entity B, we need to 
 	}
 
-	void ScaleVelocity(const LinearAlgebra::Vector<T>& change) {
-		velocity *= change;
+	void Move() {
+		velocity -= velocity * LinearAlgebra::Vector<T>({ 0.001f, 0.001f, 1.0f });
+		model->Translate(velocity);
 	}
 
-	void Move() {
-		model->Translate(velocity);
+	void Fire(Entity<T>& projectile) {
+		projectile.TranslateTo(*this);
+		projectile.Translate({ 0.0f, 1.4f, 0.0f });
 	}
 };

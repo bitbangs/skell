@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
 
 	//wall bricks
 	std::vector<Entity<GLfloat>> wall_bricks;
-	for (int ii = 0; ii < 15; ++ii) { //back wall
+	for (int ii = 0; ii < 15; ++ii) { //top wall
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
@@ -194,30 +194,21 @@ int main(int argc, char* argv[]) {
 			orange_texture_id
 		});
 	}
+	for (int ii = 0; ii < 15; ++ii) { //bottom wall
+		wall_bricks.push_back({ block,
+			diffuse_drawer,
+			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
+			{ 0.0f, 0.0f, 0.0f },
+			20.0f,
+			orange_texture_id
+		});
+	}
 
-	//player can fire projectiles
-	Entity<GLfloat> projectile(sphere,
-		diffuse_drawer,
-		aspect_ratio,
-		{ 0.0f, 0.05f, 0.0f },
-		0.5f,
-		orange_texture_id
-	);
+	//can send multiple projectiles now...but careful because you're not cleaning them up yet when they go off screen
+	std::vector<Entity<GLfloat>> projectiles;
 
 	//translations (these should be controlled by the system...)
 	GLfloat step = +0.15f;
-	//GLfloat shoot = +0.05f; //this should be a vector so we can move in xx and yy
-	//that will also allow for us to ricochet when intersecting
-	//....but now we need to know which plane of the bounding box we hit
-	//e.g.: projectile is moving diagonal up-right. intersection occurs.
-	//was this due to hitting a bottom of a bounding box? keep xx and ricochet yy
-	//was this due to hitting left side of a bounding box? ricochet xx and keep yy
-
-	//^^^I'm starting to think we need another representation of each Model that deals with physics.
-	//This new class can tell the model what transformations to make based on this new class'
-	//state of velocity, forces, and probably much more.
-	//The model shouldn't hold this stuff as it is really more of a bridge to opengl mvp of a "snapshot" for drawing
-	//need to go look below to see where/how we tell Models to update
 
 	//main loop events
 	SDL_Event event;
@@ -225,7 +216,6 @@ int main(int argc, char* argv[]) {
 	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
 	bool quit = false;
-	bool fire = false;
 
 	//main loop
 	while (!quit) {
@@ -360,11 +350,14 @@ int main(int argc, char* argv[]) {
 			case 0x8:
 				break;
 			case 0x10:
-				if (!fire) {
-					fire = true;
-					projectile.TranslateTo(player);
-					projectile.Translate({ 0.0f, 1.4f, 0.0f });
-				}
+				projectiles.push_back(Entity<GLfloat>(sphere,
+					diffuse_drawer,
+					aspect_ratio,
+					{ 0.0f, 0.05f, 0.0f },
+					0.5f,
+					orange_texture_id
+				));
+				player.Fire(projectiles.back());
 				break;
 			}
 		}
@@ -372,7 +365,7 @@ int main(int argc, char* argv[]) {
 		//deal with projectile and collisions
 		//this is what needs a heavy refactor
 		player.Move();
-		if (fire) {
+		for (auto& projectile : projectiles) {
 			//check for collision with bricks and delete them
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
 				//return projectile.IsIntersecting(brick);
@@ -407,7 +400,7 @@ int main(int argc, char* argv[]) {
 			wall_brick.Draw();
 		}
 		//draw the projectile
-		if (fire) {
+		for (auto& projectile : projectiles) {
 			projectile.Draw();
 		}
 
