@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "Drawer.h"
+#include "FreeBody.hpp"
 #include "Mesh.hpp"
 #include "ShaderProgram.h"
 //shader factory pending :p
@@ -145,61 +146,61 @@ int main(int argc, char* argv[]) {
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
+	auto player_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 10.0f);
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
 		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
-		{ 0.0f, 0.0f, 0.0f },
-		10.0f,
+		player_body,
 		blue_texture_id
 	);
 
 	//brickbreaker bricks
-	std::vector<Entity<GLfloat>> bricks;
+	std::vector<Entity<GLfloat>> bricks; //replace this with the "all-knowing" body collision object
 	for (int ii = 0; ii < 16; ii += 2) {
+		auto brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 1.5f);
 		bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
-			{ 0.0f, 0.0f, 0.0f },
-			1.5f,
+			brick_body,
 			blue_texture_id
 		});
 	}
 
 	//wall bricks
-	std::vector<Entity<GLfloat>> wall_bricks;
+	std::vector<Entity<GLfloat>> wall_bricks; //replace this with the "all-knowing" body collision object
 	for (int ii = 0; ii < 15; ++ii) { //top wall
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
-			{ 0.0f, 0.0f, 0.0f },
-			20.0f,
+			wall_brick_body,
 			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
-			{ 0.0f, 0.0f, 0.0f },
-			20.0f,
+			wall_brick_body,
 			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
-			{ 0.0f, 0.0f, 0.0f },
-			20.0f,
+			wall_brick_body,
 			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 15; ++ii) { //bottom wall
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
-			{ 0.0f, 0.0f, 0.0f },
-			20.0f,
+			wall_brick_body,
 			orange_texture_id
 		});
 	}
@@ -308,36 +309,28 @@ int main(int argc, char* argv[]) {
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				//player.Translate({ +0.0f, -step, +0.0f });
-				player.ApplyForce({ +0.0f, -step, +0.0f }, 0.1f);
+				//player.ApplyForce({ +0.0f, -step, +0.0f }, 0.1f);
 				break;
 			case 0x2: //4
-				//player.Translate({ -step, +0.0f, +0.0f });
-				player.ApplyForce({ -step, +0.0f, +0.0f }, 0.1f);
+				//player.ApplyForce({ -step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x3: //1
-				//player.Translate({ -step, -step, +0.0f });
-				player.ApplyForce({ -step, -step, +0.0f }, 0.1f);
+				//player.ApplyForce({ -step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x4: //6
-				//player.Translate({ +step, +0.0f, +0.0f });
-				player.ApplyForce({ +step, +0.0f, +0.0f }, 0.1f);
+				//player.ApplyForce({ +step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x5: //3
-				//player.Translate({ +step, -step, +0.0f });
-				player.ApplyForce({ +step, -step, +0.0f }, 0.1f);
+				//player.ApplyForce({ +step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x8: //8
-				//player.Translate({ +0.0f, +step, +0.0f });
-				player.ApplyForce({ +0.0f, +step, +0.0f }, 0.1f);
+				//player.ApplyForce({ +0.0f, +step, +0.0f }, 0.1f);
 				break;
 			case 0xa: //7
-				//player.Translate({ -step, +step, +0.0f });
-				player.ApplyForce({ -step, +step, +0.0f }, 0.1f);
+				//player.ApplyForce({ -step, +step, +0.0f }, 0.1f);
 				break;
 			case 0xc: //9
-				//player.Translate({ +step, +step, +0.0f });
-				player.ApplyForce({ +step, +step, +0.0f }, 0.1f);
+				//player.ApplyForce({ +step, +step, +0.0f }, 0.1f);
 				break;
 			}
 		}
@@ -353,11 +346,11 @@ int main(int argc, char* argv[]) {
 				break;
 			case 0x10:
 				if (toggle_fire) {
+					auto projectile_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.05f, 0.0f }), 0.5f);
 					projectiles.push_back(Entity<GLfloat>(sphere,
 						diffuse_drawer,
 						aspect_ratio,
-						{ 0.0f, 0.05f, 0.0f },
-						0.5f,
+						projectile_body,
 						orange_texture_id
 						));
 					player.Fire(projectiles.back());
@@ -369,26 +362,25 @@ int main(int argc, char* argv[]) {
 
 		//deal with projectile and collisions here
 		//next big undertaking will be to make projectiles collide with each other
-		//but first we need to be sure they don't all spawn on top of each other
-		player.Move();
+		//player.Move();
 		for (auto& projectile : projectiles) {
 			//check for collision with bricks and delete them
-			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
-				return projectile.Collide(brick);
-			});
-			if (dead_brick != bricks.end()) {
-				bricks.erase(dead_brick);
-			}
+			//auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
+			////	return projectile.Collide(brick);
+			//});
+			//if (dead_brick != bricks.end()) {
+			//	bricks.erase(dead_brick);
+			//}
 
 			//check for collision with wall
 			for (auto& wall_brick : wall_bricks) {
-				projectile.Collide(wall_brick); //I think we're losing some efficiency here but this is the right why to go
+				//projectile.Collide(wall_brick); //I think we're losing some efficiency here but this is the right why to go
 			}
 
 			//check for collision with paddle
-			player.Collide(projectile);
+			//player.Collide(projectile);
 
-			projectile.Move();
+			//projectile.Move();
 		}
 
 		//wipe frame

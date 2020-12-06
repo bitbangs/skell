@@ -81,14 +81,6 @@ public:
 			LinearAlgebra::Vector<T>({ xx, yy, zz }));
 	}
 
-	void MoveToward(const Model<T>& dest, const T step) {
-		auto toward = LinearAlgebra::Vector<T>({ dest.xx, dest.yy, dest.zz }) -
-			LinearAlgebra::Vector<T>({xx, yy, zz}); // dest.GetCentroid() - GetCentroid();
-		auto norm_toward = toward.Normalize();
-		norm_toward.Scale(step);
-		Translate(norm_toward);
-	}
-
 	void Scale(T dx, T dy, T dz) {
 		model *= LinearAlgebra::Matrix<T>(4, 4, {
 			dx, 0, 0, 0,

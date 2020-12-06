@@ -161,6 +161,7 @@
     <ClInclude Include="Drawer.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FragmentShader.h" />
+    <ClInclude Include="FreeBody.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Model.hpp" />
     <ClInclude Include="Obj.h" />
