@@ -216,6 +216,7 @@ int main(int argc, char* argv[]) {
 	unsigned char button_mask = 0;
 	unsigned char dpad_mask = 0;
 	bool quit = false;
+	bool toggle_fire = true;
 
 	//main loop
 	while (!quit) {
@@ -285,6 +286,7 @@ int main(int argc, char* argv[]) {
 				dpad_mask ^= 0x1;
 				break;
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				toggle_fire = true;
 				button_mask ^= 0x10;
 				break;
 			default:
@@ -350,27 +352,30 @@ int main(int argc, char* argv[]) {
 			case 0x8:
 				break;
 			case 0x10:
-				projectiles.push_back(Entity<GLfloat>(sphere,
-					diffuse_drawer,
-					aspect_ratio,
-					{ 0.0f, 0.05f, 0.0f },
-					0.5f,
-					orange_texture_id
-				));
-				player.Fire(projectiles.back());
+				if (toggle_fire) {
+					projectiles.push_back(Entity<GLfloat>(sphere,
+						diffuse_drawer,
+						aspect_ratio,
+						{ 0.0f, 0.05f, 0.0f },
+						0.5f,
+						orange_texture_id
+						));
+					player.Fire(projectiles.back());
+					toggle_fire = false;
+				}
 				break;
 			}
 		}
 
-		//deal with projectile and collisions
-		//this is what needs a heavy refactor
+		//deal with projectile and collisions here
+		//next big undertaking will be to make projectiles collide with each other
+		//but first we need to be sure they don't all spawn on top of each other
 		player.Move();
 		for (auto& projectile : projectiles) {
 			//check for collision with bricks and delete them
 			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
-				//return projectile.IsIntersecting(brick);
 				return projectile.Collide(brick);
-				});
+			});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
 			}
