@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
 			{ 0.0f, 0.0f, 0.0f },
-			2.0f,
+			20.0f,
 			orange_texture_id
 		});
 	}
@@ -181,7 +181,7 @@ int main(int argc, char* argv[]) {
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
 			{ 0.0f, 0.0f, 0.0f },
-			2.0f,
+			20.0f,
 			orange_texture_id
 		});
 	}
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
 			{ 0.0f, 0.0f, 0.0f },
-			2.0f,
+			20.0f,
 			orange_texture_id
 		});
 	}
@@ -373,27 +373,21 @@ int main(int argc, char* argv[]) {
 		//this is what needs a heavy refactor
 		player.Move();
 		if (fire) {
-			//check for collision with bricks
-			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](const auto& brick) {
-				return projectile.IsIntersecting(brick);
+			//check for collision with bricks and delete them
+			auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
+				//return projectile.IsIntersecting(brick);
+				return projectile.Collide(brick);
 				});
 			if (dead_brick != bricks.end()) {
 				bricks.erase(dead_brick);
-				projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
 			}
 
 			//check for collision with wall
-			for (const auto& wall_brick : wall_bricks) {
-				if (projectile.IsIntersecting(wall_brick)) {
-					projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
-					break;
-				}
+			for (auto& wall_brick : wall_bricks) {
+				projectile.Collide(wall_brick); //I think we're losing some efficiency here but this is the right why to go
 			}
 
 			//check for collision with paddle
-			//if (projectile.IsIntersecting(player)) {
-			//	projectile.ScaleVelocity({ 0.0f, -1.0f, 0.0f });
-			//}
 			player.Collide(projectile);
 
 			projectile.Move();

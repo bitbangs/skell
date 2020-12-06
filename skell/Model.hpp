@@ -125,6 +125,11 @@ public:
 		return false;
 	}
 
+	bool IsIntersectingVerticalFace(const Model<T>& other) const { //really doesn't work if we start rotating...so this is kinda hacky
+		//also should this really be in model?
+		return std::abs(other.xx - xx) > std::abs(other.yy - yy);
+	}
+
 	const T* GetMVP() {
 		mvp = LinearAlgebra::Matrix<T>(projection * view * model);
 		return mvp.GetPointerToData();
