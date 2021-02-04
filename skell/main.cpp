@@ -8,6 +8,7 @@
 #include <SDL.h>
 #include <string>
 #include <vector>
+#include "Collider.hpp"
 #include "Drawer.h"
 #include "FreeBody.hpp"
 #include "Mesh.hpp"
@@ -145,23 +146,22 @@ int main(int argc, char* argv[]) {
 	//create mesh drawer
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
+	//create the collider
+	Collider<GLfloat> collider;
+
 	//create the player
-	//we need to ultimately combine the below two constructors into one; we can create some sort of builder to keep from repeating
-	//the absolute position when making the FreeBody and the Model.  It'll also clean up all these verbose calls...and maybe set aspect ratio
-	//once and be done with it.
-	//At this moment I'm still building but not moving anything; I'd rather make this the "wrong" way by repeating the position coords
-	//and then refactor to a builder after I know this works; change one thing at a time...kinda :)
+	//a builder will clean these calls up a bit as well as make sure we're registering FreeBodies with the Collider
 	auto player_body = std::make_shared<FreeBody<GLfloat>>(
 		LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
 		LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f }), //absolute position
 		+10.0f //mass
 	);
+	collider.Add(player_body);
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
 		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
 		player_body,
-		blue_texture_id//,
-		//LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f })
+		blue_texture_id
 	);
 
 	//brickbreaker bricks
@@ -172,6 +172,7 @@ int main(int argc, char* argv[]) {
 			LinearAlgebra::Vector<GLfloat>({ -8.0f + (GLfloat)ii, +1.0f, +8.1f }), //absolute position
 			+1.5f //mass
 		);
+		collider.Add(brick_body);
 		bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
@@ -189,6 +190,7 @@ int main(int argc, char* argv[]) {
 			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f }), //absolute position
 			+20.0f //mass
 		);
+		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
@@ -203,6 +205,7 @@ int main(int argc, char* argv[]) {
 			LinearAlgebra::Vector<GLfloat>({ -14.0f, -8.0f + (GLfloat)ii * 2.0f, 8.1f }), //absolute position
 			+20.0f //mass
 		);
+		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
@@ -217,6 +220,7 @@ int main(int argc, char* argv[]) {
 			LinearAlgebra::Vector<GLfloat>({ +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f }),
 			+20.0f //mass
 		);
+		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
@@ -231,6 +235,7 @@ int main(int argc, char* argv[]) {
 			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, -8.0f, 8.1f }),
 			+20.0f
 		);
+		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
@@ -380,6 +385,7 @@ int main(int argc, char* argv[]) {
 						//do we want to instead be able to give an absolute position by passing the player?
 						+0.5f //mass
 					);
+					collider.Add(projectile_body);
 					projectiles.push_back(Entity<GLfloat>(sphere,
 						diffuse_drawer,
 						aspect_ratio,
@@ -394,28 +400,13 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		//deal with projectile and collisions here
-		//next big undertaking will be to make projectiles collide with each other
+		//check collisions
+		collider.CheckCollisions();
 
+		//move everyone along
 		player.Move();
 		for (auto& projectile : projectiles) {
-			//check for collision with bricks and delete them
-			//auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {
-			////	return projectile.Collide(brick);
-			//});
-			//if (dead_brick != bricks.end()) {
-			//	bricks.erase(dead_brick);
-			//}
-
-			//check for collision with wall
-			for (auto& wall_brick : wall_bricks) {
-				//projectile.Collide(wall_brick); //I think we're losing some efficiency here but this is the right why to go
-			}
-
-			//check for collision with paddle
-			//player.Collide(projectile);
-
-			//projectile.Move();
+			projectile.Move();
 		}
 
 		//wipe frame

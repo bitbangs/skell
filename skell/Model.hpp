@@ -11,7 +11,6 @@ private:
 	LinearAlgebra::Matrix<T> view;
 	LinearAlgebra::Matrix<T> projection;
 	LinearAlgebra::Matrix<T> mvp;
-	T sx, sy, sz;
 
 public:
 	Model() = delete;
@@ -34,8 +33,7 @@ public:
 			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
 			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
 		})),
-		mvp(projection * view * model),
-		sx(1), sy(1), sz(1)
+		mvp(projection * view * model)
 	{}
 
 	Model(T aspect_ratio, T xx, T yy, T zz) :
@@ -57,8 +55,7 @@ public:
 			+0.0f, +0.0f, (-1.0f - 100.0f) / (1.0f - 100.0f), +1.0f,
 			+0.0f, +0.0f, (+2.0f * 100.0f * 1.0f) / (1.0f - 100.0f), +0.0f
 		})),
-		mvp(projection * view * model),
-		sx(1), sy(1), sz(1)
+		mvp(projection * view * model)
 	{}
 
 	void Translate(const LinearAlgebra::Vector<T>& dt) {
@@ -70,17 +67,15 @@ public:
 			});
 	}
 
-	void Scale(T dx, T dy, T dz) {
-		model *= LinearAlgebra::Matrix<T>(4, 4, {
-			dx, 0, 0, 0,
-			0, dy, 0, 0,
-			0, 0, dz, 0,
-			0, 0, 0, 1
-			});
-		sx *= dx;
-		sy *= dy;
-		sz *= dz;
-	}
+	//this is not being used yet
+	//void Scale(T dx, T dy, T dz) {
+	//	model *= LinearAlgebra::Matrix<T>(4, 4, {
+	//		dx, 0, 0, 0,
+	//		0, dy, 0, 0,
+	//		0, 0, dz, 0,
+	//		0, 0, 0, 1
+	//		});
+	//}
 
 	const T* GetMVP() {
 		mvp = LinearAlgebra::Matrix<T>(projection * view * model);
