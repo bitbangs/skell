@@ -146,62 +146,97 @@ int main(int argc, char* argv[]) {
 	auto diffuse_drawer = std::make_shared<Drawer<GLfloat>>(ShaderProgram(diffuse_vert_shader, diffuse_frag_shader), aspect_ratio);
 
 	//create the player
-	auto player_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 10.0f);
+	//we need to ultimately combine the below two constructors into one; we can create some sort of builder to keep from repeating
+	//the absolute position when making the FreeBody and the Model.  It'll also clean up all these verbose calls...and maybe set aspect ratio
+	//once and be done with it.
+	//At this moment I'm still building but not moving anything; I'd rather make this the "wrong" way by repeating the position coords
+	//and then refactor to a builder after I know this works; change one thing at a time...kinda :)
+	auto player_body = std::make_shared<FreeBody<GLfloat>>(
+		LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
+		LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f }), //absolute position
+		+10.0f //mass
+	);
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
 		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
 		player_body,
-		blue_texture_id
+		blue_texture_id//,
+		//LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f })
 	);
 
 	//brickbreaker bricks
 	std::vector<Entity<GLfloat>> bricks; //replace this with the "all-knowing" body collision object
 	for (int ii = 0; ii < 16; ii += 2) {
-		auto brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 1.5f);
+		auto brick_body = std::make_shared<FreeBody<GLfloat>>(
+			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
+			LinearAlgebra::Vector<GLfloat>({ -8.0f + (GLfloat)ii, +1.0f, +8.1f }), //absolute position
+			+1.5f //mass
+		);
 		bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
 			brick_body,
-			blue_texture_id
+			blue_texture_id//,
+			//LinearAlgebra::Vector<GLfloat>({ -8.0f + (GLfloat)ii, +1.0f, +8.1f })
 		});
 	}
 
 	//wall bricks
 	std::vector<Entity<GLfloat>> wall_bricks; //replace this with the "all-knowing" body collision object
 	for (int ii = 0; ii < 15; ++ii) { //top wall
-		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
+			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
+			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f }), //absolute position
+			+20.0f //mass
+		);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id
+			orange_texture_id//,
+			//LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f })
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
-		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
+			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
+			LinearAlgebra::Vector<GLfloat>({ -14.0f, -8.0f + (GLfloat)ii * 2.0f, 8.1f }), //absolute position
+			+20.0f //mass
+		);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id
+			orange_texture_id//,
+			//LinearAlgebra::Vector<GLfloat>({ -14.0f, -8.0f + (GLfloat)ii * 2.0f, 8.1f })
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
-		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
+			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }),
+			LinearAlgebra::Vector<GLfloat>({ +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f }),
+			+20.0f //mass
+		);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id
+			orange_texture_id//,
+			//LinearAlgebra::Vector<GLfloat>({ +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f })
 		});
 	}
 	for (int ii = 0; ii < 15; ++ii) { //bottom wall
-		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.0f, 0.0f }), 20.0f);
+		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
+			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }),
+			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, -8.0f, 8.1f }),
+			+20.0f
+		);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id
+			orange_texture_id//,
+			//LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, -8.0f, 8.1f })
 		});
 	}
 
@@ -299,38 +334,31 @@ int main(int argc, char* argv[]) {
 		}
 
 		//process button events
-		//instead of going directly to the models and translating them, we can create a physics representation
-		//and impart a "button force" on that physics representation.  Let's admit, we'll probably call it Body.
-		//so when we put forces on the Body, the body can later(??) sum them and give the model 1 transformation
-		//so....does that also mean that Body's need to be able to talk to Models?
-		//should we maybe make some sort of composite object?
-		//Entity might be the place for this...currently we're dealing with, for example, player_model and player (Entity)
-		//in main.cpp and these should probably be abstracted away into some single object to represent the player to main.cpp
 		if (dpad_mask > 0) {
 			switch (dpad_mask) {
 			case 0x1: //2
-				//player.ApplyForce({ +0.0f, -step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ +0.0f, -step, +0.0f }, 0.1f);
 				break;
 			case 0x2: //4
-				//player.ApplyForce({ -step, +0.0f, +0.0f }, 0.1f);
+				player.ApplyImpulse({ -step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x3: //1
-				//player.ApplyForce({ -step, -step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ -step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x4: //6
-				//player.ApplyForce({ +step, +0.0f, +0.0f }, 0.1f);
+				player.ApplyImpulse({ +step, +0.0f, +0.0f }, 0.1f);
 				break;
 			case 0x5: //3
-				//player.ApplyForce({ +step, -step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ +step, -step, +0.0f }, 0.1f);
 				break;
 			case 0x8: //8
-				//player.ApplyForce({ +0.0f, +step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ +0.0f, +step, +0.0f }, 0.1f);
 				break;
 			case 0xa: //7
-				//player.ApplyForce({ -step, +step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ -step, +step, +0.0f }, 0.1f);
 				break;
 			case 0xc: //9
-				//player.ApplyForce({ +step, +step, +0.0f }, 0.1f);
+				player.ApplyImpulse({ +step, +step, +0.0f }, 0.1f);
 				break;
 			}
 		}
@@ -346,12 +374,18 @@ int main(int argc, char* argv[]) {
 				break;
 			case 0x10:
 				if (toggle_fire) {
-					auto projectile_body = std::make_shared<FreeBody<GLfloat>>(LinearAlgebra::Vector<GLfloat>({ 0.0f, 0.05f, 0.0f }), 0.5f);
+					auto projectile_body = std::make_shared<FreeBody<GLfloat>>(
+						LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.05f, +0.0f }), //velocity
+						LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //absolute position...this was originally not specified
+						//do we want to instead be able to give an absolute position by passing the player?
+						+0.5f //mass
+					);
 					projectiles.push_back(Entity<GLfloat>(sphere,
 						diffuse_drawer,
 						aspect_ratio,
 						projectile_body,
-						orange_texture_id
+						orange_texture_id//,
+						//LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f })
 						));
 					player.Fire(projectiles.back());
 					toggle_fire = false;
@@ -362,7 +396,8 @@ int main(int argc, char* argv[]) {
 
 		//deal with projectile and collisions here
 		//next big undertaking will be to make projectiles collide with each other
-		//player.Move();
+
+		player.Move();
 		for (auto& projectile : projectiles) {
 			//check for collision with bricks and delete them
 			//auto dead_brick = std::remove_if(bricks.begin(), bricks.end(), [&](auto& brick) {

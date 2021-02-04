@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Attribute.h" />
+    <ClInclude Include="Collider.hpp" />
     <ClInclude Include="Drawer.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FragmentShader.h" />
