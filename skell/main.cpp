@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, blue_text.GetWidth(), blue_text.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, blue_text.GetData());
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	//load a sphere mesh
+	//create a sphere mesh
 	Obj sphere_obj("sphere.obj");
 	auto sphere = std::make_shared<Mesh<GLfloat>>(
 		diffuse_vert_shader.GetAttributes(),
@@ -153,19 +153,20 @@ int main(int argc, char* argv[]) {
 	//a builder will clean these calls up a bit as well as make sure we're registering FreeBodies with the Collider
 	auto player_body = std::make_shared<FreeBody<GLfloat>>(
 		LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
-		LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f }), //absolute position
+		LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f }), //absolute position, which is the bottom left corner
+		//of the body, not the center of it
 		+1.0f //mass
 	);
 	collider.Add(player_body);
 	Entity<GLfloat> player(sphere, 
 		diffuse_drawer,
-		{ aspect_ratio, +0.0f, -6.0f, +8.1f },
+		aspect_ratio,
 		player_body,
 		blue_texture_id
 	);
 
 	//brickbreaker bricks
-	std::vector<Entity<GLfloat>> bricks; //replace this with the "all-knowing" body collision object
+	std::vector<Entity<GLfloat>> bricks;
 	for (int ii = 0; ii < 16; ii += 2) {
 		auto brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
@@ -175,14 +176,14 @@ int main(int argc, char* argv[]) {
 		collider.Add(brick_body);
 		bricks.push_back({ block,
 			diffuse_drawer,
-			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
+			aspect_ratio,
 			brick_body,
 			blue_texture_id
 		});
 	}
 
 	//wall bricks
-	std::vector<Entity<GLfloat>> wall_bricks; //replace this with the "all-knowing" body collision object
+	std::vector<Entity<GLfloat>> wall_bricks;
 	for (int ii = 0; ii < 15; ++ii) { //top wall
 		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
@@ -192,7 +193,7 @@ int main(int argc, char* argv[]) {
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
+			aspect_ratio,
 			wall_brick_body,
 			orange_texture_id
 		});
@@ -206,7 +207,7 @@ int main(int argc, char* argv[]) {
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
+			aspect_ratio,
 			wall_brick_body,
 			orange_texture_id
 		});
@@ -220,7 +221,7 @@ int main(int argc, char* argv[]) {
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
+			aspect_ratio,
 			wall_brick_body,
 			orange_texture_id
 		});
@@ -234,7 +235,7 @@ int main(int argc, char* argv[]) {
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
-			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
+			aspect_ratio,
 			wall_brick_body,
 			orange_texture_id
 		});

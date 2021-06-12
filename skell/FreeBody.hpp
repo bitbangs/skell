@@ -10,6 +10,9 @@ private:
 	LinearAlgebra::Vector<T> velocity;
 	LinearAlgebra::Vector<T> position;
 	T mass;
+	//let's try putting a bounding box here. maybe it can be calculated from the mesh.
+	//let's find out if the position is really a corner of the mesh...or how we can start
+	//being more flexible
 
 public:
 	FreeBody() = delete;

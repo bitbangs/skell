@@ -39,21 +39,16 @@ public:
 		GLuint texture_id) :
 		mesh(mesh),
 		drawer(drawer),
-		model(std::move(std::make_unique<Model<T>>(aspect_ratio))),
 		free_body(free_body),
 		texture_id(texture_id)
-	{}
-	Entity(std::shared_ptr<Mesh<T>> mesh,
-		std::shared_ptr<Drawer<T>> drawer,
-		std::vector<T> model_args, //can I do better than vector?
-		std::shared_ptr<FreeBody<T>> free_body,
-		GLuint texture_id) :
-		mesh(mesh),
-		drawer(drawer),
-		model(std::make_unique<Model<T>>(model_args[0], model_args[1], model_args[2], model_args[3])),
-		free_body(free_body),
-		texture_id(texture_id)
-	{}
+	{
+		//this is very ugly, but a temporary refactor necessary so that we're not repeating the position in main.cpp
+		model = std::make_unique<Model<T>>(aspect_ratio, free_body->GetPosition()[0], free_body->GetPosition()[1], free_body->GetPosition()[2]);
+
+		//so the position is the bottom left corner (ignoring z for now) of the mesh. we need to look at the mesh vertices to calculate
+		//a bounding box...assuming we're committed to aabb collisions.  let's just start there and see how this goes.  later we may want to be
+		//able to use a sphere or ellipse
+	}
 
 	void Draw() {
 		glBindVertexArray(mesh->GetVao()); //wasteful
