@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
 	auto player_body = std::make_shared<FreeBody<GLfloat>>(
 		LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
 		LinearAlgebra::Vector<GLfloat>({ +0.0f, -6.0f, +8.1f }), //absolute position
-		+10.0f //mass
+		+1.0f //mass
 	);
 	collider.Add(player_body);
 	Entity<GLfloat> player(sphere, 
@@ -177,8 +177,7 @@ int main(int argc, char* argv[]) {
 			diffuse_drawer,
 			{ aspect_ratio, -8.0f + (GLfloat)ii, +1.0f, +8.1f },
 			brick_body,
-			blue_texture_id//,
-			//LinearAlgebra::Vector<GLfloat>({ -8.0f + (GLfloat)ii, +1.0f, +8.1f })
+			blue_texture_id
 		});
 	}
 
@@ -188,60 +187,56 @@ int main(int argc, char* argv[]) {
 		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
 			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f }), //absolute position
-			+20.0f //mass
+			+200.0f //mass
 		);
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id//,
-			//LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, +8.0f, +8.1f })
+			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //left wall
 		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //velocity
 			LinearAlgebra::Vector<GLfloat>({ -14.0f, -8.0f + (GLfloat)ii * 2.0f, 8.1f }), //absolute position
-			+20.0f //mass
+			+200.0f //mass
 		);
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f, -8.0f + (GLfloat)ii * 2.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id//,
-			//LinearAlgebra::Vector<GLfloat>({ -14.0f, -8.0f + (GLfloat)ii * 2.0f, 8.1f })
+			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 8; ++ii) { //right wall
 		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }),
 			LinearAlgebra::Vector<GLfloat>({ +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f }),
-			+20.0f //mass
+			+200.0f //mass
 		);
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id//,
-			//LinearAlgebra::Vector<GLfloat>({ +14.0f, +6.0f - (GLfloat)ii * 2.0f, +8.1f })
+			orange_texture_id
 		});
 	}
 	for (int ii = 0; ii < 15; ++ii) { //bottom wall
 		auto wall_brick_body = std::make_shared<FreeBody<GLfloat>>(
 			LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }),
 			LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, -8.0f, 8.1f }),
-			+20.0f
+			+200.0f
 		);
 		collider.Add(wall_brick_body);
 		wall_bricks.push_back({ block,
 			diffuse_drawer,
 			{ aspect_ratio, -14.0f + (GLfloat)ii * 2.0f, -8.0f, +8.1f },
 			wall_brick_body,
-			orange_texture_id//,
-			//LinearAlgebra::Vector<GLfloat>({ -14.0f + (GLfloat)ii * 2.0f, -8.0f, 8.1f })
+			orange_texture_id
 		});
 	}
 
@@ -249,7 +244,7 @@ int main(int argc, char* argv[]) {
 	std::vector<Entity<GLfloat>> projectiles;
 
 	//translations (these should be controlled by the system...)
-	GLfloat step = +0.15f;
+	GLfloat step = +0.05f;
 
 	//main loop events
 	SDL_Event event;
@@ -383,15 +378,14 @@ int main(int argc, char* argv[]) {
 						LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.05f, +0.0f }), //velocity
 						LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f }), //absolute position...this was originally not specified
 						//do we want to instead be able to give an absolute position by passing the player?
-						+0.5f //mass
+						+1.5f //mass
 					);
 					collider.Add(projectile_body);
 					projectiles.push_back(Entity<GLfloat>(sphere,
 						diffuse_drawer,
 						aspect_ratio,
 						projectile_body,
-						orange_texture_id//,
-						//LinearAlgebra::Vector<GLfloat>({ +0.0f, +0.0f, +0.0f })
+						orange_texture_id
 						));
 					player.Fire(projectiles.back());
 					toggle_fire = false;

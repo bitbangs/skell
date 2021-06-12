@@ -57,11 +57,24 @@ public:
 		Translate(velocity);
 	}
 
+	//if the player bounces between walls, they continue to gain velocity
+	//this is a bug that needs to be fixed
+	//possibly related...if the player collides with a projectile while moving in roughly the same
+	//direction, the projectile sticks to the player.  it can be released by firing another projectile.
+	//...kinda cool and maybe a game modifier later, but definitely a bug now
+
 	void CollidesWith(std::shared_ptr<FreeBody<T>> other) {
 		//check for a collision assuming each freebody is a unit size box...we should support scaling better but this
 		//is just a proof of concept for now
 		//I think position is the (front...no z yet) bottom left corner of the box.
 		//check to see if they're even intersecting...if not, exit early
+
+		//this intersection isn't quite there yet...need to be smarter about the below calculation
+		//which plane is hitting which plane?
+
+		//does trading high mass for low vertex/instance density of walls balance out somewhere?
+		//right now we're at high mass and _same_ vertex/instance density relative to the size of the ball
+
 		if (other->position[0] + 1.0f >= position[0] && other->position[0] <= position[0] + 1.0f) {
 			if (other->position[1] + 1.0f >= position[1] && other->position[1] <= position[1] + 1.0f) {
 				//elastic collisions do not lose energy, we might start with this and then make each collision lose some energy if that feels more real
@@ -70,6 +83,10 @@ public:
 				//LinearAlgebra::Vector<T> first_term = velocity * ((mass - other->mass) / (mass + other->mass));
 				//instead for now we can write this out the long way...this is ugly and isn't the first time you've
 				//had to do this in this class (see accessors)
+
+				//not sure how i landed on the below equations, but these are for head-on collisions in 1 dimension.
+				//we can't use this and instead need to come up with something smarter.
+				//see giancoli page 228
 				T scale = ((mass - other->mass) / (mass + other->mass));
 				LinearAlgebra::Vector<T> first_term = { velocity[0] * scale, velocity[1] * scale, velocity[2] * scale };
 				scale = ((other->mass + other->mass) / (mass + other->mass));
@@ -81,43 +98,7 @@ public:
 				scale = ((mass + mass) / (other->mass + mass));
 				LinearAlgebra::Vector<T> other_second_term = { velocity[0] * scale, velocity[1] * scale, velocity[2] * scale };
 				other->velocity = other_first_term + other_second_term;
-				
 			}
 		}
 	}
-
-	/*
-	bool Collide(Entity<T>& other) {
-		if (this->IsIntersecting(other)) {
-			if (other.velocity.Sum() == (T)0) {
-				//ApplyForce(velocity.Scale(-1.5f), 0.5f); //real hacky and not working quite right
-				//we need a way to collide with the walls which have 0 velocity
-				//velocity = velocity.Scale(-1.0f); //invert velocity because the "wall" has relatively infinite mass
-				//but we can make the intersection better...
-				//because angle of collision matters...so we either need to enhance IsIntersecting, or
-				//only bother with these calculations when we detect a collision happened, coarsely.
-				//...should have something like
-				//velocity = velocity.Scale(-1.0f, 1.0f, 1.0f);
-				//when we hit a vertical wall
-				//velocity = velocity.Scale(1.0f, -1.0f, 1.0f);
-				//when we hit a horizontal (back) wall
-				//could just write this "hardcoded", but I'd rather make it general so that when breaking bricks we can reuse the same logic
-				if (model->IsIntersectingVerticalFace(*(other.model))) {
-					velocity *= { -1.0f, 1.0f, 1.0f };
-				}
-				else {
-					velocity *= { 1.0f, -1.0f, 1.0f };
-				}
-			}
-			else {
-				other.ApplyForce(velocity.Scale(1.0f), 0.1f); //scale by 1.0f is just a hack right now to get around not having a copy constructor for Vector
-				//also, we really need to take into account each entities mass...and I'm not sure where to put that yet
-				//passing velocity is problematic...
-				//I should really be doing a force calculation up front
-			}
-			return true;
-		}
-		return false;
-	}
-	*/
 };
